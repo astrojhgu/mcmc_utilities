@@ -55,6 +55,15 @@ namespace mcmc_utilities
     {}
   };
 
+  class invalid_prob_value
+    :public mcmc_exception
+  {
+  public:
+    invalid_prob_value()
+      :mcmc_exception("invalid probability value, probably overflow")
+    {}
+  };
+
   class arms_exception
     :public mcmc_exception
   {

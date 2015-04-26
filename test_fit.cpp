@@ -110,7 +110,7 @@ int main()
   init_var[1]=3;
   init_var[2]=.5;
   
-  for(int i=0;i<1000;++i)
+  for(int i=0;i<100000;++i)
     {
       gibbs_sample(sn,init_var);
 

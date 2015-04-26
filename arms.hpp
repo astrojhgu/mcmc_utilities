@@ -923,7 +923,10 @@ namespace mcmc_utilities
     /* evaluate density function */
     //y = (lpdf->myfunc)(x,lpdf->mydata);
     y=myfunc.eval_log(x);
-
+    if(std::isinf(y)||std::isnan(y))
+      {
+	throw invalid_prob_value();
+      }
     /* increment count of function evaluations */
     (*(env.neval))++;
 
