@@ -20,3 +20,5 @@ test_arms2:test_arms2.o
 test_arms2.o:test_arms2.cpp
 	clang++ -c $< -O2
 
+clean:
+	rm -fv *.o

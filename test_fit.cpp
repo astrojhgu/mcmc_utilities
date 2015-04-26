@@ -1,5 +1,3 @@
-#include "rejection_sampler_1d.hpp"
-#include "uniform_rng.hpp"
 #include <iostream>
 #include <vector>
 #include <fstream>

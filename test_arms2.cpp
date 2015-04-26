@@ -1,5 +1,3 @@
-//#include "rejection_sampler_1d.hpp"
-#include "uniform_rng.hpp"
 #include <iostream>
 #include <vector>
 #include "gibbs_sampler.hpp"
@@ -36,7 +34,6 @@ class std_norm
 
 int main()
 {
-  uniform_rng<double,double> ur;
   std_norm sn;
   std::vector<double> factors(2,1);
   std::vector<double> init_var(2,0);
