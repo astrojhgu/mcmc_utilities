@@ -1,7 +1,6 @@
 /* adaptive rejection metropolis sampling */
 
 /* *********************************************************************** */
-using namespace std;
 #include <cstdio>
 #include <cmath>
 #include <cstdlib>
