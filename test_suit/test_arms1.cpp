@@ -1,4 +1,4 @@
-#include "arms.hpp"
+#include "core/arms.hpp"
 #include <algorithm>
 using namespace std;
 using namespace mcmc_utilities;
