@@ -2,7 +2,6 @@
 #include "distribution.hpp"
 #include <vector>
 #include <deque>
-
 namespace mcmc_utilities
 {
  
@@ -48,8 +47,8 @@ namespace mcmc_utilities
       public:
 	T_p do_eval_log(const T_stat& x)const
 	{
-	  return ptr_pf_model->evol_log_prob(x,*ptr_t,*ptr_prev_stat,*ptr_prev_t)+
-	    ptr_pf_model->obs_log_prob(*ptr_obs_vec,x,*ptr_t);
+	  return ptr_pf_model->evol_log_prob(x,*ptr_t,*ptr_prev_stat,*ptr_prev_t)
+	    +ptr_pf_model->obs_log_prob(*ptr_obs_vec,x,*ptr_t);
 	}
 	cprob* do_clone()const
 	{
