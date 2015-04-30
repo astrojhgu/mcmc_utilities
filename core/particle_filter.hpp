@@ -46,25 +46,25 @@ namespace mcmc_utilities
     }
 
   public:
-    void update_sir(const T_obs& y,const T_t& t,std::vector<particle<T_p,T_stat> >& prev_stat,T_t& prev_t)const
+    void update_sir(const T_obs& y,const T_t& t,std::vector<particle<T_p,T_stat> >& particle_list,T_t& prev_t)const
     {
       class cprob
 	:public probability_density_md<T_p,T_stat>
       {
       private:
-	const pf_model*  ptr_pf_model;
+	const pf_model<T_p,T_stat,T_obs,T_t>*  ptr_pf_model;
 	const T_obs* ptr_obs_vec;
-	const T_stat* ptr_prev_stat;
+	const T_stat* ptr_particle_list;
 	const T_t* ptr_prev_t;
 	const T_t* ptr_t;
-	friend class pf_model;
+	friend class pf_model<T_p,T_stat,T_obs,T_t>;
       public:
 	T_p do_eval_log(const T_stat& x)const
 	{
-	  //return ptr_pf_model->evol_log_prob(x,*ptr_t,*ptr_prev_stat,*ptr_prev_t)
+	  //return ptr_pf_model->evol_log_prob(x,*ptr_t,*ptr_particle_list,*ptr_prev_t)
 	  //+ptr_pf_model->obs_log_prob(*ptr_obs_vec,x,*ptr_t);
-	  //return ptr_pf_model->combined_log_prob(*ptr_obs_vec,x,*ptr_t,*ptr_prev_stat,*ptr_prev_t);
-	  return ptr_pf_model->evol_log_prob(x,*ptr_t,*ptr_prev_stat,*ptr_prev_t);
+	  //return ptr_pf_model->combined_log_prob(*ptr_obs_vec,x,*ptr_t,*ptr_particle_list,*ptr_prev_t);
+	  return ptr_pf_model->evol_log_prob(x,*ptr_t,*ptr_particle_list,*ptr_prev_t);
 	}
 	cprob* do_clone()const
 	{
@@ -74,39 +74,37 @@ namespace mcmc_utilities
 	void do_var_range(T_stat& xl,T_stat& xr)const
 	{
 	  //ptr_pf_model->stat_var_range(x0,x1,x2);
-	  ptr_pf_model->stat_var_range(*ptr_prev_stat,xl,xr);
+	  ptr_pf_model->stat_var_range(*ptr_particle_list,xl,xr);
 	}
-      }prob;
+      };
 
-      std::vector<T_p> weight_cdf;
-      std::vector<particle<T_p,T_stat> > updated_stat;
-      for(int i=0;i<prev_stat.size();++i)
+      std::vector<T_p> weight_cdf(particle_list.size());
+      std::vector<particle<T_p,T_stat> > updated_stat(particle_list.size());
+#pragma omp parallel for
+      for(int i=0;i<particle_list.size();++i)
 	{
+	  cprob prob;
 	  prob.ptr_pf_model=this;
 	  prob.ptr_obs_vec=&y;
-	  prob.ptr_prev_stat=&(prev_stat[i].status);
+	  prob.ptr_particle_list=&(particle_list[i].status);
 	  prob.ptr_prev_t=&prev_t;
 	  prob.ptr_t=&t;
-	  T_stat new_pred(prev_stat[i].status);
+	  T_stat new_pred(particle_list[i].status);
 	  //ofstream ofs("log.txt");
 
 	  gibbs_sample(prob,new_pred);
 	  
-	  prev_stat[i].status=new_pred;
-	  prev_t=t;
-	  prev_stat[i].weight=std::exp(obs_log_prob(y,new_pred,t));
-	  //cout<<new_pred[0]<<" "<<prev_stat[i].weight<<endl;
-	  if(i==0)
-	    {
-	      weight_cdf.push_back(prev_stat[i].weight);
-	    }
-	  else
-	    {
-	      weight_cdf.push_back(weight_cdf.back()+prev_stat[i].weight);
-	    }
-	  //cout<<i<<" "<<weight_cdf.back()<<endl;
+	  particle_list[i].status=new_pred;
+	  particle_list[i].weight=std::exp(obs_log_prob(y,new_pred,t));
+	  //cout<<new_pred[0]<<" "<<particle_list[i].weight<<endl;
 	}
-      for(int i=0;i<prev_stat.size();++i)
+      weight_cdf[0]=particle_list[0].weight;
+      for(int i=1;i<particle_list.size();++i)
+	{
+	  weight_cdf[i]=weight_cdf[i-1]+particle_list[i].weight;
+	}
+#pragma omp parallel for
+      for(int i=0;i<particle_list.size();++i)
 	{
 	  T_p p=random()/(T_p)RAND_MAX*weight_cdf.back();
 
@@ -119,16 +117,16 @@ namespace mcmc_utilities
 		  break;
 		}
 	    }
-	  
 	  assert(n!=-1);
-	  updated_stat.push_back(prev_stat.at(n));
-	  updated_stat.back().weight=1;
+	  updated_stat[i]=particle_list.at(n);
+	  updated_stat[i].weight=1;
 	}
-      prev_stat.swap(updated_stat);
+      prev_t=t;
+      particle_list.swap(updated_stat);
       
     }
   private:
-    virtual T_p do_evol_log_prob(const T_stat& x,const T_t& t,const T_stat& prev_stat,const T_t& prev_t)const=0;
+    virtual T_p do_evol_log_prob(const T_stat& x,const T_t& t,const T_stat& particle_list,const T_t& prev_t)const=0;
     virtual T_p do_obs_log_prob(const T_obs& y,const T_stat& x,const T_t& t)const=0;
     virtual void do_stat_var_range(const T_stat& x0,T_stat& xl,T_stat& xr)const=0;
   };
