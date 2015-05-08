@@ -9,8 +9,22 @@ namespace mcmc_utilities
   template <typename T_p,typename T_stat>
   struct particle
   {
-    T_stat status;
+    T_stat state;
     T_p weight;
+
+    particle()
+    {}
+
+    particle(const particle& rhs)
+      :state(rhs.state),weight(rhs.weight)
+    {}
+
+    particle& operator=(const particle& rhs)
+    {
+      resize(state,get_size(rhs.state));
+      state=rhs.state;
+      return *this;
+    }
   };
   
  
@@ -54,17 +68,14 @@ namespace mcmc_utilities
       private:
 	const pf_model<T_p,T_stat,T_obs,T_t>*  ptr_pf_model;
 	const T_obs* ptr_obs_vec;
-	const T_stat* ptr_particle_list;
+	const T_stat* ptr_particle;
 	const T_t* ptr_prev_t;
 	const T_t* ptr_t;
 	friend class pf_model<T_p,T_stat,T_obs,T_t>;
       public:
 	T_p do_eval_log(const T_stat& x)const
 	{
-	  //return ptr_pf_model->evol_log_prob(x,*ptr_t,*ptr_particle_list,*ptr_prev_t)
-	  //+ptr_pf_model->obs_log_prob(*ptr_obs_vec,x,*ptr_t);
-	  //return ptr_pf_model->combined_log_prob(*ptr_obs_vec,x,*ptr_t,*ptr_particle_list,*ptr_prev_t);
-	  return ptr_pf_model->evol_log_prob(x,*ptr_t,*ptr_particle_list,*ptr_prev_t);
+	  return ptr_pf_model->evol_log_prob(x,*ptr_t,*ptr_particle,*ptr_prev_t);
 	}
 	cprob* do_clone()const
 	{
@@ -74,7 +85,7 @@ namespace mcmc_utilities
 	void do_var_range(T_stat& xl,T_stat& xr)const
 	{
 	  //ptr_pf_model->stat_var_range(x0,x1,x2);
-	  ptr_pf_model->stat_var_range(*ptr_particle_list,xl,xr);
+	  ptr_pf_model->stat_var_range(*ptr_particle,xl,xr);
 	}
       };
 
@@ -86,15 +97,15 @@ namespace mcmc_utilities
 	  cprob prob;
 	  prob.ptr_pf_model=this;
 	  prob.ptr_obs_vec=&y;
-	  prob.ptr_particle_list=&(particle_list[i].status);
+	  prob.ptr_particle=&(particle_list[i].state);
 	  prob.ptr_prev_t=&prev_t;
 	  prob.ptr_t=&t;
-	  T_stat new_pred(particle_list[i].status);
+	  T_stat new_pred(particle_list[i].state);
 	  //ofstream ofs("log.txt");
 
 	  gibbs_sample(prob,new_pred);
 	  
-	  particle_list[i].status=new_pred;
+	  particle_list[i].state=new_pred;
 	  particle_list[i].weight=std::exp(obs_log_prob(y,new_pred,t));
 	  //cout<<new_pred[0]<<" "<<particle_list[i].weight<<endl;
 	}

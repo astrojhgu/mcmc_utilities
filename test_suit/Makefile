@@ -1,4 +1,4 @@
-targets=test_fit test_arms1 test_arms2 test_coal
+targets=test_fit test_arms1 test_arms2 test_coal test_pf
 
 all:$(targets)
 
@@ -27,6 +27,13 @@ test_coal:test_coal.o
 
 test_coal.o:test_coal.cpp
 	clang++ -c $(cppflags) $< -O2
+
+test_pf:test_pf.o
+	clang++ $< -o $@ -O2 -lSDL2
+
+test_pf.o:test_pf.cpp
+	clang++ -c $(cppflags) $< -O2
+
 
 clean:
 	rm -fv *.o
