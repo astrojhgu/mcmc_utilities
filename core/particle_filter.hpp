@@ -2,7 +2,7 @@
 #include "distribution.hpp"
 #include <vector>
 #include <cassert>
-
+#include <algorithm>
 
 namespace mcmc_utilities
 {
@@ -91,6 +91,7 @@ namespace mcmc_utilities
 
       std::vector<T_p> weight_cdf(particle_list.size());
       std::vector<particle<T_p,T_stat> > updated_stat(particle_list.size());
+      std::vector<T_p> log_weight(particle_list.size());
 #pragma omp parallel for
       for(int i=0;i<particle_list.size();++i)
 	{
@@ -106,8 +107,15 @@ namespace mcmc_utilities
 	  gibbs_sample(prob,new_pred);
 	  
 	  particle_list[i].state=new_pred;
-	  particle_list[i].weight=std::exp(obs_log_prob(y,new_pred,t));
+	  //particle_list[i].weight=std::exp(obs_log_prob(y,new_pred,t));
+	  log_weight[i]=obs_log_prob(y,new_pred,t);
 	  //cout<<new_pred[0]<<" "<<particle_list[i].weight<<endl;
+	}
+      T_p max_log_weight=*(std::max_element(log_weight.begin(),log_weight.end()));
+#pragma omp parallel for
+      for(int i=0;i<particle_list.size();++i)
+	{
+	  particle_list[i].weight=std::exp(log_weight[i]-max_log_weight);
 	}
       weight_cdf[0]=particle_list[0].weight;
       for(int i=1;i<particle_list.size();++i)

@@ -8,7 +8,7 @@ using namespace mcmc_utilities;
 #include <SDL2/SDL.h>
 
 ranlib::Normal<> nrg(0,1);
-const int h(512),w(512);
+const int h(480),w(640);
 
 class target
 {
@@ -27,7 +27,7 @@ private:
 
 public:
   target()
-    :x(0),vx(0),sx(.1),svx(.01),osx(10),y(0),vy(0),sy(.1),svy(.01),osy(10)
+    :x(0),vx(0),sx(.1),svx(.01),osx(1),y(0),vy(0),sy(.1),svy(.01),osy(1)
   {}
 
 public:
@@ -72,9 +72,10 @@ public:
 private:
   T_p do_evol_log_prob(const T_stat& x,const T_t& t,const T_stat& prev_stat,const T_t& prev_t)const
   {
-    double sx(.1),svx(.01),osx(10);
-    double sy(.1),svy(.01),osy(10);
+    double sx(.1),svx(.01);
+    double sy(.1),svy(.01);
 
+    double kx(.0),ky(.0);
     //double x1=prev_stat.back()[0];
     double x_prev=prev_stat[0];
     double vx_prev=prev_stat[1];
@@ -99,7 +100,7 @@ private:
   T_p do_obs_log_prob(const T_obs& obs,const T_stat& stat,const T_t& t)const
   {
     //return -(x[0]-y[0])*(x[0]-y[0])/(2*.4*.4);
-    double osx(10),osy(10);
+    double osx(1),osy(1);
     return -(obs[0]-stat[0])*(obs[0]-stat[0])/(2*osx*osx)
       -(obs[1]-stat[2])*(obs[1]-stat[2])/(2*osx*osx);
   }
@@ -151,35 +152,58 @@ void clear_sdl(SDL_Window*& window,SDL_Renderer*& renderer)
   SDL_DestroyWindow(window);
 }
 
-void regulate(SDL_Rect& rect,int h,int w)
+void regulate(int& ix,int& iy,double x,double y,int w,int h,double scale)
 {
-  rect.x*=10;
-  rect.y*=10;
-  rect.x+=w/2;
-  rect.y+=h/2;
-  rect.x%=w;
-  rect.y%=h;
-  while(rect.x<0)
+  ix=x*scale+w/2;
+  iy=y*scale+h/2;
+
+  ix%=w;
+  iy%=h;
+  while(ix<0)
     {
-      rect.x+=w;
+      ix+=w;
     }
-  while(rect.y<0)
+  while(iy<0)
     {
-      rect.y+=h;
+      iy+=h;
     }
 }
-	     
+
+
+void draw_vector(SDL_Renderer& renderer,int w,int h,double x0,double y0,double vx,double vy,double scale)
+{
+  int ix0,iy0;
+  int ix1,iy1;
+
+  regulate(ix0,iy0,x0,y0,w,h,scale);
+  //regulate(ix1,iy1,x0+vx*10,y0+vy*10,w,h,scale);
+  ix1=ix0+vx*10;
+  iy1=iy0+vy*10;
+
+  SDL_RenderDrawLine(&renderer,ix0,iy0,ix1,iy1);
+}
+
+void draw_target(SDL_Renderer& renderer,int w,int h,double x,double y,double scale)
+{
+  SDL_Rect rect;
+  rect.w=rect.h=2;
+  //regulate(rect,w,h,x,y,scale);
+  regulate(rect.x,rect.y,x,y,w,h,scale);
+  SDL_RenderFillRect(&renderer,&rect);
+}
+
+
 int main()
 {
 
   SDL_Window *window;
   SDL_Renderer *renderer;
   init_display(window,renderer,h,w);
-  SDL_Rect rect;
+  //SDL_Rect rect;
 
-  
+  double scale=30;
   nrg.seed(time(0));
-  int nparticles=100;
+  int nparticles=500;
   ranlib::Normal<double> ng(0,1);
   target target1;
   target_model tm;
@@ -225,17 +249,15 @@ int main()
       //cout<<t<<" "<<xmean<<" "<<xstd<<endl;
 
 
-      rect.x=x;
-      rect.y=y;
-      rect.w=2;
-      rect.h=2;
-      regulate(rect,h,w);
+      
+      //regulate(rect,w,h,x,y,scale);
       
       SDL_SetRenderDrawColor(renderer,0,0,0,255);
       SDL_RenderClear(renderer);
       SDL_SetRenderDrawColor(renderer,255,255,255,255);
-      SDL_RenderFillRect(renderer,&rect);
-
+      //SDL_RenderFillRect(renderer,&rect);
+      draw_target(*renderer,w,h,x,y,scale);
+      draw_vector(*renderer,w,h,x,y,vx,vy,scale);
       SDL_SetRenderDrawColor(renderer,0,0,255,255);
       for(int i=0;i<particles.size();++i)
 	{
@@ -243,11 +265,10 @@ int main()
 	  vx_mean+=particles[i].state[1];
 	  y_mean+=particles[i].state[2];
 	  vy_mean+=particles[i].state[3];
-	  rect.x=particles[i].state[0];
-	  rect.y=particles[i].state[2];
-
-	  regulate(rect,h,w);
-	  SDL_RenderFillRect(renderer,&rect);
+	  
+	  //regulate(rect,w,h,particles[i].state[0],particles[i].state[2],scale);
+	  //SDL_RenderFillRect(renderer,&rect);
+	  draw_target(*renderer,w,h,particles[i].state[0],particles[i].state[2],scale);
 	  //cout<<particles[i].state[0]<<" "<<particles[i].weight<<endl;
 	}
       //return 0;
@@ -256,28 +277,39 @@ int main()
       y_mean/=particles.size();
       vy_mean/=particles.size();
 
-      rect.x=x_mean;
-      rect.y=y_mean;
-      regulate(rect,h,w);
+      //regulate(rect,w,h,x_mean,y_mean,scale);
 
       SDL_SetRenderDrawColor(renderer,0,255,255,255);
-      SDL_RenderFillRect(renderer,&rect);
-
-      rect.x=obs[0];
-      rect.y=obs[1];
-
-      regulate(rect,h,w);
+      //SDL_RenderFillRect(renderer,&rect);
+      draw_target(*renderer,w,h,x_mean,y_mean,scale);
+      draw_vector(*renderer,w,h,x_mean,y_mean,vx_mean,vy_mean,scale);
+      //regulate(rect,w,h,obs[0],obs[1],scale);
       SDL_SetRenderDrawColor(renderer,255,0,255,255);
-      SDL_RenderFillRect(renderer,&rect);
-
+      //SDL_RenderFillRect(renderer,&rect);
+      draw_target(*renderer,w,h,obs[0],obs[1],scale);
 
       SDL_RenderPresent(renderer);
-      //SDL_Delay(10);  // Pause execution for 3000 milliseconds, for example
+      SDL_Event event;
+      while (SDL_PollEvent(&event))
+	{
+	  switch(event.type)
+	    {
+	    case SDL_KEYDOWN:
+	      if(event.key.keysym.sym==SDLK_q)
+		{
+		  exit(0);
+		}
+	      break;
+	    }
+	}
+      //SDL_Delay(1000);  // Pause execution for 3000 milliseconds, for example
       if(step%10==0)
 	{
 	  //cout<<step<<endl;
 	}
-      cout<<t<<" "<<x<<" "<<x_mean<<" "<<obs[0]<<endl;
+      //cout<<t<<" "<<x<<" "<<x_mean<<" "<<obs[0]<<endl;
+      cout<<t<<" "<<y<<" "<<y_mean<<" "<<obs[1]<<endl;
+      //cout<<vx_mean<<" "<<vy_mean<<endl;
     }
   clear_sdl(window,renderer);
   SDL_Quit();
