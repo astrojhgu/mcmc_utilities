@@ -27,10 +27,10 @@ namespace mcmc_utilities
 	}
       return result;
     }
-    T_var log_CN(const T_var& m,const T_var& n)const
+    T_p log_CN(const T_var& m,const T_var& n)const
     {
-      //return factorial(m)/(factorial(n)*factorial(m-n));
-      return log_factorial(m)-log_factorial(n)-log_factorial(m-n);
+      T_p result= log_factorial(m)-log_factorial(n)-log_factorial(m-n);
+      return result;
     }
   public:
     dbin(const T_p& _p,const T_var& _n)
@@ -45,7 +45,8 @@ namespace mcmc_utilities
   private:
     T_p do_eval_log(const T_var& x)const
     {
-      return log_CN(n,x)+x*std::log(p)+(n-x)*std::log(1-p);
+      T_p result= log_CN(n,x)+x*std::log(p)+(n-x)*std::log(1-p);
+      return result;
     }
     
   dbin* do_clone()const
