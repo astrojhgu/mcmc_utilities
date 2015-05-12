@@ -46,7 +46,7 @@ public:
     double scat=x[2];
     double intrscat=1/std::sqrt(scat);
     double log_prior_a=logdt(a,0.,1.,1.);
-    double log_prior_b=logdnorm(b,0.,1e-4);
+    double log_prior_b=logdnorm(b,0.,100.);
     double log_prior_scat=logdgamma(scat,1e-2,1e-2);
 
     log_p+=log_prior_a;
@@ -55,9 +55,9 @@ public:
 
     for(int i=0;i<x_vec.size();++i)
       {
-	log_p+=logdnorm(x_vec[i],x[i+3],std::pow(xe_vec[i],-2.));
+	log_p+=logdnorm(x_vec[i],x[i+3],xe_vec[i]);
 	log_p+=logdnorm(x[3+i+x_vec.size()],b+a*(x[i+3]-2.3),scat);
-	log_p+=logdnorm(y_vec[i],x[i+3+x_vec.size()],1/(ye_vec[i]*ye_vec[i]));
+	log_p+=logdnorm(y_vec[i],x[i+3+x_vec.size()],ye_vec[i]);
       }
     return log_p;
   }
@@ -85,7 +85,7 @@ public:
     x2[1]=10;
 
     x1[2]=0;
-    x2[2]=1;
+    x2[2]=100;
   }  
 };
 
@@ -101,7 +101,7 @@ int main()
     }
   x[0]=1;
   x[1]=4;
-  x[2]=.3;
+  x[2]=10;
   //gibbs_sample(cd,x);
 
   //cout<<cd.eval_log(x)<<endl;
@@ -110,7 +110,7 @@ int main()
       gibbs_sample(cd,x);
       if(n>100)
 	{
-	  for(unsigned int i=0;i<x.size();++i)
+	  for(int i=0;i<3;++i)
 	    {
 	      cout<<x[i]<<" ";
 	    }

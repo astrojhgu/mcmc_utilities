@@ -33,14 +33,15 @@ namespace mcmc_utilities
   }
 
   template <typename T>
-  T logdnorm(T x,T mu,T tau)
+  T logdnorm(T x,T mu,T sigma)
   {
-    if(tau<=0)
+    if(sigma<=0)
       {
 	throw var_out_of_range();
       }
     static const T pi=std::atan(1)*4;
-    return std::log(tau/(2*pi))/2-tau*(x-mu)*(x-mu)/2;
+    //return std::log(tau/(2*pi))/2-tau*(x-mu)*(x-mu)/2;
+    return -std::log(2*pi*sigma*sigma)/2-(x-mu)*(x-mu)/(2*sigma*sigma);
   }
 
   template <typename T_p,typename T_var>
