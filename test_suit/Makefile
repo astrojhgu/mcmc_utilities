@@ -1,4 +1,4 @@
-targets=test_fit test_arms1 test_arms2 test_coal test_pf test_eff test_dual_err
+targets=test_fit test_arms1 test_arms2 test_coal test_pf test_eff test_dual_err test_gibbs
 
 all:$(targets)
 
@@ -40,7 +40,13 @@ test_dual_err:test_dual_err.o
 	$(cpp) $< -o $@ 
 
 test_dual_err.o:test_dual_err.cpp
-	$(cpp) -c $(cppflags) $< 
+	$(cpp) -c $(cppflags) $< -std=c++14
+
+test_gibbs:test_gibbs.o
+	$(cpp) $< -o $@ 
+
+test_gibbs.o:test_gibbs.cpp
+	$(cpp) -c $(cppflags) $< -std=c++14
 
 test_pf:test_pf.o
 	$(cpp) $< -o $@  -lSDL2

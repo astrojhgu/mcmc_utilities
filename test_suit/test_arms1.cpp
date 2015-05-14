@@ -81,7 +81,7 @@ int main(void)
 
   for(i=0;i<100000;i++){
     err = arms(xinit,xl,xr,norm,convex,
-    npoint,dometrop,xprev,xsamp,qcent,xcent,neval);
+	       npoint,dometrop,xprev,xsamp,qcent,xcent,neval, u_random<double>);
     //err= arms_simple (300, norm, xprev,xsamp);
     //const probability_density_md<T_p,T_var>& myfunc,
     //int dometrop, T_var *xprev, T_var *xsamp);

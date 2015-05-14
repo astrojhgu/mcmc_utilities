@@ -61,7 +61,7 @@ public:
 
 
 class target_model
-  :public pf_model<double,std::vector<double>,std::vector<double>,double>
+  :public pf_model<double,std::vector<double>,std::vector<double>,double,double (*)()>
 {
 public:
   typedef double T_p;
@@ -239,7 +239,7 @@ int main()
       double y_mean=0;
       double vy_mean=0;
 
-      tm.update_sir(obs,t,particles,prev_t);
+      tm.update_sir(obs,t,particles,prev_t,u_random<double>);
      
       double x,vx,y,vy;
       //cout<<t<<" "<<x_mean<<" "<<v_mean<<endl;

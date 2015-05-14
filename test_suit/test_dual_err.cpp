@@ -1,6 +1,7 @@
 #include <core/distribution.hpp>
 #include <core/gibbs_sampler.hpp>
 #include <math/special_function.hpp>
+#include <random/uniform.h>
 //#include <distribution/dbin.hpp>
 #include <vector>
 #include <fstream>
@@ -99,15 +100,16 @@ int main()
       x[i+3]=cd.x_vec[i];
       x[i+3+cd.x_vec.size()]=cd.y_vec[i];
     }
-  x[0]=1;
-  x[1]=4;
-  x[2]=10;
+  x[0]=3;
+  x[1]=8;
+  x[2]=.2;
   //gibbs_sample(cd,x);
-
+  ranlib::Uniform<double> uf;
   //cout<<cd.eval_log(x)<<endl;
+  gibbs_sample(cd,x,1,[&uf](){return uf.random();},2);
   for(int n=0;n<10000;++n)
     {
-      gibbs_sample(cd,x);
+      gibbs_sample(cd,x,1,[&uf](){return uf.random();},2);
       if(n>100)
 	{
 	  for(int i=0;i<3;++i)
