@@ -53,13 +53,14 @@ public:
     log_p+=log_prior_a;
     log_p+=log_prior_b;
     log_p+=log_prior_scat;
-
+    double log_p1=0,log_p2=0,log_p3=0;
     for(int i=0;i<x_vec.size();++i)
       {
-	log_p+=logdnorm(x_vec[i],x[i+3],xe_vec[i]);
-	log_p+=logdnorm(x[3+i+x_vec.size()],b+a*(x[i+3]-2.3),scat);
-	log_p+=logdnorm(y_vec[i],x[i+3+x_vec.size()],ye_vec[i]);
+	log_p1+=logdnorm(x_vec[i],x[i+3],xe_vec[i]);
+	log_p2+=logdnorm(x[3+i+x_vec.size()],b+a*(x[i+3]-2.3),scat);
+	log_p3+=logdnorm(y_vec[i],x[i+3+x_vec.size()],ye_vec[i]);
       }
+    log_p=log_p1+log_p2+log_p3;
     return log_p;
   }
 
@@ -109,7 +110,7 @@ int main()
   gibbs_sample(cd,x,1,[&uf](){return uf.random();},2);
   for(int n=0;n<10000;++n)
     {
-      gibbs_sample(cd,x,1,[&uf](){return uf.random();},2);
+      gibbs_sample(cd,x,1,[&uf](){return uf.random();},20);
       if(n>100)
 	{
 	  for(int i=0;i<3;++i)

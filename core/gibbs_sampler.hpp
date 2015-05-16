@@ -66,7 +66,7 @@ namespace mcmc_utilities
 	xprev=get_element(init_var,idx);
 
 	arms_simple(10,cpd,xprev,xsamp,dometrop,urand);
-	set_element(init_var,idx,xsamp[0]);
+	set_element(init_var,idx,xsamp.back());
       }
   }
 		    

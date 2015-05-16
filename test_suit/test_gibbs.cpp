@@ -41,6 +41,7 @@ int main()
   test_distribution cd;
   std::vector<double> x(3);
   ranlib::Uniform<double> uf;
+  uf.seed(time(0));
   //cout<<cd.eval_log(x)<<endl;
   gibbs_sample(cd,x,1,[&uf](){return uf.random();},2);
   for(int n=0;n<10000;++n)
