@@ -2,7 +2,6 @@
 #include <core/gibbs_sampler.hpp>
 #include <math/special_function.hpp>
 #include <random/uniform.h>
-//#include <distribution/dbin.hpp>
 #include <vector>
 #include <fstream>
 #include <cassert>
@@ -110,7 +109,7 @@ int main()
   gibbs_sample(cd,x,1,[&uf](){return uf.random();},2);
   for(int n=0;n<10000;++n)
     {
-      gibbs_sample(cd,x,1,[&uf](){return uf.random();},20);
+      gibbs_sample(cd,x,1,[&uf](){return uf.random();},10);
       if(n>100)
 	{
 	  for(int i=0;i<3;++i)
