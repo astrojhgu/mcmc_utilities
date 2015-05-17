@@ -20,13 +20,6 @@ namespace mcmc_utilities
       const probability_density_md<T_p,T_var>* ppd;
       int status;
     private:
-      T_p do_eval(const T_var1& x1)const
-      {
-	//set_element(*p_init_var,*p_idx,x1);
-	p_init_var->at(*p_idx)=x1;
-	return ppd->eval(*p_init_var);
-      }
-
       T_p do_eval_log(const T_var1& x1)const
       {
 	//set_element(*p_init_var,*p_idx,x1);

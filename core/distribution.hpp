@@ -13,11 +13,6 @@ namespace mcmc_utilities
   {
   public:
     int status;
-    T_p eval(const T_var& x)const
-    {
-      return do_eval(x);
-    }
-
     T_p eval_log(const T_var& x)const
     {
       return do_eval_log(x);
@@ -42,15 +37,7 @@ namespace mcmc_utilities
     }
 
   private:
-    virtual T_p do_eval(const T_var& x)const
-    {
-      throw eval_method_not_implemented();
-    }
-    virtual T_p do_eval_log(const T_var& x)const
-    {
-      double p=do_eval(x);
-      return std::log(p+std::numeric_limits<T_p>::epsilon());
-    }
+    virtual T_p do_eval_log(const T_var& x)const=0;
     virtual probability_density_md* do_clone()const=0;
     virtual void do_var_range(T_var& x1,T_var& x2)const=0;
     virtual void do_destroy()

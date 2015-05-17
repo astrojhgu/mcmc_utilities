@@ -24,17 +24,17 @@ private:
     x2=40;
   }
 
-  double do_eval(const double& x)const
+  double do_eval_log(const double& x)const
   {
-    return exp(-x*x/(2*.001*.001));//+1e-199;
+    return (-x*x/(2*.001*.001));//+1e-199;
     double p1 = .3;
     double mean1 = 4.;
     double sd1 = .01;
     double mean2 = 10.;
     double sd2 = 2.5;
 
-    return (p1/sd1)*std::exp(-0.5*std::pow(((x - mean1)/sd1),2.0))
-      + ((1-p1)/sd2)*std::exp(-0.5*std::pow(((x - mean2)/sd2),2.0));
+    return std::log((p1/sd1)*std::exp(-0.5*std::pow(((x - mean1)/sd1),2.0))
+		    + ((1-p1)/sd2)*std::exp(-0.5*std::pow(((x - mean2)/sd2),2.0)));
   }
 }norm;
 

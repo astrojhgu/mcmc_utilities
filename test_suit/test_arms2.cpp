@@ -7,12 +7,12 @@ using namespace mcmc_utilities;
 class std_norm
   :public probability_density_md<double,std::vector<double> >
 {
-  double do_eval(const std::vector<double>& x)const
+  double do_eval_log(const std::vector<double>& x)const
   {
     //return exp(-(x*x/2.));
     double y=0;
     y=x[0]*x[0]+x[1]*x[1]+2*.9*x[1]*x[0];
-    return exp(-y/(2*5*5.));
+    return (-y/(2*5*5.));
   }
 
   probability_density_md* do_clone()const

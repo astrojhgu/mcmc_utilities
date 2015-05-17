@@ -12,29 +12,6 @@ std::vector<double> y_vec;
 class std_norm
   :public probability_density_md<double,std::vector<double> >
 {
-  double do_eval(const std::vector<double>& param)const
-  {
-    double p=1;
-    double k=param[0];
-    double b=param[1];
-    double sigma=param[2];
-    //double sigma=param[2];
-    //double sigma=1;
-    
-    //return 1;
-    //return exp(-k*k-b*b);
-    if(sigma<=.5)
-      {
-	return 0;
-      }
-    for(int i=0;i<x_vec.size();++i)
-      {
-	double y1=k*x_vec[i]+b;
-	p*=exp(-(y_vec[i]-y1)*(y_vec[i]-y1)/(2*sigma*sigma));
-      }
-    return p;
-  }
-
   double do_eval_log(const std::vector<double>& param)const
   {
     double p=0;
