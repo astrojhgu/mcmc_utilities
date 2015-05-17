@@ -18,12 +18,11 @@ namespace mcmc_utilities
       size_t* p_idx;
       T_var* p_init_var;
       const probability_density_md<T_p,T_var>* ppd;
-      int status;
     private:
       T_p do_eval_log(const T_var1& x1)const
       {
-	//set_element(*p_init_var,*p_idx,x1);
-	p_init_var->at(*p_idx)=x1;
+	set_element(*p_init_var,*p_idx,x1);
+	
 	
 	T_p result= ppd->eval_log(*p_init_var);
 
@@ -44,8 +43,6 @@ namespace mcmc_utilities
     }cpd;
     cpd.p_idx=&idx;
     cpd.p_init_var=&init_var;
-    cpd.status=0;
-    //T_var init_var_orig=init_var;
     cpd.ppd=&pd;
     T_var1 xprev=0.;
     std::vector<T_var1> xsamp(sample_cnt);

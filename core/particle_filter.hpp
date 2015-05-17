@@ -132,7 +132,7 @@ namespace mcmc_utilities
 		}
 	    }
 	  assert(n!=-1);
-	  updated_stat[i]=particle_list.at(n);
+	  updated_stat[i]=particle_list[n];
 	  updated_stat[i].weight=1;
 	}
       prev_t=t;
