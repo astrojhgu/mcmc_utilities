@@ -1,23 +1,12 @@
 #include <core/distribution.hpp>
 #include <core/gibbs_sampler.hpp>
+#include <math/special_function.hpp>
 #include <vector>
 #include <fstream>
 #include <cassert>
 using namespace std;
 using namespace mcmc_utilities;
 
-int factorial(int n)
-{
-  assert(n<100);
-  if(n==0)
-    {
-      return 1;
-    }
-  else
-    {
-      return n*factorial(n-1);
-    }
-}
 class coal_distribution
   :public probability_density_md<double,std::vector<double> >
 {
@@ -59,7 +48,7 @@ public:
 	    lambda=lambda2;
 	  }
 	int n=n_accident[i];
-	double logp1=n*log(lambda)-log(factorial(n))-lambda;
+	double logp1=logdpoisson(n,lambda);
 	logp+=logp1;
       }
     return logp;
@@ -71,9 +60,6 @@ public:
     x1[1]=0;x2[1]=100;
     x1[2]=0;x2[2]=year.back()+1;
   }
-
-  
-  
 };
 
 int main()

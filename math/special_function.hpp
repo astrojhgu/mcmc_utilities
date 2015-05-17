@@ -73,6 +73,13 @@ namespace mcmc_utilities
     T_p result= log_CN<T_p,T_var>(n,x)+x*std::log(p)+(n-x)*std::log(1-p);
     return result;
   }
+
+  template <typename T_p,typename T_var>
+  T_p logdpoisson(const T_var& x,const T_p& lambda)
+  {
+    T_p result=x*std::log(lambda)-lambda-log_factorial<T_p,T_var>(x);
+    return result;
+  }
 }
 
 
