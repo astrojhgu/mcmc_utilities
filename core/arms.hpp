@@ -33,6 +33,18 @@ namespace mcmc_utilities
     T_p ymax;             /* the maximum y-value in the current envelope */
     point<T_p,T_var> *p;                /* start of storage of envelope POINTs */
     const T_p *convex;          /* adjustment for convexity */
+
+    envelope()
+      :p(0)
+    {}
+
+    ~envelope()
+    {
+      if(p)
+	{
+	  delete[] p;
+	}
+    }
   };
   
   /* *********************************************************************** */
@@ -287,7 +299,7 @@ namespace mcmc_utilities
     //free(env->p);
     //free(env);
     //free(metrop);
-    delete[] env.p;
+    //delete[] env.p;
     //delete env;
     //delete metrop;
     
