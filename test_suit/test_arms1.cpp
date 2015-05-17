@@ -13,11 +13,6 @@ class normix
   :public probability_density_md<double,double>
 {
 private:
-  normix* do_clone()const
-  {
-    return new normix(*this);
-  }
-
   void do_var_range(double& x1,double& x2)const
   {
     x1=-40;

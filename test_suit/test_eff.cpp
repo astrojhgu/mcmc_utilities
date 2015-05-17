@@ -66,16 +66,7 @@ public:
 	  }
 	log_p+=log_p1;
       }
-    if(dbg_status)
-      {
-	cout<<"logp="<<log_p<<endl;
-      }
     return log_p;
-  }
-
-  eff_distribution* do_clone()const
-  {
-    return new eff_distribution(*this);
   }
 
   void do_var_range(std::vector<double>& x1,std::vector<double>& x2)const

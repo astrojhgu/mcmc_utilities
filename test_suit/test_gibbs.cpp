@@ -22,11 +22,6 @@ public:
     return log_p;
   }
 
-  test_distribution* do_clone()const
-  {
-    return new test_distribution(*this);
-  }
-
   void do_var_range(std::vector<double>& x1,std::vector<double>& x2)const
   {
     x1.resize(3);

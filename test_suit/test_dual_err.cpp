@@ -63,11 +63,6 @@ public:
     return log_p;
   }
 
-  dual_err_distribution* do_clone()const
-  {
-    return new dual_err_distribution(*this);
-  }
-
   void do_var_range(std::vector<double>& x1,std::vector<double>& x2)const
   {
     x1.resize(x_vec.size()*2+3);

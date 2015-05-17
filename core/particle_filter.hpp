@@ -77,11 +77,6 @@ namespace mcmc_utilities
 	{
 	  return ptr_pf_model->evol_log_prob(x,*ptr_t,*ptr_particle,*ptr_prev_t);
 	}
-	cprob* do_clone()const
-	{
-	  return new cprob(*this);
-	}
-	
 	void do_var_range(T_stat& xl,T_stat& xr)const
 	{
 	  //ptr_pf_model->stat_var_range(x0,x1,x2);

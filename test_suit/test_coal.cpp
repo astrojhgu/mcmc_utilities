@@ -65,11 +65,6 @@ public:
     return logp;
   }
 
-  coal_distribution* do_clone()const
-  {
-    return new coal_distribution(*this);
-  }
-
   void do_var_range(std::vector<double>& x1,std::vector<double>& x2)const
   {
     x1[0]=0;x2[0]=100;

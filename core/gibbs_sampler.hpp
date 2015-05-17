@@ -30,11 +30,6 @@ namespace mcmc_utilities
 	return result;
       }
       
-      probability_density_md<T_p,T_var1>* do_clone()const
-      {
-	return new conditional_probability_density(*this);
-      }
-
       void do_var_range(T_var1& x1,T_var1& x2)const
       {
 	T_var xmin,xmax;
