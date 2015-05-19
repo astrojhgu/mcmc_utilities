@@ -160,7 +160,10 @@ namespace mcmc_utilities
     T_var xl,xr;
     
     myfunc.var_range(xl,xr);
-
+    if(xl>=xr)
+      {
+	throw range_not_ordered();
+      }
     for(int i=0;i<ninit;++i)
       {
 	xinit[i]=xl+(xr-xl)/(ninit+2)*(i+1);

@@ -163,6 +163,15 @@ namespace mcmc_utilities
     {}
   };
 
+  class range_not_ordered
+    :public mcmc_exception
+  {
+  public:
+    range_not_ordered()
+      :mcmc_exception("range not in order")
+    {}
+  };
+
   class envelope_violation_without_metropolis
     :public mcmc_exception
   {
