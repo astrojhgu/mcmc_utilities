@@ -63,25 +63,33 @@ public:
     return log_p;
   }
 
-  void do_var_range(std::vector<double>& x1,std::vector<double>& x2)const
+  void do_var_range(double& x1,double& x2,const std::vector<double>& x,size_t ndim)const
   {
-    x1.resize(x_vec.size()*2+3);
-    x2.resize(x_vec.size()*2+3);
-    for(int i=0;i<x_vec.size();++i)
+    //for(int i=0;i<x_vec.size();++i)
+    if(ndim>=3&&ndim<x_vec.size()+3)
       {
-	x1[i+3]=-10;x2[i+3]=10;
-	x1[i+3+x_vec.size()]=-20;
-	x2[i+3+x_vec.size()]=20;
-	
+	x1=-10;x2=10;
       }
-    x1[0]=0;
-    x2[0]=10;
-
-    x1[1]=-10;
-    x2[1]=10;
-
-    x1[2]=0;
-    x2[2]=100;
+    else if(ndim>=x_vec.size()+3&&ndim<x_vec.size()*2+3)
+      {
+	x1=-20;
+	x2=20;
+      }
+    else if(ndim==0)
+      {
+	x1=0;
+	x2=10;
+      }
+    else if(ndim==1)
+      {
+	x1=-10;
+	x2=10;
+      }
+    else
+      {
+	x1=0;
+	x2=100;
+      }
   }  
 };
 

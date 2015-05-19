@@ -54,11 +54,16 @@ public:
     return logp;
   }
 
-  void do_var_range(std::vector<double>& x1,std::vector<double>& x2)const
+  void do_var_range(double& x1,double& x2,const std::vector<double>& x,size_t ndim)const
   {
-    x1[0]=0;x2[0]=100;
-    x1[1]=0;x2[1]=100;
-    x1[2]=0;x2[2]=year.back()+1;
+    if(ndim==0||ndim==1)
+      {
+	x1=0;x2=100;
+      }
+    else
+      {
+	x1=0;x2=year.back()+1;
+      }
   }
 };
 

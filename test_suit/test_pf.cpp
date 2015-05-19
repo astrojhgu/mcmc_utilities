@@ -105,24 +105,18 @@ private:
       -(obs[1]-stat[2])*(obs[1]-stat[2])/(2*osx*osx);
   }
 
-  void do_stat_var_range(const T_stat& x0,T_stat& xl,T_stat& xr)const
+  void do_stat_var_range(double& xl,double& xr,const T_stat& x0,size_t ndim)const
   {
-    xl.resize(4);
-    xr.resize(4);
-    //x1[0]=-10;x2[0]=10;
-    T_stat x1(x0),x2(x0);
-    x1[0]-=100;
-    x1[1]-=20;
-    x1[2]-=100;
-    x1[3]-=20;
-
-    x2[0]+=100;
-    x2[1]+=20;
-    x2[2]+=100;
-    x2[3]+=20;
-
-    xl=x1;
-    xr=x2;
+    if(ndim==0||ndim==2)
+      {
+	xl=x0[ndim]-100;
+	xr=x0[ndim]+100;
+      }
+    else
+      {
+	xl=x0[ndim]-20;
+	xr=x0[ndim]+20;
+      }
   }
 
 };

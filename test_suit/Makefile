@@ -1,59 +1,17 @@
-targets=test_fit test_arms1 test_arms2 test_coal test_pf test_eff test_dual_err test_gibbs
+targets=test_fit.out test_arms1.out test_arms2.out test_coal.out test_pf.out test_eff.out test_dual_err.out test_gibbs.out simulate_lm.out
 
 all:$(targets)
 
-cpp=g++
-cppflags=-I ../ -O2
+CXX=g++
+CXXFLAGS=-I ../ -O2 -std=c++14 -g
+LIBFLAGS=-lSDL2 -lfio -lcfitsio
 
 
-test_fit:test_fit.o
-	$(cpp) $< -o $@ 
+%.out:%.o
+	$(CXX) $< -o $@ $(LIBFLAGS)
 
-test_fit.o:test_fit.cpp
-	$(cpp) -c $(cppflags) $< 
-
-test_arms1:test_arms1.o
-	$(cpp) $< -o $@ 
-
-test_arms1.o:test_arms1.cpp
-	$(cpp) -c $(cppflags) $< 
-
-test_arms2:test_arms2.o
-	$(cpp) $< -o $@ 
-
-test_arms2.o:test_arms2.cpp
-	$(cpp) -c $(cppflags) $< 
-
-test_coal:test_coal.o
-	$(cpp) $< -o $@ 
-
-test_coal.o:test_coal.cpp
-	$(cpp) -c $(cppflags) $< 
-
-test_eff:test_eff.o
-	$(cpp) $< -o $@ 
-
-test_eff.o:test_eff.cpp
-	$(cpp) -c $(cppflags) $< 
-
-test_dual_err:test_dual_err.o
-	$(cpp) $< -o $@ 
-
-test_dual_err.o:test_dual_err.cpp
-	$(cpp) -c $(cppflags) $< -std=c++14
-
-test_gibbs:test_gibbs.o
-	$(cpp) $< -o $@ 
-
-test_gibbs.o:test_gibbs.cpp
-	$(cpp) -c $(cppflags) $< -std=c++14
-
-test_pf:test_pf.o
-	$(cpp) $< -o $@  -lSDL2
-
-test_pf.o:test_pf.cpp
-	$(cpp) -c $(cppflags) $< 
-
+%.o:	%.CXX
+	$(CXX) -c $(CXXFLAGS) $< 
 
 clean:
-	rm -fv *.o
+	rm -f $(targets) *.o

@@ -2,9 +2,13 @@
 
 /* *********************************************************************** */
 #include <cstdio>
+#include <fstream>
 #include <cmath>
+#include <iomanip>
 #include <cstdlib>
 #include <iostream>
+#include <cassert>
+#include <limits>
 //#include <fstream>
 #include <vector>
 #include "distribution.hpp"
@@ -64,44 +68,42 @@ namespace mcmc_utilities
   template <typename T>
   struct float_constants
   {
-    static const T XEPS;            /* critical relative x-value difference */
-    static const T YEPS;                /* critical y-value difference */
-    static const T EYEPS;              /* critical relative exp(y) difference */
-    static const T YCEIL;                /* maximum y avoiding overflow in exp(y) */
+    static const T XEPS()
+    {
+      return .00001;
+    }            /* critical relative x-value difference */
+    static const T YEPS()
+    {
+      return .01;
+    }                /* critical y-value difference */
+    static const T EYEPS()
+    {
+      return .001;
+    }              /* critical relative exp(y) difference */
+    static const T YCEIL()
+    {
+      //return std::log(std::numeric_limits<T>::max()/10000.);
+      return 100;
+    }                /* maximum y avoiding overflow in exp(y) */
   };
-  
-  template <typename T>
-  const T float_constants<T>::XEPS=.00001;
-  
-  template <typename T>
-  const T float_constants<T>::YEPS=.1;
-  
-  template <typename T>
-  const T float_constants<T>::EYEPS=.001;
-  
-  template <typename T>
-  const T float_constants<T>::YCEIL=50;
-  
   /* *********************************************************************** */
   
   /* declarations for functions defined in this file */
   
   template <typename T_p,typename T_var>
-  int arms_simple (int ninit, const T_var& xl, const T_var& xr, 
-		   const probability_density_md<T_p,T_var>& myfunc,
+  int arms_simple (int ninit, const probability_density_1d<T_p,T_var>& myfunc,
 		   int dometrop, const T_var& xprev, std::vector<T_var>& xsamp);
 
   
   template <typename T_p,typename T_var, typename T_urand>
   int arms (const std::vector<T_var>& xinit, const T_var& xl, const T_var& xr, 
-	    const probability_density_md<T_p,T_var>& myfunc, 
+	    const probability_density_1d<T_p,T_var>& myfunc, 
 	    const T_p& convex, int npoint, int dometrop, const T_var& xprev, std::vector<T_var>& xsamp,
-	    const std::vector<T_var>& qcent, std::vector<T_var>& xcent,
 	    int& neval, const T_urand& urand);
   
   template <typename T_p,typename T_var>
   int initial (const std::vector<T_var>& xinit, T_var xl, T_var xr, int npoint,
-	       const probability_density_md<T_p,T_var>& myfunc, envelope<T_p,T_var>& env, const T_p& convex, int& neval,
+	       const probability_density_1d<T_p,T_var>& myfunc, envelope<T_p,T_var>& env, const T_p& convex, int& neval,
 	       metropolis<T_p,T_var>& metrop);
   
   template <typename T_p,typename T_var,typename T_urand>
@@ -111,10 +113,10 @@ namespace mcmc_utilities
   void invert(T_p prob, envelope<T_p,T_var>& env, point<T_p,T_var> *p);
   
   template <typename T_p,typename T_var, typename T_urand>
-  int test(envelope<T_p,T_var>& env, point<T_p,T_var> *p, const probability_density_md<T_p,T_var>& myfunc, metropolis<T_p,T_var>& metrop, const T_urand& urand);
+  int test(envelope<T_p,T_var>& env, point<T_p,T_var> *p, const probability_density_1d<T_p,T_var>& myfunc, metropolis<T_p,T_var>& metrop, const T_urand& urand);
   
   template <typename T_p,typename T_var>
-  int update(envelope<T_p,T_var>& env, point<T_p,T_var> *p, const probability_density_md<T_p,T_var>& myfunc, metropolis<T_p,T_var>& metrop);
+  int update(envelope<T_p,T_var>& env, point<T_p,T_var> *p, const probability_density_1d<T_p,T_var>& myfunc, metropolis<T_p,T_var>& metrop);
   
   template <typename T_p,typename T_var>
   void cumulate(envelope<T_p,T_var>& env);
@@ -132,10 +134,7 @@ namespace mcmc_utilities
   T_p logshift(T_p y, T_p y0);
   
   template <typename T_p,typename T_var>
-  T_p perfunc(const probability_density_md<T_p,T_var>& myfunc, envelope<T_p,T_var>& env, T_var x);
-  
-  template <typename T_p,typename T_var>
-  void display(FILE *f, envelope<T_p,T_var>& env);
+  T_p perfunc(const probability_density_1d<T_p,T_var>& myfunc, envelope<T_p,T_var>& env, T_var x);
   
   template <typename T_var>
   T_var u_random();
@@ -143,7 +142,7 @@ namespace mcmc_utilities
   /* *********************************************************************** */
 
   template <typename T_p,typename T_var, typename T_urand>
-  int arms_simple (int ninit,const probability_density_md<T_p,T_var>& myfunc,
+  int arms_simple (int ninit,const probability_density_1d<T_p,T_var>& myfunc,
 		   const T_var& xprev, std::vector<T_var>& xsamp, int dometrop, const T_urand& urand)
     
   /* adaptive rejection metropolis sampling - simplified argument list */
@@ -161,24 +160,20 @@ namespace mcmc_utilities
     T_var xl,xr;
     
     myfunc.var_range(xl,xr);
+
     for(int i=0;i<ninit;++i)
       {
 	xinit[i]=xl+(xr-xl)/(ninit+2)*(i+1);
+	//xinit[i]=xl_shifted+(xr_shifted-xl_shifted)/(ninit+2)*(i+1);
       }
-    int npoint=std::max(100,2*ninit + 2);
-    std::vector<T_p> qcent;
-    for(int i=1;i<100;i+=10)
-      {
-	qcent.push_back(i);
-      }
-    
-    std::vector<T_var> xcent(qcent.size());
+    int npoint=std::max(200,2*ninit + 2);
     T_var convex=1.;
     //int dometrop=1;
     int err=0;
     int neval;
     err = arms(xinit,xl,xr,myfunc,convex,
-	       npoint,dometrop,xprev,xsamp,qcent,xcent,neval, urand);
+	       npoint,dometrop,xprev,xsamp,neval, urand);
+    
     return err;
   }
 
@@ -186,9 +181,8 @@ namespace mcmc_utilities
   
   template <typename T_p,typename T_var, typename T_urand>
   int arms (const std::vector<T_var>& xinit, const T_var& xl, const T_var& xr, 
-	    const probability_density_md<T_p,T_var>& myfunc,
+	    const probability_density_1d<T_p,T_var>& myfunc,
 	    const T_p& convex, int npoint, int dometrop, const T_var& xprev, std::vector<T_var>& xsamp,
-	    const std::vector<T_var>& qcent, std::vector<T_var>& xcent,
 	    int& neval,const T_urand& urand)
     
   /* to perform derivative-free adaptive rejection sampling with metropolis step */
@@ -210,7 +204,6 @@ namespace mcmc_utilities
   /* *neval       : on exit, the number of function evaluations performed */
     
   {
-    int ncent=qcent.size();
     //int ninit=xinit.size();
     int nsamp=xsamp.size();
     //envelope<T_p,T_var> *env;      /* rejection envelope */
@@ -221,14 +214,6 @@ namespace mcmc_utilities
     metropolis<T_p,T_var> metrop; /* to hold bits for metropolis step */
     int i,err;
     
-    /* check requested envelope centiles */
-    for(i=0; i<ncent; i++){
-      if((qcent[i] < 0.0) || (qcent[i] > 100.0)){
-	/* percentage requesting centile is out of range */
-	//return 1005;
-	throw centile_out_of_range();
-      }
-    }
     
     /* incorporate density function and its data into funbag lpdf */
     //lpdf.mydata = mydata;
@@ -288,13 +273,6 @@ namespace mcmc_utilities
       }  
     } while (msamp < nsamp);
     
-    /* nsamp points now sampled */
-    /* calculate requested envelope centiles */
-    for (i=0; i<ncent; i++){
-      invert(qcent[i]/100.0,env,&pwork);
-      xcent[i] = pwork.x;
-    }
-    
     /* free space */
     //free(env->p);
     //free(env);
@@ -310,7 +288,7 @@ namespace mcmc_utilities
   
   template <typename T_p,typename T_var>
   int initial (const std::vector<T_var>& xinit, T_var xl, T_var xr, int npoint,
-	       const probability_density_md<T_p,T_var>& myfunc, envelope<T_p,T_var>& env, const T_p& convex, int& neval,
+	       const probability_density_1d<T_p,T_var>& myfunc, envelope<T_p,T_var>& env, const T_p& convex, int& neval,
 	       metropolis<T_p,T_var>& metrop)
     
   /* to set up initial envelope */
@@ -469,11 +447,14 @@ namespace mcmc_utilities
     /* find rightmost point in envelope */
     q = env.p;
     while(q->pr != NULL)q = q->pr;
-
+    
     /* find exponential piece containing point implied by prob */
     u = prob * q->cum;
-    while(q->pl->cum > u)q = q->pl;
-
+    while(q->pl->cum > u)
+      {
+	q = q->pl;
+	assert(q!=NULL);
+      }
     /* piece found: set left and right points of p, etc. */
     p->pl = q->pl;
     p->pr = q;
@@ -496,9 +477,9 @@ namespace mcmc_utilities
       yr = q->y;
       eyl = q->pl->ey;
       eyr = q->ey;
-      if(std::abs(yr - yl) < float_constants<T_p>::YEPS){
+      if(std::abs(yr - yl) < float_constants<T_p>::YEPS()){
 	/* linear approximation was used in integration in function cumulate */
-	if(std::abs(eyr - eyl) > float_constants<T_p>::EYEPS*std::abs(eyr + eyl)){
+	if(std::abs(eyr - eyl) > float_constants<T_p>::EYEPS()*std::abs(eyr + eyl)){
 	  p->x = xl + ((xr - xl)/(eyr - eyl))
 	    * (-eyl + sqrt((1. - prop)*eyl*eyl + prop*eyr*eyr));
 	} else {
@@ -515,9 +496,20 @@ namespace mcmc_utilities
       }
     }
 
+    p->x=std::min(p->x,xr);
+    p->x=std::max(p->x,xl);
     /* guard against imprecision yielding point outside interval */
     if ((p->x < xl) || (p->x > xr))
       {
+
+	
+	std::ofstream ofs("a.log");
+	ofs<<std::setprecision(10);
+	ofs<<env;
+	ofs<<"------------"<<std::endl;
+	ofs<<(p->x)<<std::endl;
+	ofs<<xl<<std::endl;
+	ofs<<xr<<std::endl;
 	throw arms_exception(3);
       };
 
@@ -527,7 +519,7 @@ namespace mcmc_utilities
   /* *********************************************************************** */
 
   template <typename T_p,typename T_var,typename T_urand>
-  int test(envelope<T_p,T_var>& env, point<T_p,T_var> *p, const probability_density_md<T_p,T_var>& myfunc, metropolis<T_p,T_var>& metrop, const T_urand& urand)
+  int test(envelope<T_p,T_var>& env, point<T_p,T_var> *p, const probability_density_1d<T_p,T_var>& myfunc, metropolis<T_p,T_var>& metrop, const T_urand& urand)
 
   /* to perform rejection, squeezing, and metropolis tests */
   /* *env          : envelope attributes */
@@ -604,7 +596,7 @@ namespace mcmc_utilities
     w = ynew-znew-yold+zold;
     if(w > 0.0)w = 0.0;
 
-    if(w > -float_constants<T_p>::YCEIL){
+    if(w > -float_constants<T_p>::YCEIL()){
       w = std::exp(w);
     } else {
       w = 0.0;
@@ -632,7 +624,7 @@ namespace mcmc_utilities
   /* *********************************************************************** */
 
   template <typename T_p,typename T_var>
-  int update(envelope<T_p,T_var>& env, point<T_p,T_var> *p, const probability_density_md<T_p,T_var>& myfunc, metropolis<T_p,T_var>& metrop)
+  int update(envelope<T_p,T_var>& env, point<T_p,T_var> *p, const probability_density_1d<T_p,T_var>& myfunc, metropolis<T_p,T_var>& metrop)
 
   /* to update envelope to incorporate new point on log density*/
   /* *env          : envelope attributes */
@@ -692,13 +684,13 @@ namespace mcmc_utilities
     } else {
       qr = q->pr;
     }
-    if (q->x < (1. - float_constants<T_var>::XEPS) * ql->x + float_constants<T_var>::XEPS * qr->x){
+    if (q->x < (1. - float_constants<T_var>::XEPS()) * ql->x + float_constants<T_var>::XEPS() * qr->x){
       /* q too close to left end of interval */
-      q->x = (1. - float_constants<T_var>::XEPS) * ql->x + float_constants<T_var>::XEPS * qr->x;
+      q->x = (1. - float_constants<T_var>::XEPS()) * ql->x + float_constants<T_var>::XEPS() * qr->x;
       q->y = perfunc(myfunc,env,q->x);
-    } else if (q->x > float_constants<T_var>::XEPS * ql->x + (1. - float_constants<T_var>::XEPS) * qr->x){
+    } else if (q->x > float_constants<T_var>::XEPS() * ql->x + (1. - float_constants<T_var>::XEPS()) * qr->x){
       /* q too close to right end of interval */
-      q->x = float_constants<T_var>::XEPS * ql->x + (1. - float_constants<T_var>::XEPS) * qr->x;
+      q->x = float_constants<T_var>::XEPS() * ql->x + (1. - float_constants<T_var>::XEPS()) * qr->x;
       q->y = perfunc(myfunc,env,q->x);
     }
 
@@ -837,17 +829,17 @@ namespace mcmc_utilities
 
     if(il && irl){
       dr = (gl - grl) * (q->pr->x - q->pl->x);
-      if(dr < float_constants<T_p>::YEPS){
+      if(dr < float_constants<T_p>::YEPS()){
 	/* adjust dr to avoid numerical problems */
-	dr = float_constants<T_p>::YEPS;
+	dr = float_constants<T_p>::YEPS();
       }
     }
 
     if(ir && irl){
       dl = (grl - gr) * (q->pr->x - q->pl->x);
-      if(dl < float_constants<T_p>::YEPS){
+      if(dl < float_constants<T_p>::YEPS()){
 	/* adjust dl to avoid numerical problems */
-	dl = float_constants<T_p>::YEPS;
+	dl = float_constants<T_p>::YEPS();
       }
     }
 
@@ -905,7 +897,7 @@ namespace mcmc_utilities
     } else if(q->pl->x == q->x){
       /* interval is zero length */
       a = 0.;
-    } else if (std::abs(q->y - q->pl->y) < float_constants<T_p>::YEPS){
+    } else if (std::abs(q->y - q->pl->y) < float_constants<T_p>::YEPS()){
       /* integrate straight line piece */
       a = 0.5*(q->ey + q->pl->ey)*(q->x - q->pl->x);
     } else {
@@ -922,8 +914,8 @@ namespace mcmc_utilities
 
   /* to exponentiate shifted y without underflow */
   {
-    if(y - y0 > -2.0 * float_constants<T_p>::YCEIL){
-      return std::exp(y - y0 + float_constants<T_p>::YCEIL);
+    if(y - y0 > -2.0 * float_constants<T_p>::YCEIL()){
+      return std::exp(y - y0 + float_constants<T_p>::YCEIL());
     } else {
       return 0.0;
     }
@@ -936,13 +928,13 @@ namespace mcmc_utilities
 
   /* inverse of function expshift */
   {
-    return (std::log(y) + y0 - float_constants<T_p>::YCEIL);
+    return (std::log(y) + y0 - float_constants<T_p>::YCEIL());
   }
 
   /* *********************************************************************** */
 
   template <typename T_p,typename T_var>
-  T_p perfunc(const probability_density_md<T_p,T_var>& myfunc, envelope<T_p,T_var>& env, T_var x)
+  T_p perfunc(const probability_density_1d<T_p,T_var>& myfunc, envelope<T_p,T_var>& env, T_var x)
 
   /* to evaluate log density and increment count of evaluations */
 
@@ -958,6 +950,7 @@ namespace mcmc_utilities
     y=myfunc.eval_log(x);
     if(std::isinf(y)||std::isnan(y))
       {
+	std::cerr<<x<<std::endl;
 	throw invalid_prob_value();
       }
     /* increment count of function evaluations */

@@ -36,14 +36,14 @@ class std_norm
     return p;
   }
 
-  void do_var_range(std::vector<double>& x1,std::vector<double>& x2)const
+  void do_var_range(double& x1,double& x2,const std::vector<double>& x0,size_t ndim)const
   {
-    for(int i=0;i<x1.size();++i)
+    x1=-20;
+    x2=20;
+    if(ndim==2)
       {
-	x1[i]=-20;
-	x2[i]=20;
+	x1=.001;
       }
-    x1[2]=.001;
   }
 
   

@@ -12,7 +12,7 @@ namespace mcmc_utilities
     size_t idx=0;
     typedef typename element_type_trait<T_var>::element_type T_var1;
     class conditional_probability_density
-      :public probability_density_md<T_p,typename element_type_trait<T_var>::element_type>
+      :public probability_density_1d<T_p,typename element_type_trait<T_var>::element_type>
     {
     public:
       size_t* p_idx;
@@ -31,14 +31,7 @@ namespace mcmc_utilities
       
       void do_var_range(T_var1& x1,T_var1& x2)const
       {
-	T_var xmin,xmax;
-	//x1=xmin[*p_idx];
-	//x2=xmax[*p_idx];
-	resize(xmin,get_size(*p_init_var));
-	resize(xmax,get_size(*p_init_var));
-	ppd->var_range(xmin,xmax);
-	x1=get_element(xmin,*p_idx);
-	x2=get_element(xmax,*p_idx);
+	ppd->var_range(x1,x2,*p_init_var,(*p_idx));
       }
     }cpd;
     cpd.p_idx=&idx;
@@ -49,10 +42,11 @@ namespace mcmc_utilities
     for(idx=0;idx<get_size(init_var);++idx)
       {
 	xprev=get_element(init_var,idx);
-
+	//xprev=100;
 	arms_simple(10,cpd,xprev,xsamp,dometrop,urand);
 	set_element(init_var,idx,xsamp.back());
       }
+    //exit(0);
   }
 		    
 };

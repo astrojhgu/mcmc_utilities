@@ -10,26 +10,19 @@ using namespace mcmc_utilities;
 /* ********************************************************************* */
 
 class normix
-  :public probability_density_md<double,double>
+  :public probability_density_1d<double,double>
 {
 private:
   void do_var_range(double& x1,double& x2)const
   {
-    x1=-40;
-    x2=40;
+    x1=-40e10;
+    x2=40e10;
   }
 
   double do_eval_log(const double& x)const
   {
-    return (-x*x/(2*.001*.001));//+1e-199;
-    double p1 = .3;
-    double mean1 = 4.;
-    double sd1 = .01;
-    double mean2 = 10.;
-    double sd2 = 2.5;
-
-    return std::log((p1/sd1)*std::exp(-0.5*std::pow(((x - mean1)/sd1),2.0))
-		    + ((1-p1)/sd2)*std::exp(-0.5*std::pow(((x - mean2)/sd2),2.0)));
+    double xmean=1e10;
+    return (-(x-xmean)*(x-xmean)/(2*.001*.001*1e5*1e5));//+1e-199;
   }
 }norm;
 
@@ -40,7 +33,7 @@ private:
 int main(void)
 {
   FILE *f;
-  int err,  npoint = 500, nsamp = 1;
+  int err, nsamp = 1;
   int neval,i;
   std::vector<double> xinit;
   double  xl,xr;
@@ -54,14 +47,6 @@ int main(void)
       xinit.push_back(x);
     }
   sort(xinit.begin(),xinit.end());
-  //double xcent[10], qcent[10] = {5., 30., 70., 95.};
-  
-  std::vector<double> qcent;
-  //qcent.push_back(5);
-  //qcent.push_back(30);
-  //qcent.push_back(70);
-  //qcent.push_back(95);
-  std::vector<double> xcent(qcent.size());
   std::vector<double> xsamp(10);
   unsigned seed = 44;
   double convex = 1.0;
@@ -73,10 +58,11 @@ int main(void)
 
   /* open a file */
   f = fopen("arms.out02","w+");
-
+  int npoint=100000;
+  std::vector<double> data(npoint);
   for(i=0;i<100000;i++){
     err = arms(xinit,xl,xr,norm,convex,
-	       npoint,dometrop,xprev,xsamp,qcent,xcent,neval, u_random<double>);
+	       npoint,dometrop,xprev,xsamp,neval, u_random<double>);
     //err= arms_simple (300, norm, xprev,xsamp);
     //const probability_density_md<T_p,T_var>& myfunc,
     //int dometrop, T_var *xprev, T_var *xsamp);
@@ -86,9 +72,17 @@ int main(void)
       exit(1);
     }
     /* update xprev to get a Markov chain */
-    xprev = xsamp[0];
-    fprintf(f,"%d  %11.5f  %d\n",i,xsamp[0],neval);
+    xprev = xsamp.back();
+    //fprintf(f,"%d  %11.5f  %d\n",i,xsamp[0],neval);
+    //cout<<xprev<<endl;
+    data[i]=xprev;
   }
+  std::sort(data.begin(),data.end());
+
+  for(int i=0;i<npoint;++i)
+    {
+      cout<<data[i]-1e10<<" "<<i<<endl;
+    }
   return 0;
 }
 

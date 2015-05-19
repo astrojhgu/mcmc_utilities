@@ -22,12 +22,10 @@ public:
     return log_p;
   }
 
-  void do_var_range(std::vector<double>& x1,std::vector<double>& x2)const
+  void do_var_range(double& x1,double& x2,const std::vector<double>& x0,size_t ndim)const
   {
-    x1.resize(3);
-    x2.resize(3);
-    x1[0]=x1[1]=x1[2]=-20;
-    x2[0]=x2[1]=x2[2]=20;
+    x1=-20;
+    x2=20;
   }  
 };
 

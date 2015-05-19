@@ -31,6 +31,8 @@ namespace mcmc_utilities
   template <typename T_p,typename T_stat,typename T_obs,typename T_t,typename T_urand>
   class pf_model
   {
+  public:
+    typedef typename element_type_trait<T_stat>::element_type T_stat1;
   private:
     pf_model(const pf_model&);
   public:
@@ -54,9 +56,9 @@ namespace mcmc_utilities
       return evol_log_prob(x,t,prev_stat,prev_t)+obs_log_prob(y,x,t);
     }
     
-    void stat_var_range(const T_stat& x0,T_stat& xl,T_stat& xr)const
+    void stat_var_range(T_stat1& xl,T_stat1& xr,const T_stat& x0,size_t ndim)const
     {
-      return do_stat_var_range(x0,xl,xr);
+      return do_stat_var_range(xl,xr,x0,ndim);
     }
 
   public:
@@ -65,6 +67,8 @@ namespace mcmc_utilities
       class cprob
 	:public probability_density_md<T_p,T_stat>
       {
+      public:
+	typedef typename element_type_trait<T_stat>::element_type T_var1;
       private:
 	const pf_model<T_p,T_stat,T_obs,T_t, T_urand>*  ptr_pf_model;
 	const T_obs* ptr_obs_vec;
@@ -77,10 +81,11 @@ namespace mcmc_utilities
 	{
 	  return ptr_pf_model->evol_log_prob(x,*ptr_t,*ptr_particle,*ptr_prev_t);
 	}
-	void do_var_range(T_stat& xl,T_stat& xr)const
+	void do_var_range(T_var1& xl,T_var1& xr,const T_stat& x,size_t ndim)const
 	{
 	  //ptr_pf_model->stat_var_range(x0,x1,x2);
-	  ptr_pf_model->stat_var_range(*ptr_particle,xl,xr);
+	  //ptr_pf_model->stat_var_range(xl,xr,*ptr_particle,ndim);
+	  ptr_pf_model->stat_var_range(xl,xr,x,ndim);
 	}
       };
 
@@ -142,6 +147,6 @@ namespace mcmc_utilities
   private:
     virtual T_p do_evol_log_prob(const T_stat& x,const T_t& t,const T_stat& particle_list,const T_t& prev_t)const=0;
     virtual T_p do_obs_log_prob(const T_obs& y,const T_stat& x,const T_t& t)const=0;
-    virtual void do_stat_var_range(const T_stat& x0,T_stat& xl,T_stat& xr)const=0;
+    virtual void do_stat_var_range(T_stat1& xl,T_stat1& xr,const T_stat& x0,size_t ndim)const=0;
   };
 };

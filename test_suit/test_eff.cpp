@@ -57,24 +57,21 @@ public:
 	  }
 	//dbin<double,double> d(eff,ninj[i]);
 	double log_p1=logdbin(nrec[i],eff,ninj[i]);
-	if(isnan(log_p1))
-	  {
-	    cout<<"aa"<<log_p1<<endl;
-	    cout<<"bb:"<<eff<<" "<<ninj[i]<<" "<<nrec[i]<<endl;
-	    cout.flush();
-	    assert(0);
-	  }
 	log_p+=log_p1;
       }
     return log_p;
   }
 
-  void do_var_range(std::vector<double>& x1,std::vector<double>& x2)const
+  void do_var_range(double& x1,double& x2,const std::vector<double>& x,size_t ndim)const
   {
-    x1[0]=0.001;x2[0]=1;
-    x1[1]=0.001;x2[1]=1;
-    x1[2]=0.001;x2[2]=100;
-    x1[3]=0.001;x2[3]=100;
+    if(ndim==0||ndim==1)
+      {
+	x1=.001;x2=1;
+      }
+    else if(ndim==2||ndim==3)
+      {
+	x1=.001;x2=100;
+      }
   }
 
   

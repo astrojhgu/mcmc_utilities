@@ -15,13 +15,10 @@ class std_norm
     return (-y/(2*5*5.));
   }
 
-  void do_var_range(std::vector<double>& x1,std::vector<double>& x2)const
+  void do_var_range(double& x1,double& x2,const std::vector<double>& x,size_t ndim)const
   {
-    for(int i=0;i<x1.size();++i)
-      {
-	x1[i]=-100;
-	x2[i]=100;
-      }
+    x1=-100;
+    x2=100;
   }
 
   
@@ -32,8 +29,6 @@ int main()
   std_norm sn;
   std::vector<double> factors(2,1);
   std::vector<double> init_var(2,0);
-  std::vector<double> xmin,xmax;
-  sn.var_range(xmin,xmax);
   srand(time(0));
   for(int i=0;i<10000;++i)
     {
