@@ -9,10 +9,12 @@
 #include <iostream>
 #include <cassert>
 #include <limits>
+#include <algorithm>
 //#include <fstream>
 #include <vector>
 #include "distribution.hpp"
 #include "mcmc_exception.hpp"
+#include "find_peak/find_peak.hpp"
 /* *********************************************************************** */
 
 namespace mcmc_utilities
@@ -164,11 +166,13 @@ namespace mcmc_utilities
       {
 	throw range_not_ordered();
       }
-    for(int i=0;i<ninit;++i)
+    for(int i=0;i<ninit-1;++i)
       {
-	xinit[i]=xl+(xr-xl)/(ninit+2)*(i+1);
+	xinit[i]=xl+(xr-xl)/(ninit+1)*(i+1);
 	//xinit[i]=xl_shifted+(xr_shifted-xl_shifted)/(ninit+2)*(i+1);
       }
+    xinit[ninit-1]=find_peak(myfunc);
+    std::sort(xinit.begin(),xinit.end());
     int npoint=std::max(200,2*ninit + 2);
     T_var convex=1.;
     //int dometrop=1;

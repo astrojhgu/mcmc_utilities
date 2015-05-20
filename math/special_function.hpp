@@ -1,6 +1,7 @@
 #ifndef SPECIAL_FUNCTION_HPP
 #define SPECIAL_FUNCTION_HPP
 #include <cmath>
+#include "../core/mcmc_exception.hpp"
 namespace mcmc_utilities
 {
   
@@ -37,12 +38,28 @@ namespace mcmc_utilities
   {
     if(sigma<=0)
       {
+	assert(0);
 	throw var_out_of_range();
       }
     static const T pi=std::atan(1)*4;
     //return std::log(tau/(2*pi))/2-tau*(x-mu)*(x-mu)/2;
     return -std::log(2*pi*sigma*sigma)/2-(x-mu)*(x-mu)/(2*sigma*sigma);
   }
+
+  template <typename T>
+  T logdlnorm(T x,T mu,T sigma)
+  {
+    if(sigma<=0||x<=0)
+      {
+	assert(0);
+	throw var_out_of_range();
+      }
+    static const T pi=std::atan(1)*4;
+    T result=-std::log(2*pi*sigma*sigma)/2-std::log(x)-(std::log(x)-mu)*(std::log(x)-mu)/(2.*sigma*sigma);
+    assert(!std::isnan(result)&&!std::isinf(result));
+    return result;
+  }
+
 
   template <typename T_p,typename T_var>
   T_p log_factorial(const T_var& n)
@@ -78,6 +95,19 @@ namespace mcmc_utilities
   T_p logdpoisson(const T_var& x,const T_p& lambda)
   {
     T_p result=x*std::log(lambda)-lambda-log_factorial<T_p,T_var>(x);
+    return result;
+  }
+
+  template <typename T_p,typename T_var>
+  T_p logdpar(const T_var& x,const T_var& c,const T_p& alpha)
+  {
+    if(x<c||c<=0)
+      {
+	throw var_out_of_range();
+      }
+    assert(x>0);
+    T_p result=std::log(alpha)+alpha*std::log(c)-(alpha+1)*std::log(x);
+    assert(!std::isnan(result)&&!std::isinf(result));
     return result;
   }
 }

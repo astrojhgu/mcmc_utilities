@@ -22,16 +22,22 @@ namespace mcmc_utilities
       T_p do_eval_log(const T_var1& x1)const
       {
 	set_element(*p_init_var,*p_idx,x1);
-	
-	
 	T_p result= ppd->eval_log(*p_init_var);
-
 	return result;
       }
       
-      void do_var_range(T_var1& x1,T_var1& x2)const
+      void do_var_range(T_var1& xmin,T_var1& xmax)const
       {
-	ppd->var_range(x1,x2,*p_init_var,(*p_idx));
+	ppd->var_range(xmin,xmax,*p_init_var,(*p_idx));
+	T_var1 x=get_element(*p_init_var,*p_idx);
+	if(xmin>x)
+	  {
+	    xmin=x;
+	  }
+	if(xmax<x)
+	  {
+	    xmax=x;
+	  }
       }
     }cpd;
     cpd.p_idx=&idx;
@@ -42,11 +48,9 @@ namespace mcmc_utilities
     for(idx=0;idx<get_size(init_var);++idx)
       {
 	xprev=get_element(init_var,idx);
-	//xprev=100;
-	arms_simple(10,cpd,xprev,xsamp,dometrop,urand);
+	arms_simple(20,cpd,xprev,xsamp,dometrop,urand);
 	set_element(init_var,idx,xsamp.back());
       }
-    //exit(0);
   }
 		    
 };

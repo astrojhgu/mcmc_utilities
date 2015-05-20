@@ -22,7 +22,7 @@ private:
   double do_eval_log(const double& x)const
   {
     double xmean=1e10;
-    return (-(x-xmean)*(x-xmean)/(2*.001*.001*1e5*1e5));//+1e-199;
+    return (-(x-xmean)*(x-xmean)/(2000));//+1e-199;
   }
 }norm;
 
@@ -76,6 +76,7 @@ int main(void)
     //fprintf(f,"%d  %11.5f  %d\n",i,xsamp[0],neval);
     //cout<<xprev<<endl;
     data[i]=xprev;
+    //cout<<xprev-1e10<<endl;
   }
   std::sort(data.begin(),data.end());
 

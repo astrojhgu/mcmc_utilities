@@ -1,4 +1,4 @@
-targets=test_fit.out test_arms1.out test_arms2.out test_coal.out test_pf.out test_eff.out test_dual_err.out test_gibbs.out simulate_lm.out
+targets=test_fit.out test_arms1.out test_arms2.out test_coal.out test_pf.out test_eff.out test_dual_err.out test_gibbs.out simulate_lm.out fit_lm.out simulate_dpar.out
 
 all:$(targets)
 
