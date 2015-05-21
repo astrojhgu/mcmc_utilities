@@ -15,14 +15,14 @@ class normix
 private:
   void do_var_range(double& x1,double& x2)const
   {
-    x1=-40e10;
-    x2=40e10;
+    x1=-40;
+    x2=40;
   }
 
   double do_eval_log(const double& x)const
   {
-    double xmean=1e10;
-    return (-(x-xmean)*(x-xmean)/(2000));//+1e-199;
+    double xmean=1;
+    return (-(x-xmean)*(x-xmean)/(20));//+1e-199;
   }
 }norm;
 
@@ -73,7 +73,7 @@ int main(void)
     }
     /* update xprev to get a Markov chain */
     xprev = xsamp.back();
-    //fprintf(f,"%d  %11.5f  %d\n",i,xsamp[0],neval);
+    fprintf(f,"%d  %11.5f  %d\n",i,xsamp[0],neval);
     //cout<<xprev<<endl;
     data[i]=xprev;
     //cout<<xprev-1e10<<endl;

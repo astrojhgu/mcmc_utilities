@@ -10,8 +10,44 @@
 using namespace std;
 using namespace mcmc_utilities;
 
+struct variable
+{
+  typedef double value_type;
+  double data[4];
+  
+  double& A;
+  double& B;
+  double& mu;
+  double& sigma;
+
+  int size()const
+  {
+    return 4;
+  }
+  
+  variable()
+    :A(data[0]),B(data[1]),mu(data[2]),sigma(data[3])
+  {
+    for(int i=0;i<3;++i)
+      {
+	data[i]=0;
+      }
+  }
+
+  double& operator[](size_t i)
+  {
+    return data[i];
+  }
+
+  const double& operator[](size_t i)const
+  {
+    return data[i];
+  }
+};
+
+
 class eff_distribution
-  :public probability_density_md<double,std::vector<double> >
+  :public probability_density_md<double,variable>
 {
 private:
   std::vector<double> E;
@@ -36,25 +72,13 @@ public:
       }
   }
 
-  double do_eval_log(const std::vector<double>& x)const
+  double do_eval_log(const variable& x)const
   {
-    double A=x.at(0);
-    double B=x.at(1);
-    double mu=x.at(2);
-    double sigma=x.at(3);
     double log_p=0;
 
     for(unsigned int i=0;i<E.size();++i)
       {
-	double eff=A+(B-A)*phi((E[i]-mu)/sigma);
-	if(eff>=1)
-	  {
-	    cout<<"A="<<A<<endl;
-	    cout<<"B="<<B<<endl;
-	    cout<<"mu="<<mu<<endl;
-	    cout<<"sigma="<<sigma<<endl;
-
-	  }
+	double eff=x.A+(x.B-x.A)*phi((E[i]-x.mu)/x.sigma);
 	//dbin<double,double> d(eff,ninj[i]);
 	double log_p1=logdbin(nrec[i],eff,ninj[i]);
 	log_p+=log_p1;
@@ -62,7 +86,7 @@ public:
     return log_p;
   }
 
-  void do_var_range(double& x1,double& x2,const std::vector<double>& x,size_t ndim)const
+  void do_var_range(double& x1,double& x2,const variable& x,size_t ndim)const
   {
     if(ndim==0||ndim==1)
       {
@@ -81,11 +105,12 @@ public:
 int main()
 {
   eff_distribution cd;
-  std::vector<double> x;
-  x.push_back(.5);
-  x.push_back(1);
-  x.push_back(15);
-  x.push_back(12);
+  variable x;
+  
+  x.A=.5;
+  x.B=1;
+  x.mu=15;
+  x.sigma=12;
   //cout<<cd.eval_log(x)<<endl;
   for(int n=0;n<10000;++n)
     {
