@@ -45,16 +45,7 @@ namespace mcmc_utilities
     mcmc_assign(b,c);
     mcmc_assign(c,d);
   }
-  //  template <typename T>  
-  //  void swap(T& ax,T& bx)
-  //{
-    //  swap(ax,bx);
-    //    T temp;
-    //mcmc_assign(temp,ax);
-    //mcmc_assign(ax,bx);
-    //mcmc_assign(bx,temp);
-    //}
-  
+
   template <typename T>
   T sign(const T& a,const T& b)
   {
