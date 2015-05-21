@@ -11,9 +11,9 @@ using namespace std;
 using namespace mcmc_utilities;
 double a=1;
 double b=0;
-double s=.1;
+double s=.3;
 double c=10;
-double alpha=4;
+double alpha=2.5;
 
 class LM
   :public probability_density_md<double,std::vector<double> >
@@ -74,7 +74,7 @@ int main()
 	  cout.flush();
 	}
     }
-  return 0;
+  //return 0;
   cout<<"no no no"<<endl;
 
   for(double x=1E1;x<xmax;x*=1.1)

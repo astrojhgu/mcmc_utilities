@@ -17,8 +17,8 @@ class lm_model
   {
     double log_p=0;
     double alpha=param[0];
-    //double c=param[1];
-    double c=10;
+    double c=param[1];
+    //double c=10;
     double a=param[2];
     double b=param[3];
     double s=param[4];
