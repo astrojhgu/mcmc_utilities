@@ -110,6 +110,18 @@ namespace mcmc_utilities
     assert(!std::isnan(result)&&!std::isinf(result));
     return result;
   }
+
+  template <typename T>
+  T logit(const T& x)
+  {
+    return std::log(x/(1-x));
+  }
+
+  template <typename T>
+  T ilogit(const T& x)
+  {
+    return std::exp(x)/(1+std::exp(x));
+  }
 }
 
 
