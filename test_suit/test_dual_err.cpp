@@ -1,6 +1,6 @@
 #include <core/distribution.hpp>
 #include <core/gibbs_sampler.hpp>
-#include <math/special_function.hpp>
+#include <math/distributions.hpp>
 #include <random/uniform.h>
 #include <vector>
 #include <fstream>

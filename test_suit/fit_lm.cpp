@@ -2,7 +2,7 @@
 #include <vector>
 #include <fstream>
 #include <fio.h>
-#include <math/special_function.hpp>
+#include <math/distributions.hpp>
 #include "core/gibbs_sampler.hpp"
 using namespace std;
 using namespace mcmc_utilities;
