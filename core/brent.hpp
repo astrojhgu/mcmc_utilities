@@ -7,7 +7,7 @@
 namespace mcmc_utilities
 {
   template<typename T_p,typename T_var>
-  T_p brent(T_var ax,T_var bx,T_var cx,const cfunc<T_p,T_var>& f,T_var tol,T_var& xmin)
+  T_p brent(T_var ax,T_var bx,T_var cx,const dist_adapter<T_p,T_var>& f,T_var tol,T_var& xmin)
   {
     const int ITMAX=100;
     const T_var CGOLD=0.3819660;
@@ -25,13 +25,13 @@ namespace mcmc_utilities
     for(iter=0;iter<ITMAX;++iter)
       {
 	xm=.5*(a+b);
-	tol2=2.*(tol1=tol*tabs(x)+ZEPS);
-	if(tabs(T_var(x-xm))<=(tol2-.5*(b-a)))
+	tol2=2.*(tol1=tol*std::abs(x)+ZEPS);
+	if(std::abs(T_var(x-xm))<=(tol2-.5*(b-a)))
 	  {
 	    xmin=x;
 	    return fx;
 	  }
-	if(tabs(e)>tol1)
+	if(std::abs(e)>tol1)
 	  {
 	    r=(x-w)*(fx-fv);
 	    q=(x-v)*(fx-fw);
@@ -41,10 +41,10 @@ namespace mcmc_utilities
 	      {
 		p=-p;
 	      }
-	    q=tabs(q);
+	    q=std::abs(q);
 	    etemp=e;
 	    e=d;
-	    if(tabs(p)>=tabs(T_p(T_p(.5)*p*etemp))||p<=q*(a-x)||p>=q*(b-x))
+	    if(std::abs(p)>=std::abs(T_p(T_p(.5)*p*etemp))||p<=q*(a-x)||p>=q*(b-x))
 	      {
 		d=CGOLD*(e=(x>=xm?a-x:b-x));
 	      }
@@ -63,7 +63,7 @@ namespace mcmc_utilities
 	  {
 	    d=CGOLD*(e=(x>=xm?a-x:b-x));
 	  }
-	u=(tabs(d)>=tol1?x+d:x+sign(tol1,d));
+	u=(std::abs(d)>=tol1?x+d:x+sign(tol1,d));
 	fu=f(u);
 	if(fu<=fx)
 	  {

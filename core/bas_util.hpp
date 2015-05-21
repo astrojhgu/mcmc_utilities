@@ -1,14 +1,14 @@
 #ifndef MCMC_BAS_UTIL
 #define MCMC_BAS_UTIL
 #define OPT_HEADER
-#include "../mcmc_traits.hpp"
+#include "mcmc_traits.hpp"
 #include <algorithm>
 #include <limits>
-#include "../distribution.hpp"
+#include "distribution.hpp"
 namespace mcmc_utilities
 {
   template <typename T_p,typename T_var>
-  struct cfunc
+  struct dist_adapter
   {
       T_var xl,xr;
       const probability_density_1d<T_p,T_var>* ppd;
@@ -23,12 +23,6 @@ namespace mcmc_utilities
       }
   };
   
-  template <typename T>
-  T tabs(T x)
-  {
-    return T(x)<T(0)?T(-x):T(x);
-  }
-
   template <typename T>
   T sqr(T x)
   {
@@ -67,11 +61,6 @@ namespace mcmc_utilities
     return b>=0?T(a>=0?T(a):T(-a)):T(a>=0?T(-a):T(a));
   }
 
-  template <typename T>
-  T tmax(T a,T b)
-  {
-    return b>a?T(b):T(a);
-  }
 
   template <typename T>
   void mov3(T& a,T& b,T& c, T& d,T& e,T& f)

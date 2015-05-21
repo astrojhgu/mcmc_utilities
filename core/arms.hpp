@@ -14,7 +14,7 @@
 #include <vector>
 #include "distribution.hpp"
 #include "mcmc_exception.hpp"
-#include "find_peak/find_peak.hpp"
+#include "find_peak.hpp"
 /* *********************************************************************** */
 
 namespace mcmc_utilities
@@ -68,12 +68,17 @@ namespace mcmc_utilities
   
   //#define RAND_MAX 2147483647      /* For Sun4 : remove this for some systems */
   template <typename T>
-  struct float_constants
+  struct var_constants
   {
     static const T XEPS()
     {
       return .00001;
-    }            /* critical relative x-value difference */
+    }
+  };/* critical relative x-value difference */
+
+  template <typename T>
+  struct prob_constants
+  {
     static const T YEPS()
     {
       return .01;
@@ -484,9 +489,9 @@ namespace mcmc_utilities
       yr = q->y;
       eyl = q->pl->ey;
       eyr = q->ey;
-      if(std::abs(yr - yl) < float_constants<T_p>::YEPS()){
+      if(std::abs(yr - yl) < prob_constants<T_p>::YEPS()){
 	/* linear approximation was used in integration in function cumulate */
-	if(std::abs(eyr - eyl) > float_constants<T_p>::EYEPS()*std::abs(eyr + eyl)){
+	if(std::abs(eyr - eyl) > prob_constants<T_p>::EYEPS()*std::abs(eyr + eyl)){
 	  p->x = xl + ((xr - xl)/(eyr - eyl))
 	    * (-eyl + sqrt((1. - prop)*eyl*eyl + prop*eyr*eyr));
 	} else {
@@ -603,7 +608,7 @@ namespace mcmc_utilities
     w = ynew-znew-yold+zold;
     if(w > 0.0)w = 0.0;
 
-    if(w > -float_constants<T_p>::YCEIL()){
+    if(w > -prob_constants<T_p>::YCEIL()){
       w = std::exp(w);
     } else {
       w = 0.0;
@@ -691,13 +696,13 @@ namespace mcmc_utilities
     } else {
       qr = q->pr;
     }
-    if (q->x < (1. - float_constants<T_var>::XEPS()) * ql->x + float_constants<T_var>::XEPS() * qr->x){
+    if (q->x < (1. - var_constants<T_var>::XEPS()) * ql->x + var_constants<T_var>::XEPS() * qr->x){
       /* q too close to left end of interval */
-      q->x = (1. - float_constants<T_var>::XEPS()) * ql->x + float_constants<T_var>::XEPS() * qr->x;
+      q->x = (1. - var_constants<T_var>::XEPS()) * ql->x + var_constants<T_var>::XEPS() * qr->x;
       q->y = perfunc(myfunc,env,q->x);
-    } else if (q->x > float_constants<T_var>::XEPS() * ql->x + (1. - float_constants<T_var>::XEPS()) * qr->x){
+    } else if (q->x > var_constants<T_var>::XEPS() * ql->x + (1. - var_constants<T_var>::XEPS()) * qr->x){
       /* q too close to right end of interval */
-      q->x = float_constants<T_var>::XEPS() * ql->x + (1. - float_constants<T_var>::XEPS()) * qr->x;
+      q->x = var_constants<T_var>::XEPS() * ql->x + (1. - var_constants<T_var>::XEPS()) * qr->x;
       q->y = perfunc(myfunc,env,q->x);
     }
 
@@ -836,17 +841,17 @@ namespace mcmc_utilities
 
     if(il && irl){
       dr = (gl - grl) * (q->pr->x - q->pl->x);
-      if(dr < float_constants<T_p>::YEPS()){
+      if(dr < prob_constants<T_p>::YEPS()){
 	/* adjust dr to avoid numerical problems */
-	dr = float_constants<T_p>::YEPS();
+	dr = prob_constants<T_p>::YEPS();
       }
     }
 
     if(ir && irl){
       dl = (grl - gr) * (q->pr->x - q->pl->x);
-      if(dl < float_constants<T_p>::YEPS()){
+      if(dl < prob_constants<T_p>::YEPS()){
 	/* adjust dl to avoid numerical problems */
-	dl = float_constants<T_p>::YEPS();
+	dl = prob_constants<T_p>::YEPS();
       }
     }
 
@@ -904,7 +909,7 @@ namespace mcmc_utilities
     } else if(q->pl->x == q->x){
       /* interval is zero length */
       a = 0.;
-    } else if (std::abs(q->y - q->pl->y) < float_constants<T_p>::YEPS()){
+    } else if (std::abs(q->y - q->pl->y) < prob_constants<T_p>::YEPS()){
       /* integrate straight line piece */
       a = 0.5*(q->ey + q->pl->ey)*(q->x - q->pl->x);
     } else {
@@ -921,8 +926,8 @@ namespace mcmc_utilities
 
   /* to exponentiate shifted y without underflow */
   {
-    if(y - y0 > -2.0 * float_constants<T_p>::YCEIL()){
-      return std::exp(y - y0 + float_constants<T_p>::YCEIL());
+    if(y - y0 > -2.0 * prob_constants<T_p>::YCEIL()){
+      return std::exp(y - y0 + prob_constants<T_p>::YCEIL());
     } else {
       return 0.0;
     }
@@ -935,7 +940,7 @@ namespace mcmc_utilities
 
   /* inverse of function expshift */
   {
-    return (std::log(y) + y0 - float_constants<T_p>::YCEIL());
+    return (std::log(y) + y0 - prob_constants<T_p>::YCEIL());
   }
 
   /* *********************************************************************** */

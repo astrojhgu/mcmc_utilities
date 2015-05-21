@@ -11,7 +11,7 @@
 #include "mnbrak.hpp"
 #include "brent.hpp"
 #include <cmath>
-#include "../mcmc_traits.hpp"
+#include "mcmc_traits.hpp"
 //#include <iostream>
 using namespace std;
 #include <limits>
@@ -21,7 +21,7 @@ namespace mcmc_utilities
   T_var find_peak(const probability_density_1d<T_p,T_var>& dist)
   {
     //func_adaptor<T_p,T_var> fadpt(p,xi,func);
-    cfunc<T_p,T_var> func;
+    dist_adapter<T_p,T_var> func;
     
     func.ppd=&dist;
     dist.var_range(func.xl,func.xr);

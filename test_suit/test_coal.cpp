@@ -16,7 +16,7 @@ private:
 public:
   coal_distribution()
   {
-    ifstream ifs("coal.data");
+    ifstream ifs("coal.dat");
     for(;;)
       {
 	double y,n;

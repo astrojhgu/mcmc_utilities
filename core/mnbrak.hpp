@@ -8,7 +8,7 @@ namespace mcmc_utilities
 
   
   template <typename T_p,typename T_var>
-  void mnbrak(T_var& ax,T_var& bx,T_var& cx,T_p& fa,T_p& fb,T_p& fc,const cfunc<T_p,T_var>& func)
+  void mnbrak(T_var& ax,T_var& bx,T_var& cx,T_p& fa,T_p& fb,T_p& fc,const dist_adapter<T_p,T_var>& func)
   {
     const T_var GOLD=1.618034;
     const T_var GLIMIT=100;
@@ -32,7 +32,7 @@ namespace mcmc_utilities
 	r=(bx-ax)*(fb-fc);
 	q=(bx-cx)*(fb-fa);
 	u=bx-T_var((bx-cx)*q-(bx-ax)*r)/
-	  T_var(T_var(2.)*sign(T_var(tmax(T_var(tabs(T_var(q-r))),T_var(TINY))),T_var(q-r)));
+	  T_var(T_var(2.)*sign(T_var(std::max(T_var(std::abs(T_var(q-r))),T_var(TINY))),T_var(q-r)));
 	ulim=bx+GLIMIT*(cx-bx);
 	if((bx-u)*(u-cx)>0.)
 	  {
