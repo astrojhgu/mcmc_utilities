@@ -30,14 +30,6 @@ namespace mcmc_utilities
       {
 	ppd->var_range(xmin,xmax,*p_init_var,(*p_idx));
 	T_var1 x=get_element(*p_init_var,*p_idx);
-	if(xmin>x)
-	  {
-	    xmin=x;
-	  }
-	if(xmax<x)
-	  {
-	    xmax=x;
-	  }
       }
     }cpd;
     cpd.p_idx=&idx;

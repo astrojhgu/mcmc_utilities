@@ -3,7 +3,7 @@ targets=test_fit.out test_arms1.out test_arms2.out test_coal.out test_pf.out tes
 all:$(targets)
 
 CXX=g++
-CXXFLAGS=-I ../ -O2 -std=c++14 -g
+CXXFLAGS=-I ../ -O3 -std=c++14 -g
 LIBFLAGS=-lSDL2 -lfio -lcfitsio
 
 
