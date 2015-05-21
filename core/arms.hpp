@@ -6,7 +6,7 @@
 #include <cmath>
 #include <iomanip>
 #include <cstdlib>
-#include <iostream>
+//#include <iostream>
 #include <cassert>
 #include <limits>
 #include <algorithm>
@@ -957,7 +957,7 @@ namespace mcmc_utilities
     y=myfunc.eval_log(x);
     if(std::isinf(y)||std::isnan(y))
       {
-	std::cerr<<x<<std::endl;
+	//std::cerr<<x<<std::endl;
 	throw invalid_prob_value();
       }
     /* increment count of function evaluations */

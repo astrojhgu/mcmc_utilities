@@ -1,7 +1,7 @@
 #ifndef MCMC_BRENT_HPP
 #define MCMC_BRENT_HPP
 
-#include <iostream>
+//#include <iostream>
 #include "bas_util.hpp"
 //#include "optimizer.hpp"
 namespace mcmc_utilities
@@ -102,7 +102,7 @@ namespace mcmc_utilities
 	      }
 	  }
       }
-    std::cerr<<"Too many iterations in brent"<<std::endl;
+    //std::cerr<<"Too many iterations in brent"<<std::endl;
     xmin=x;
     return fx;
     

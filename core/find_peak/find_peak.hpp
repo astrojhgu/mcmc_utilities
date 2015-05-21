@@ -12,7 +12,7 @@
 #include "brent.hpp"
 #include <cmath>
 #include "../mcmc_traits.hpp"
-#include <iostream>
+//#include <iostream>
 using namespace std;
 #include <limits>
 namespace mcmc_utilities
