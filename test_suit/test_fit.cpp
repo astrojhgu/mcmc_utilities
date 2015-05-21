@@ -9,34 +9,40 @@ using namespace std;
 std::vector<double> x_vec;
 std::vector<double> y_vec;
 
-class std_norm
-  :public probability_density_md<double,std::vector<double> >
+class variable
+  :public std::vector<double>
 {
-  double do_eval_log(const std::vector<double>& param)const
+public:
+  double& k;
+  double& b;
+  double& sigma;
+
+  variable()
+    :vector(3),k(at(0)),b(at(1)),sigma(at(2))
+  {}
+
+private:
+  variable(const variable&);
+  variable& operator=(const variable&);
+};
+
+class prob
+  :public probability_density_md<double,variable>
+{
+  double do_eval_log(const variable& param)const
   {
     double p=0;
-    double k=param[0];
-    double b=param[1];
-    double sigma=param[2];
     
     for(int i=0;i<x_vec.size();++i)
       {
-	double y1=k*x_vec[i]+b;
-	p+=((-(y_vec[i]-y1)*(y_vec[i]-y1)/(2*sigma*sigma))-std::log(sigma));
+	double y1=param.k*x_vec[i]+param.b;
+	p+=((-(y_vec[i]-y1)*(y_vec[i]-y1)/(2*param.sigma*param.sigma))-std::log(param.sigma));
       }
-    
-    //p=-k*k-b*b-sigma*sigma/4;
-    //cout<<"a ";
-    for(int i=0;i<3;++i)
-      {
-	//cout<<param[i]<<" ";
-      }
-    //cout<<p<<endl;
     
     return p;
   }
 
-  void do_var_range(double& x1,double& x2,const std::vector<double>& x0,size_t ndim)const
+  void do_var_range(double& x1,double& x2,const variable& x0,size_t ndim)const
   {
     x1=-20;
     x2=20;
@@ -65,8 +71,8 @@ int main()
       y_vec.push_back(y);
     }
   //uniform_rng<double,double> ur;
-  std_norm sn;
-  std::vector<double> init_var(3,0);
+  prob sn;
+  variable init_var;
   init_var[0]=4;
   init_var[1]=3;
   init_var[2]=20;
@@ -93,6 +99,5 @@ int main()
 	  cout<<init_var[j]<<" ";
 	}
       cout<<endl;
-      
     }
 }
