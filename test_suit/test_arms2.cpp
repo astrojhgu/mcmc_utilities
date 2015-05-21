@@ -27,7 +27,6 @@ class std_norm
 int main()
 {
   std_norm sn;
-  std::vector<double> factors(2,1);
   std::vector<double> init_var(2,0);
   srand(time(0));
   for(int i=0;i<10000;++i)
