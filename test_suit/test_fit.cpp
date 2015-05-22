@@ -90,7 +90,7 @@ int main()
   
   for(int i=0;i<100000;++i)
     {
-      gibbs_sample(sn,init_var,1,u_random<double>);
+      gibbs_sample(sn,init_var,1,u_random<double>());
 
       cout<<i<<" ";
       //cout<<init_var[1]<<" "<<init_var[2]<<endl;

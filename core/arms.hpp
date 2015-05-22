@@ -1,16 +1,16 @@
+#ifndef CORE_ARMS_HPP
+#define CORE_ARMS_HPP
+
 /* adaptive rejection metropolis sampling */
 
 /* *********************************************************************** */
-#include <cstdio>
-#include <fstream>
+
 #include <cmath>
+#include <iostream>
 #include <iomanip>
 #include <cstdlib>
-//#include <iostream>
-#include <cassert>
 #include <limits>
 #include <algorithm>
-//#include <fstream>
 #include <vector>
 #include "distribution.hpp"
 #include "mcmc_exception.hpp"
@@ -96,56 +96,56 @@ namespace mcmc_utilities
   /* *********************************************************************** */
   
   /* declarations for functions defined in this file */
-  
-  template <typename T_p,typename T_var>
-  int arms_simple (int ninit, const probability_density_1d<T_p,T_var>& myfunc,
-		   int dometrop, const T_var& xprev, std::vector<T_var>& xsamp);
+  template <typename T_p,typename T_var, typename T_urand>
+  int arms_simple (int ninit,const probability_density_1d<T_p,T_var>& myfunc,
+		   const T_var& xprev, std::vector<T_var>& xsamp, int dometrop, const T_urand& urand);
 
   
   template <typename T_p,typename T_var, typename T_urand>
   int arms (const std::vector<T_var>& xinit, const T_var& xl, const T_var& xr, 
-	    const probability_density_1d<T_p,T_var>& myfunc, 
+	    const probability_density_1d<T_p,T_var>& myfunc,
 	    const T_p& convex, int npoint, int dometrop, const T_var& xprev, std::vector<T_var>& xsamp,
-	    int& neval, const T_urand& urand);
-  
+	    int& neval,const T_urand& urand);
+
   template <typename T_p,typename T_var>
   int initial (const std::vector<T_var>& xinit, T_var xl, T_var xr, int npoint,
 	       const probability_density_1d<T_p,T_var>& myfunc, envelope<T_p,T_var>& env, const T_p& convex, int& neval,
 	       metropolis<T_p,T_var>& metrop);
-  
   template <typename T_p,typename T_var,typename T_urand>
   void sample(envelope<T_p,T_var>& env, point<T_p,T_var> *p,const T_urand& urand);
   
   template <typename T_p,typename T_var>
   void invert(T_p prob, envelope<T_p,T_var>& env, point<T_p,T_var> *p);
-  
-  template <typename T_p,typename T_var, typename T_urand>
+
+  template <typename T_p,typename T_var,typename T_urand>
   int test(envelope<T_p,T_var>& env, point<T_p,T_var> *p, const probability_density_1d<T_p,T_var>& myfunc, metropolis<T_p,T_var>& metrop, const T_urand& urand);
   
   template <typename T_p,typename T_var>
   int update(envelope<T_p,T_var>& env, point<T_p,T_var> *p, const probability_density_1d<T_p,T_var>& myfunc, metropolis<T_p,T_var>& metrop);
-  
+
   template <typename T_p,typename T_var>
   void cumulate(envelope<T_p,T_var>& env);
-  
+
   template <typename T_p,typename T_var>
   int meet (point<T_p,T_var> *q, envelope<T_p,T_var>& env, metropolis<T_p,T_var>& metrop);
-  
+
   template <typename T_p,typename T_var>
   T_p area(point<T_p,T_var> *q);
-  
+
+
   template <typename T_p>
   T_p expshift(T_p y, T_p y0);
-  
+
   template <typename T_p>
   T_p logshift(T_p y, T_p y0);
-  
+
+
   template <typename T_p,typename T_var>
   T_p perfunc(const probability_density_1d<T_p,T_var>& myfunc, envelope<T_p,T_var>& env, T_var x);
-  
+
   template <typename T_var>
-  T_var u_random();
-  
+  class u_random;
+
   /* *********************************************************************** */
 
   template <typename T_p,typename T_var, typename T_urand>
@@ -465,7 +465,6 @@ namespace mcmc_utilities
     while(q->pl->cum > u)
       {
 	q = q->pl;
-	assert(q!=NULL);
       }
     /* piece found: set left and right points of p, etc. */
     p->pl = q->pl;
@@ -513,15 +512,6 @@ namespace mcmc_utilities
     /* guard against imprecision yielding point outside interval */
     if ((p->x < xl) || (p->x > xr))
       {
-
-	
-	std::ofstream ofs("a.log");
-	ofs<<std::setprecision(10);
-	ofs<<env;
-	ofs<<"------------"<<std::endl;
-	ofs<<(p->x)<<std::endl;
-	ofs<<xl<<std::endl;
-	ofs<<xr<<std::endl;
 	throw arms_exception(3);
       };
 
@@ -1006,12 +996,22 @@ namespace mcmc_utilities
   
   /* *********************************************************************** */
   template <typename T_var>
-  T_var u_random()
-
-  /* to return a standard uniform random number */
+  class u_random
   {
-    return ((T_var)std::rand() + 0.5)/((T_var)RAND_MAX + 1.0);
-  }
+  public:
+    u_random()
+    {
+      srand(time(0));
+    }
+  public:
+    T_var operator()()const
+    {
+      return ((T_var)std::rand() + 0.5)/((T_var)RAND_MAX + 1.0);
+    }
+  };
 }
 /* *********************************************************************** */
+
+
+#endif
 

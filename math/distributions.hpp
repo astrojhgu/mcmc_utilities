@@ -31,7 +31,6 @@ namespace mcmc_utilities
   {
     if(sigma<=0)
       {
-	assert(0);
 	throw var_out_of_range();
       }
     static const T pi=std::atan(1)*4;
@@ -44,12 +43,10 @@ namespace mcmc_utilities
   {
     if(sigma<=0||x<=0)
       {
-	assert(0);
 	throw var_out_of_range();
       }
     static const T pi=std::atan(1)*4;
     T result=-std::log(2*pi*sigma*sigma)/2-std::log(x)-(std::log(x)-mu)*(std::log(x)-mu)/(2.*sigma*sigma);
-    assert(!std::isnan(result)&&!std::isinf(result));
     return result;
   }
 
@@ -74,9 +71,7 @@ namespace mcmc_utilities
       {
 	throw var_out_of_range();
       }
-    assert(x>0);
     T_p result=std::log(alpha)+alpha*std::log(c)-(alpha+1)*std::log(x);
-    assert(!std::isnan(result)&&!std::isinf(result));
     return result;
   }
 

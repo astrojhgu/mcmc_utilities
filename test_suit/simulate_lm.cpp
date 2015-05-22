@@ -56,11 +56,11 @@ int main()
   double xmax=0;
   for(int n=0;n<1000;++n)
     {
-      gibbs_sample(cd,x,1,u_random<double>,100); 
+      gibbs_sample(cd,x,1,u_random<double>(),100); 
     }
   for(long n=0;n<1000000l;++n)
     {
-      gibbs_sample(cd,x,1,u_random<double>,100);
+      gibbs_sample(cd,x,1,u_random<double>(),100);
       if(n%100==0)
 	{
 	  for(unsigned int i=0;i<x.size();++i)

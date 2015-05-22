@@ -120,7 +120,7 @@ int main(int argc,char* argv[])
 	  cout<<init_var[j]<<" ";
 	}
       cout<<endl;
-      gibbs_sample(sn,init_var,1,u_random<double>);
+      gibbs_sample(sn,init_var,1,u_random<double>());
 
     }
 }

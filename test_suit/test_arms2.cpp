@@ -31,7 +31,7 @@ int main()
   srand(time(0));
   for(int i=0;i<10000;++i)
     {
-      gibbs_sample(sn,init_var,0,u_random<double>);
+      gibbs_sample(sn,init_var,0,u_random<double>());
       cout<<i<<" ";
       for(int j=0;j<init_var.size();++j)
 	{
