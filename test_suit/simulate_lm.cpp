@@ -9,8 +9,8 @@
 using namespace std;
 
 using namespace mcmc_utilities;
-double a=1;
-double b=0;
+double a=1.5;
+double b=0.2;
 double s=.3;
 double c=10;
 double alpha=2.5;
@@ -54,14 +54,15 @@ int main()
   //exit(0);
   //cout<<cd.eval_log(x)<<endl;
   double xmax=0;
+  u_random<double> rng;
   for(int n=0;n<1000;++n)
     {
-      gibbs_sample(cd,x,1,u_random<double>(),100); 
+      gibbs_sample(cd,x,1,rng,100); 
     }
-  for(long n=0;n<1000000l;++n)
+  for(long n=0;n<10000l;++n)
     {
-      gibbs_sample(cd,x,1,u_random<double>(),100);
-      if(n%100==0)
+      gibbs_sample(cd,x,1,rng,1000);
+      if(n%1==0)
 	{
 	  for(unsigned int i=0;i<x.size();++i)
 	    {
@@ -74,7 +75,7 @@ int main()
 	  cout.flush();
 	}
     }
-  //return 0;
+  return 0;
   cout<<"no no no"<<endl;
 
   for(double x=1E1;x<xmax;x*=1.1)

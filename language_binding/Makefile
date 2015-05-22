@@ -4,7 +4,7 @@ PYTHON_INC=`python-config --includes`
 OPTDIR=../
 OS=LINUX
 CXX=g++
-python:mcmc_py_wrap.cpp
+_mcmc.so:mcmc_py_wrap.cpp
 	$(CXX) -shared $< -I../ $(PYTHON_INC) -o _mcmc.so -fPIC -g
 
 mcmc_py_wrap.cpp:mcmc.i

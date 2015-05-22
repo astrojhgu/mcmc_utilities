@@ -5,8 +5,8 @@
 #include "functions.hpp"
 namespace mcmc_utilities
 {
-  template <typename T>
-  T logdgamma(T x,T r,T lambda)
+  template <typename T_p,typename T_var>
+  T_p logdgamma(T_var x,T_p r,T_p lambda)
   {
     if(x<0||lambda<=0||r<=0)
       {
@@ -15,38 +15,38 @@ namespace mcmc_utilities
     return r*std::log(lambda)+(r-1)*std::log(x)-lambda*x-lgamma(r);
   }
 
-  template <typename T>
-  T logdt(T x,T mu,T tau,T k)
+  template <typename T_p,typename T_var>
+  T_p logdt(T_var x,T_p mu,T_p tau,T_p k)
   {
     if(tau<=0||k<=0)
       {
 	throw var_out_of_range();
       }
-    static const T pi=std::atan(1)*4;
+    static const T_p pi=std::atan(1)*4;
     return lgamma((k+1)/2)-lgamma(k/2)+std::log(tau/k/pi)/2-(k+1)/2*std::log(1+tau*(x-mu)*(x-mu)/k);
   }
 
-  template <typename T>
-  T logdnorm(T x,T mu,T sigma)
+  template <typename T_p,typename T_var>
+  T_p logdnorm(T_var x,T_p mu,T_p sigma)
   {
     if(sigma<=0)
       {
 	throw var_out_of_range();
       }
-    static const T pi=std::atan(1)*4;
+    static const T_p pi=std::atan(1)*4;
     //return std::log(tau/(2*pi))/2-tau*(x-mu)*(x-mu)/2;
     return -std::log(2*pi*sigma*sigma)/2-(x-mu)*(x-mu)/(2*sigma*sigma);
   }
 
-  template <typename T>
-  T logdlnorm(T x,T mu,T sigma)
+  template <typename T_p,typename T_var>
+  T_p logdlnorm(T_var x,T_p mu,T_p sigma)
   {
     if(sigma<=0||x<=0)
       {
 	throw var_out_of_range();
       }
-    static const T pi=std::atan(1)*4;
-    T result=-std::log(2*pi*sigma*sigma)/2-std::log(x)-(std::log(x)-mu)*(std::log(x)-mu)/(2.*sigma*sigma);
+    static const T_p pi=std::atan(1)*4;
+    T_p result=-std::log(2*pi*sigma*sigma)/2-std::log(x)-(std::log(x)-mu)*(std::log(x)-mu)/(2.*sigma*sigma);
     return result;
   }
 

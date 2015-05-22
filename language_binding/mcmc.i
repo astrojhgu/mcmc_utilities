@@ -10,7 +10,8 @@
 #include "core/arms.hpp"
 #include "core/mcmc_exception.hpp"
 #include "vwrap.hpp"
-  
+#include "math/distributions.hpp"
+#include "math/functions.hpp"
   using namespace std;
   using namespace mcmc_utilities;
   %}
@@ -25,6 +26,7 @@
 %apply const double& {const std::vector<double,std::allocator<double > >::value_type& };
 %apply const double& {const std::vector<double >::value_type& };
 
+//%template (bpdensity) mcmc_utilities::probability_density_md<double,std::vector<double> >;
 %include "vwrap.hpp"
 
 #define private public
@@ -32,6 +34,8 @@
 %include "core/distribution.hpp"
 %include "core/arms.hpp"
 %include "core/mcmc_exception.hpp"
+%include "math/distributions.hpp"
+%include "math/functions.hpp"
 
 %exception
 {
@@ -53,3 +57,10 @@
 %template (pdensity) mcmc_utilities::dist_md<double,std::vector<double> >;
 %template (urand) mcmc_utilities::u_random<double>;
 
+%template (logdgamma) mcmc_utilities::logdgamma<double,double>;
+%template (logdt) mcmc_utilities::logdt<double,double>;
+%template (logdnorm) mcmc_utilities::logdnorm<double,double>;
+%template (logdlnorm) mcmc_utilities::logdlnorm<double,double>;
+%template (logdbin) mcmc_utilities::logdbin<double,double>;
+%template (logdpoisson) mcmc_utilities::logdpoisson<double,double>;
+%template (logdpar) mcmc_utilities::logdpar<double,double>;
