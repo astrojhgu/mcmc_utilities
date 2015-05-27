@@ -75,7 +75,7 @@ public:
   double do_eval_log(const variable& x)const
   {
     double log_p=0;
-
+    
     for(unsigned int i=0;i<E.size();++i)
       {
 	double eff=x.A+(x.B-x.A)*phi((E[i]-x.mu)/x.sigma);
@@ -111,10 +111,11 @@ int main()
   x.B=1;
   x.mu=15;
   x.sigma=12;
+  u_random<double> rng;
   //cout<<cd.eval_log(x)<<endl;
-  for(int n=0;n<10000;++n)
+  for(int n=0;n<30000;++n)
     {
-      gibbs_sample(cd,x,1,u_random<double>());
+      gibbs_sample(cd,x,true,rng,1,true);
       //if(n>100)
 	{
 	  for(unsigned int i=0;i<x.size();++i)

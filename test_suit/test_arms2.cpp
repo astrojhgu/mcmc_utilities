@@ -29,9 +29,10 @@ int main()
   std_norm sn;
   std::vector<double> init_var(2,0);
   srand(time(0));
+  u_random<double> rng;
   for(int i=0;i<10000;++i)
     {
-      gibbs_sample(sn,init_var,0,u_random<double>());
+      gibbs_sample(sn,init_var,0,rng);
       cout<<i<<" ";
       for(int j=0;j<init_var.size();++j)
 	{

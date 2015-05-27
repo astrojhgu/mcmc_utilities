@@ -222,6 +222,7 @@ int main()
   
   //ifstream ifs("noisy_motion.txt");
   double t=0;
+  u_random<double> rng;
   for(int step=0;step<10000;++step)
     {
       t+=1;
@@ -233,7 +234,7 @@ int main()
       double y_mean=0;
       double vy_mean=0;
 
-      tm.update_sir(obs,t,particles,prev_t,u_random<double>());
+      tm.update_sir(obs,t,particles,prev_t,rng);
      
       double x,vx,y,vy;
       //cout<<t<<" "<<x_mean<<" "<<v_mean<<endl;

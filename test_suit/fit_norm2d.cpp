@@ -16,29 +16,20 @@ class lm_model
   double do_eval_log(const std::vector<double>& param)const
   {
     double log_p=0;
-    double alpha=param[0];
-    double c=param[1];
-    //double c=10;
-    double a=param[2];
-    double b=param[3];
-    double s=param[4];
-    //log_p+=logdnorm(a,1.3,.5);
-    //log_p+=logdnorm(b,0.,.5);
-    //log_p+=logdnorm(s,.2,.5);
-    //log_p+=logdnorm(c,1e1,1.);
-    //log_p+=logdnorm(alpha,2.,1.);
+    double mu1=param[0];
+    double mu2=param[1];
+    double sigma11=param[2];
+    double sigma22=param[3];
+    double sigma12=param[4];
 
     for(int i=0;i<x_vec.size();++i)
       {
-	double x=x_vec[i];
-	double y=y_vec[i];
-	if(x<c)
-	  {
-	    assert(0);
-	  }
-	log_p+=logdpar(x,c,alpha);
-	log_p+=logdlnorm(y,log(x)*a+b,s);
+	std::vector<double> x(2);
+	x[0]=x_vec[i];
+	x[1]=y_vec[i];
+	log_p+=logdbivnorm(x,mu1,mu2,sigma11,sigma22,sigma12);
       }
+    
     
     return log_p;
   }
@@ -48,29 +39,27 @@ class lm_model
     switch(ndim)
       {
       case 0:
-	x1=1.;
-	x2=5;
-	break;
-      case 1:
-	x1=1;
-	x2=10;
-	break;
-      case 2:
-	x1=.5;
-	x2=3.;
-	break;
-      case 3:
 	x1=-1;
 	x2=1;
 	break;
-      case 4:
+      case 1:
+	x1=-1;
+	x2=1;
+	break;
+      case 2:
 	x1=.001;
-	x2=1.;
+	x2=10;
+	break;
+      case 3:
+	x1=.001;
+	x2=10;
+	break;
+      case 4:
+	x1=-10;
+	x2=10;
 	break;
       default:
-	cerr<<ndim<<endl;
 	assert(0);
-	break;
       }
   }
 };
@@ -99,11 +88,11 @@ int main(int argc,char* argv[])
   //uniform_rng<double,double> ur;
   lm_model sn;
   std::vector<double> init_var(5,0);
-  init_var[0]=4;
-  init_var[1]=9.9;
+  init_var[0]=0;
+  init_var[1]=0;
   init_var[2]=1;
-  init_var[3]=.2;
-  init_var[4]=.1;
+  init_var[3]=1;
+  init_var[4]=0;
   //cout<<sn.eval(init_var)<<endl;
   
   int s=(time(0));

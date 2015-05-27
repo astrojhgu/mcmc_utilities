@@ -36,7 +36,7 @@ class prob
     for(int i=0;i<x_vec.size();++i)
       {
 	double y1=param.k*x_vec[i]+param.b;
-	p+=((-(y_vec[i]-y1)*(y_vec[i]-y1)/(2*param.sigma*param.sigma))-std::log(param.sigma));
+	p+=(-(y_vec[i]-y1)*(y_vec[i]-y1)/(2*param.sigma*param.sigma)-std::log(param.sigma));
       }
     
     return p;
@@ -44,11 +44,14 @@ class prob
 
   void do_var_range(double& x1,double& x2,const variable& x0,size_t ndim)const
   {
-    x1=-20;
     x2=20;
     if(ndim==2)
       {
 	x1=.001;
+      }
+    else
+      {
+	x1=-20;
       }
   }
 
@@ -87,10 +90,10 @@ int main()
   init_var[0]=4;
   init_var[1]=3;
   init_var[2]=.5;
-  
+  u_random<double> rng;
   for(int i=0;i<100000;++i)
     {
-      gibbs_sample(sn,init_var,1,u_random<double>());
+      gibbs_sample(sn,init_var,1,rng);
 
       cout<<i<<" ";
       //cout<<init_var[1]<<" "<<init_var[2]<<endl;

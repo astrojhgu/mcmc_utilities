@@ -60,9 +60,10 @@ int main(void)
   f = fopen("arms.out02","w+");
   int npoint=100000;
   std::vector<double> data(npoint);
+  u_random<double> rng;
   for(i=0;i<100000;i++){
     err = arms(xinit,xl,xr,norm,convex,
-	       npoint,dometrop,xprev,xsamp,neval, u_random<double>());
+	       npoint,dometrop,xprev,xsamp,neval, rng);
     //err= arms_simple (300, norm, xprev,xsamp);
     //const probability_density_md<T_p,T_var>& myfunc,
     //int dometrop, T_var *xprev, T_var *xsamp);
@@ -82,7 +83,7 @@ int main(void)
 
   for(int i=0;i<npoint;++i)
     {
-      cout<<data[i]-1e10<<" "<<i<<endl;
+      cout<<data[i]<<" "<<i<<endl;
     }
   return 0;
 }

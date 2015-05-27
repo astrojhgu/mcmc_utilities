@@ -75,6 +75,34 @@ namespace mcmc_utilities
     return result;
   }
 
+
+  template <typename T_p,typename T_var>
+  T_p logdbivnorm(const T_var& x,
+		  const T_p& mu1,const T_p& mu2,
+		  const T_p& sigma11,const T_p& sigma22,T_p& sigma12)
+		  
+  {
+    static const T_p pi=std::atan(1)*4;
+    
+    T_p sigma21=sigma12;
+    
+    T_p sigma1_sq=sigma11*sigma11+sigma12*sigma12;
+    T_p sigma2_sq=sigma21*sigma21+sigma22*sigma22;
+
+    T_p sigma1=std::sqrt(sigma1_sq);
+    T_p sigma2=std::sqrt(sigma2_sq);
+
+    T_p rho=(sigma11*sigma21+sigma12*sigma22)/(sigma1*sigma2);
+      
+    T_p x1=x[0];
+    T_p x2=x[1];
+    T_p z=(x1-mu1)*(x1-mu1)/sigma1_sq+
+      (x2-mu2)*(x2-mu2)/sigma2_sq-
+      2*rho*(x1-mu1)*(x2-mu2)/(sigma1*sigma2);
+    return (-z/(2*(1-rho*rho)))-std::log(2*pi*sigma1*sigma2*std::sqrt(1-rho*rho));
+
+  }
+
 }
 
 

@@ -11,9 +11,9 @@ using namespace std;
 using namespace mcmc_utilities;
 double a=1.5;
 double b=0.2;
-double s=.3;
+double s=.1;
 double c=10;
-double alpha=2.5;
+double alpha=3.5;
 
 class LM
   :public probability_density_md<double,std::vector<double> >
@@ -26,8 +26,6 @@ public:
   double do_eval_log(const std::vector<double>& x)const
   {
     double log_p=0;
-    //log_p+=g*log(x[0]);
-    //assert(x[0]>0);
     log_p+=logdpar(x[0],c,alpha);
     //log_p+=logdnorm(x[0],500.,50.);
     //log_p+=logdnorm(std::log(x[1]),log(x[0])*a+b,s);
@@ -40,38 +38,39 @@ public:
   {
     x1=1e1;
     x2=1e6;
-    return;
   }
 };
 
 int main()
 {
   LM cd;
-  std::vector<double> x;
-  x.push_back(100);
-  x.push_back(exp(log(x[0])*a+b));
-  //cout<<std::log(std::numeric_limits<float>::max()/10)<<endl;
-  //exit(0);
-  //cout<<cd.eval_log(x)<<endl;
-  double xmax=0;
+  std::vector<double> var;
+  var.push_back(4000);
+  var.push_back(exp(log(var[0])*a+b));
   u_random<double> rng;
+  size_t idx=1;
+  double xmin,xmax;
+
   for(int n=0;n<1000;++n)
     {
-      gibbs_sample(cd,x,1,rng,100); 
+      gibbs_sample(cd,var,1,rng,100); 
     }
   for(long n=0;n<10000l;++n)
     {
-      gibbs_sample(cd,x,1,rng,1000);
-      if(n%1==0)
+      for(int i=0;i<var.size();++i)
 	{
-	  for(unsigned int i=0;i<x.size();++i)
+	  gibbs_sample(cd,var,i,true,rng,100);
+	}
+      if(n%100==0)
+	{
+	  for(unsigned int i=0;i<var.size();++i)
 	    {
-	      //cout<<std::log(x[i])<<" ";
-	      cout<<x[i]<<" ";
+	      //cout<<std::log(var[i])<<" ";
+	      cout<<var[i]<<" ";
 	    }
 	  cout<<endl;
-	  //cout<<x[0]<<" "<<x[1]<<"\n";
-	  xmax=max(xmax,x[0]);
+	  //cout<<var[0]<<" "<<var[1]<<"\n";
+	  xmax=max(xmax,var[0]);
 	  cout.flush();
 	}
     }

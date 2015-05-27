@@ -172,6 +172,16 @@ namespace mcmc_utilities
     {}
   };
 
+
+  class index_out_of_range
+    :public mcmc_exception
+  {
+  public:
+    index_out_of_range()
+      :mcmc_exception("index out of range")
+    {}
+  };
+
   class envelope_violation_without_metropolis
     :public mcmc_exception
   {

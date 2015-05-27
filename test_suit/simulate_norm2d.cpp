@@ -9,59 +9,59 @@
 using namespace std;
 
 using namespace mcmc_utilities;
-double c=10;
-double alpha=2;
-class LM
+double mu1=0;
+double mu2=0;
+double sigma11=1;
+double sigma22=1;
+double sigma12=.3;
+
+class norm2d
   :public probability_density_md<double,std::vector<double> >
 {
 public:
-  LM()
+  norm2d()
   {
   }
 
   double do_eval_log(const std::vector<double>& x)const
   {
     double log_p=0;
-    //log_p+=g*log(x[0]);
-    
-    log_p+=logdpar(x[0],c,alpha);
+    log_p+=logdbivnorm(x,mu1,mu2,sigma11,sigma22,sigma12);
     return log_p;
   }
 
   //void do_var_range(std::vector<double>& x1,std::vector<double>& x2)const
   void do_var_range(double& x1,double& x2,const std::vector<double>& x,size_t ndim)const
   {
-    x1=10;
-    x2=1e5;
+    x1=-1e2;
+    x2=1e2;
   }
-
-  
-  
 };
 
 int main()
 {
-  LM cd;
-  std::vector<double> x;
-  x.push_back(2e2);
-  //cout<<std::log(std::numeric_limits<float>::max()/10)<<endl;
-  //exit(0);
-  //cout<<cd.eval_log(x)<<endl;
-  double xmax=0;
+  norm2d cd;
+  std::vector<double> var;
+  var.push_back(1);
+  var.push_back(1);
   u_random<double> rng;
-  for(int n=0;n<10000;++n)
+  double xmin,xmax;
+
+  for(int n=0;n<1000;++n)
     {
-      gibbs_sample(cd,x,1,rng,1000);
-      //if(n>100)
+      gibbs_sample(cd,var,1,rng,100); 
+    }
+  for(long n=0;n<1000000l;++n)
+    {
+      gibbs_sample(cd,var,1,rng,100);
+      if(n%100==0)
 	{
-	  for(unsigned int i=0;i<x.size();++i)
+	  for(unsigned int i=0;i<var.size();++i)
 	    {
-	      //cout<<std::log10(x[i])<<" ";
-	      cout<<x[i]<<" ";
+	      //cout<<std::log(var[i])<<" ";
+	      cout<<var[i]<<" ";
 	    }
 	  cout<<endl;
-	  //cout<<x[0]<<" "<<x[1]<<"\n";
 	}
     }
-
 }

@@ -74,10 +74,11 @@ int main()
   x.push_back(3);
   x.push_back(4);
   x.push_back(50);
+  u_random<double> rng;
   //cout<<cd.eval_log(x)<<endl;
   for(int n=0;n<10000;++n)
     {
-      gibbs_sample(cd,x,1,u_random<double>());
+      gibbs_sample(cd,x,1,rng);
       for(int i=0;i<x.size();++i)
 	{
 	  cout<<x[i]<<" ";

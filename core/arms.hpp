@@ -59,7 +59,7 @@ namespace mcmc_utilities
   
   template <typename T_p,typename T_var>
   struct metropolis { /* for metropolis step */
-    int on;            /* whether metropolis is to be used */
+    bool on;            /* whether metropolis is to be used */
     T_var xprev;      /* previous Markov chain iterate */
     T_p yprev;      /* current log density at xprev */
   };
@@ -98,13 +98,13 @@ namespace mcmc_utilities
   /* declarations for functions defined in this file */
   template <typename T_p,typename T_var, typename T_urand>
   int arms_simple (int ninit,const probability_density_1d<T_p,T_var>& myfunc,
-		   const T_var& xprev, std::vector<T_var>& xsamp, int dometrop, const T_urand& urand);
+		   const T_var& xprev, std::vector<T_var>& xsamp, bool dometrop, const T_urand& urand);
 
   
   template <typename T_p,typename T_var, typename T_urand>
   int arms (const std::vector<T_var>& xinit, const T_var& xl, const T_var& xr, 
 	    const probability_density_1d<T_p,T_var>& myfunc,
-	    const T_p& convex, int npoint, int dometrop, const T_var& xprev, std::vector<T_var>& xsamp,
+	    const T_p& convex, int npoint, bool dometrop, const T_var& xprev, std::vector<T_var>& xsamp,
 	    int& neval,const T_urand& urand);
 
   template <typename T_p,typename T_var>
@@ -150,7 +150,7 @@ namespace mcmc_utilities
 
   template <typename T_p,typename T_var, typename T_urand>
   int arms_simple (int ninit,const probability_density_1d<T_p,T_var>& myfunc,
-		   const T_var& xprev, std::vector<T_var>& xsamp, int dometrop, const T_urand& urand)
+		   const T_var& xprev, std::vector<T_var>& xsamp, bool dometrop, const T_urand& urand,bool use_peak_finder=true)
     
   /* adaptive rejection metropolis sampling - simplified argument list */
   /* ninit        : number of starting values to be used */
@@ -171,13 +171,24 @@ namespace mcmc_utilities
       {
 	throw range_not_ordered();
       }
-    for(int i=0;i<ninit-1;++i)
+    if(use_peak_finder)
       {
-	xinit[i]=xl+(xr-xl)/(ninit+1)*(i+1);
-	//xinit[i]=xl_shifted+(xr_shifted-xl_shifted)/(ninit+2)*(i+1);
+	for(int i=0;i<ninit-1;++i)
+	  {
+	    xinit[i]=xl+(xr-xl)/(ninit+1)*(i+1);
+	    //xinit[i]=xl_shifted+(xr_shifted-xl_shifted)/(ninit+2)*(i+1);
+	  }
+	xinit[ninit-1]=find_peak(myfunc);
+	std::sort(xinit.begin(),xinit.end());
       }
-    xinit[ninit-1]=find_peak(myfunc);
-    std::sort(xinit.begin(),xinit.end());
+    else
+      {
+	for(int i=0;i<ninit;++i)
+	  {
+	    xinit[i]=xl+(xr-xl)/(ninit+1)*(i+1);
+	    //xinit[i]=xl_shifted+(xr_shifted-xl_shifted)/(ninit+2)*(i+1);
+	  }
+      }
     int npoint=std::max(200,2*ninit + 2);
     T_var convex=1.;
     //int dometrop=1;
@@ -194,7 +205,7 @@ namespace mcmc_utilities
   template <typename T_p,typename T_var, typename T_urand>
   int arms (const std::vector<T_var>& xinit, const T_var& xl, const T_var& xr, 
 	    const probability_density_1d<T_p,T_var>& myfunc,
-	    const T_p& convex, int npoint, int dometrop, const T_var& xprev, std::vector<T_var>& xsamp,
+	    const T_p& convex, int npoint, bool dometrop, const T_var& xprev, std::vector<T_var>& xsamp,
 	    int& neval,const T_urand& urand)
     
   /* to perform derivative-free adaptive rejection sampling with metropolis step */
