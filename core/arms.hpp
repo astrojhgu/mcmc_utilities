@@ -2,7 +2,20 @@
 #define CORE_ARMS_HPP
 
 /* adaptive rejection metropolis sampling */
-
+/*
+  Downloaded from
+  http://www1.maths.leeds.ac.uk/~wally.gilks/adaptive.rejection/web_page/Welcome.html
+  References
+  
+  Gilks, W. R. (1992) Derivative-free adaptive rejection sampling for Gibbs sampling. Bayesian Statistics 4, (eds. Bernardo, J., Berger, J., Dawid, A. P., and Smith, A. F. M.) Oxford University Press.
+  Gilks, W. R., Best, N. G. and Tan, K. K. C. (1995) Adaptive rejection Metropolis sampling. Applied Statistics, 44, 455-472.
+  
+  Gilks, W. R. and Wild, P. (1992) Adaptive rejection sampling for Gibbs sampling. Applied Statistics 41, pp 337-348.
+  
+  Metropolis, N., Rosenbluth, A. W., Rosenbluth, M. N., Teller, A. H. and Teller, E. (1953) Equations of state calculations by fast computing machines. J. Chem. Phys., 21, 1087-1092.
+  
+  Ripley, B. (1987) Stochastic Simulation. New York, Wiley. 
+*/
 /* *********************************************************************** */
 
 #include <cmath>

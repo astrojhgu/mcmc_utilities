@@ -114,7 +114,7 @@ public:
 	break;
       case 4:
 	x1=0;
-	x2=2*atan(1)*4;
+	x2=2*atan(1.)*4;
 	break;
       case 5:
 	x1=0;
