@@ -15,17 +15,8 @@ namespace mcmc_utilities
   template <typename T_p,typename T_var>
   T_p log_factorial(const T_var& n)
   {
-    if(n==0)
-      {
-	return 0;
-      }
-    T_p result=0;
-    
-    for(T_var x=1;x<=n;++x)
-      {
-	result+=std::log(x);
-      }
-    return result;
+    //http://en.wikipedia.org/wiki/Factorial
+    return lgamma(n+1);
   }
 
   template <typename T_p,typename T_var>

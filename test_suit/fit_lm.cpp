@@ -99,9 +99,9 @@ int main(int argc,char* argv[])
   //uniform_rng<double,double> ur;
   lm_model sn;
   std::vector<double> init_var(5,0);
-  init_var[0]=4;
-  init_var[1]=9.9;
-  init_var[2]=1;
+  init_var[0]=3.5;
+  init_var[1]=10;
+  init_var[2]=1.5;
   init_var[3]=.2;
   init_var[4]=.1;
   //cout<<sn.eval(init_var)<<endl;
@@ -120,6 +120,7 @@ int main(int argc,char* argv[])
 	{
 	  cout<<init_var[j]<<" ";
 	}
+      cout<<sn.eval_log(init_var)<<endl;
       cout<<endl;
       gibbs_sample(sn,init_var,1,rng);
 

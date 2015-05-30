@@ -55,13 +55,13 @@ int main()
     {
       gibbs_sample(cd,var,1,rng,100); 
     }
-  for(long n=0;n<10000l;++n)
+  for(long n=0;n<300000l;++n)
     {
       for(int i=0;i<var.size();++i)
 	{
-	  gibbs_sample(cd,var,i,true,rng,100);
+	  gibbs_sample(cd,var,i,true,rng,10,true);
 	}
-      if(n%100==0)
+      //if(n%100==0)
 	{
 	  for(unsigned int i=0;i<var.size();++i)
 	    {

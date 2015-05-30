@@ -82,7 +82,7 @@ namespace mcmc_utilities
     std::vector<T_var1> xsamp(sample_cnt);
     
     xprev=get_element(init_var,idx);
-    arms_simple(20,cpd,xprev,xsamp,dometrop,urand,use_peak_finder);
+    arms_simple(3,cpd,xprev,xsamp,dometrop,urand,use_peak_finder);
     set_element(init_var,idx,xsamp.back());
   }
   

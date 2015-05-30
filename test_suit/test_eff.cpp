@@ -9,7 +9,7 @@
 
 using namespace std;
 using namespace mcmc_utilities;
-
+const double pi=4*atan(1);
 struct variable
 {
   typedef double value_type;
@@ -79,6 +79,7 @@ public:
     for(unsigned int i=0;i<E.size();++i)
       {
 	double eff=x.A+(x.B-x.A)*phi((E[i]-x.mu)/x.sigma);
+	//double eff=x.A+(x.B-x.A)*(atan((E[i]-x.mu)/x.sigma)+(pi/2))/pi;
 	//dbin<double,double> d(eff,ninj[i]);
 	double log_p1=logdbin(nrec[i],eff,ninj[i]);
 	log_p+=log_p1;
