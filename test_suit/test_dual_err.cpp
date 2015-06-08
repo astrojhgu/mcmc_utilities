@@ -3,11 +3,12 @@
 #include <math/distributions.hpp>
 #include <random/uniform.h>
 #include <vector>
+#include <set>
 #include <fstream>
 #include <cassert>
 #include <iostream>
 #include <cassert>
-
+#include <algorithm>
 using namespace std;
 using namespace mcmc_utilities;
 
@@ -20,12 +21,13 @@ struct variable
   double& scat;
   typedef double value_type;
   double *x,*y;
+  int current_index;
   int size()const
   {
     return ndata;
   }
   variable(int n)
-    :ndata(n*2+3),data(new double[ndata]),a(data[0]),b(data[1]),scat(data[2]),x(data+3),y(data+3+n)
+    :ndata(n*2+3),data(new double[ndata]),a(data[0]),b(data[1]),scat(data[2]),x(data+3),y(data+3+n),current_index(-1)
   {}
 
   double& operator[](size_t i)
@@ -39,6 +41,16 @@ struct variable
     assert(i<ndata);
     return data[i];
   }
+
+  bool relies_on(const double& v)const
+  {
+    if(&(data[current_index])==&v)
+      {
+	return true;
+      }
+    return false;
+  }
+  
 public:
   ~variable()
   {
@@ -48,6 +60,12 @@ private:
   variable(const variable& rhs);
   variable operator=(const variable& rhs);
 };
+
+inline void set_element(variable& x,size_t i,const double& v)
+{
+  x[i]=v;
+  x.current_index=i;
+}
 
 
 class dual_err_distribution
@@ -92,9 +110,18 @@ public:
     double log_p1=0,log_p2=0,log_p3=0;
     for(int i=0;i<x_vec.size();++i)
       {
-	log_p1+=logdnorm(x_vec[i],p.x[i],xe_vec[i]);
-	log_p2+=logdnorm(p.y[i],p.b+p.a*(p.x[i]-2.3),p.scat);
-	log_p3+=logdnorm(y_vec[i],p.y[i],ye_vec[i]);
+	//if(p.relies_on(p.x[i]))
+	  {
+	    log_p1+=logdnorm(x_vec[i],p.x[i],xe_vec[i]);
+	  }
+	//if(p.relies_on(p.y[i])||p.relies_on(p.b)||p.relies_on(p.a)||p.relies_on(p.x[i])||p.relies_on(p.scat))
+	  {
+	    log_p2+=logdnorm(p.y[i],p.b+p.a*(p.x[i]-2.3),p.scat);
+	  }
+	//if(p.relies_on(p.y[i]))
+	  {
+	    log_p3+=logdnorm(y_vec[i],p.y[i],ye_vec[i]);
+	  }
       }
     log_p=log_p1+log_p2+log_p3;
     return log_p;
@@ -134,6 +161,8 @@ int main()
 {
   dual_err_distribution cd;
   variable p(cd.x_vec.size());
+
+  
   for(int i=0;i<cd.x_vec.size();++i)
     {
       //x.push_back(cd.y_vec[i]);
