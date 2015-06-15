@@ -155,7 +155,7 @@ int main()
   u_random<double> rng;
   for(int i=0;i<1000;++i)
     {
-      gibbs_sample(model,var,true,rng,1,true);
+      gibbs_sample(model,var,true,rng,1);
 
       cout<<i<<" ";
       //cout<<init_var[1]<<" "<<init_var[2]<<endl;
