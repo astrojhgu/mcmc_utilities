@@ -21,7 +21,8 @@ namespace mcmc_utilities
   T_var find_peak(const probability_density_1d<T_p,T_var>& dist)
   {
     //func_adaptor<T_p,T_var> fadpt(p,xi,func);
-    dist_adapter<T_p,T_var> func;
+    typedef dist_adapter<T_p,T_var> T_dist;
+    T_dist func;
     
     func.ppd=&dist;
     dist.var_range(func.xl,func.xr);
@@ -37,9 +38,9 @@ namespace mcmc_utilities
     bx=func.xr;
     xx=(ax+bx)/2;
 
-    mnbrak<T_p,T_var>(ax,xx,bx,fa,fx,fb,func);
+    mnbrak<T_dist>(ax,xx,bx,fa,fx,fb,func);
     //cout<<xx<<endl;
-    brent<T_p,T_var>(ax,xx,bx,func,TOL,peak_x);
+    brent<T_dist>(ax,xx,bx,func,TOL,peak_x);
 
     return peak_x;
   }

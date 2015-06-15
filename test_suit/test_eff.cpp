@@ -116,7 +116,7 @@ int main()
   //cout<<cd.eval_log(x)<<endl;
   for(int n=0;n<30000;++n)
     {
-      gibbs_sample(cd,x,true,rng,1,true);
+      gibbs_sample(cd,x,true,rng,1);
       //if(n>100)
 	{
 	  for(unsigned int i=0;i<x.size();++i)

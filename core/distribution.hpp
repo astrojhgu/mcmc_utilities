@@ -4,6 +4,7 @@
 #include <limits>
 #include "mcmc_traits.hpp"
 #include "mcmc_exception.hpp"
+#include <vector>
 
 namespace mcmc_utilities
 {
@@ -26,9 +27,28 @@ namespace mcmc_utilities
       do_var_range(x1,x2,x,ndim);
     }
 
+    size_t num_init_points(const T_var& x,size_t ndim)const
+    {
+      return do_num_init_points(x,ndim);
+    }
+
+    T_var1 init_point(size_t n,const T_var& x,size_t ndim)const
+    {
+      return do_init_point(n,x,ndim);
+    }
+      
+
   private:
     virtual T_p do_eval_log(const T_var& x)const=0;
     virtual void do_var_range(T_var1& x1,T_var1& x2,const T_var& x,size_t ndim)const=0;
+    virtual size_t do_num_init_points(const T_var& x,size_t ndim)const
+    {
+      return 0;
+    }
+    virtual T_var1 do_init_point(size_t n,const T_var& x,size_t ndim)const
+    {
+      return T_var1();
+    }
   };
   
   template <typename T_p,typename T_var>
@@ -48,10 +68,33 @@ namespace mcmc_utilities
       do_var_range(x1,x2);
     }
 
+    size_t num_init_points()const
+    {
+      return do_num_init_points();
+    }
+
+    T_var init_point(size_t n)const
+    {
+      return do_init_point(n);
+    }
+
   private:
     virtual T_p do_eval_log(const T_var& x)const=0;
     virtual void do_var_range(T_var& x1,T_var& x2)const=0;
+    virtual size_t do_num_init_points()const
+    {
+      return 3;
+    };
+    virtual T_var do_init_point(size_t n)const
+    {
+      T_var xl,xr;
+      var_range(xl,xr);
+      if(n!=1)
+	{
+	  return xl+(xr-xl)/(num_init_points()+1)*(n+1);
+	}
+      return find_peak(*this);
+    };
   };
-
 }
 #endif

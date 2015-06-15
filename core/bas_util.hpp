@@ -7,21 +7,24 @@
 #include "distribution.hpp"
 namespace mcmc_utilities
 {
-  template <typename T_p,typename T_var>
+  template <typename Tp,typename Tvar>
   struct dist_adapter
   {
-      T_var xl,xr;
-      const probability_density_1d<T_p,T_var>* ppd;
-
-      T_p operator()(const T_var& x)const
-      {
-	if(x<=xl||x>=xr)
-	  {
-	    return std::numeric_limits<T_p>::max();
-	  }
-	return -(ppd->eval_log(x));
-      }
+    typedef Tp T_p;
+    typedef Tvar T_var;
+    T_var xl,xr;
+    const probability_density_1d<Tp,Tvar>* ppd;
+    
+    T_p operator()(const Tvar& x)const
+    {
+      if(x<=xl||x>=xr)
+	{
+	  return std::numeric_limits<Tp>::max();
+	}
+      return -(ppd->eval_log(x));
+    }
   };
+
   
   template <typename T>
   T sqr(T x)

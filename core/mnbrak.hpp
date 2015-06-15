@@ -7,13 +7,13 @@ namespace mcmc_utilities
 {
 
   
-  template <typename T_p,typename T_var>
-  void mnbrak(T_var& ax,T_var& bx,T_var& cx,T_p& fa,T_p& fb,T_p& fc,const dist_adapter<T_p,T_var>& func)
+  template <typename T_dist>
+  void mnbrak(typename T_dist::T_var& ax,typename T_dist::T_var& bx,typename T_dist::T_var& cx,typename T_dist::T_p& fa,typename T_dist::T_p& fb,typename T_dist::T_p& fc,const dist_adapter<typename T_dist::T_p,typename T_dist::T_var>& func)
   {
-    const T_var GOLD=1.618034;
-    const T_var GLIMIT=100;
-    const T_var TINY=std::numeric_limits<T_var>::epsilon();
-    T_var ulim,u,r,q,fu;
+    const typename T_dist::T_var GOLD=1.618034;
+    const typename T_dist::T_var GLIMIT=100;
+    const typename T_dist::T_var TINY=std::numeric_limits<typename T_dist::T_var>::epsilon();
+    typename T_dist::T_var ulim,u,r,q,fu;
     fa=func(ax);
     fb=func(bx);
     
@@ -31,8 +31,8 @@ namespace mcmc_utilities
       {
 	r=(bx-ax)*(fb-fc);
 	q=(bx-cx)*(fb-fa);
-	u=bx-T_var((bx-cx)*q-(bx-ax)*r)/
-	  T_var(T_var(2.)*sign(T_var(std::max(T_var(std::abs(T_var(q-r))),T_var(TINY))),T_var(q-r)));
+	u=bx-typename T_dist::T_var((bx-cx)*q-(bx-ax)*r)/
+	  typename T_dist::T_var(typename T_dist::T_var(2.)*sign(typename T_dist::T_var(std::max(typename T_dist::T_var(std::abs(typename T_dist::T_var(q-r))),typename T_dist::T_var(TINY))),typename T_dist::T_var(q-r)));
 	ulim=bx+GLIMIT*(cx-bx);
 	if((bx-u)*(u-cx)>0.)
 	  {
@@ -59,7 +59,7 @@ namespace mcmc_utilities
 	    fu=func(u);
 	    if(fu<fc)
 	      {
-		shft3(bx,cx,u,T_var(cx+GOLD*(cx-bx)));
+		shft3(bx,cx,u,typename T_dist::T_var(cx+GOLD*(cx-bx)));
 		shft3(fb,fc,fu,func(u));
 	      }
 	  }

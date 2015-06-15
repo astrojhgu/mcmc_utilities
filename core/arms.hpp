@@ -142,8 +142,8 @@ namespace mcmc_utilities
   
   /* declarations for functions defined in this file */
   template <typename T_p,typename T_var, typename T_urand>
-  int arms_simple (int ninit,const probability_density_1d<T_p,T_var>& myfunc,
-		   const T_var& xprev, std::vector<T_var>& xsamp, bool dometrop, const T_urand& urand,bool use_peak_finder=true);
+  int arms_simple (const probability_density_1d<T_p,T_var>& myfunc,
+		   const T_var& xprev, std::vector<T_var>& xsamp, bool dometrop, const T_urand& urand);
 
   
   template <typename T_p,typename T_var, typename T_urand>
@@ -194,8 +194,8 @@ namespace mcmc_utilities
   /* *********************************************************************** */
 
   template <typename T_p,typename T_var, typename T_urand>
-  int arms_simple (int ninit,const probability_density_1d<T_p,T_var>& myfunc,
-		   const T_var& xprev, std::vector<T_var>& xsamp, bool dometrop, const T_urand& urand,bool use_peak_finder)
+  int arms_simple (const probability_density_1d<T_p,T_var>& myfunc,
+		   const T_var& xprev, std::vector<T_var>& xsamp, bool dometrop, const T_urand& urand)
     
   /* adaptive rejection metropolis sampling - simplified argument list */
   /* ninit        : number of starting values to be used */
@@ -208,6 +208,7 @@ namespace mcmc_utilities
   /* *xsamp       : to store sampled value */
     
   {
+    int ninit=myfunc.num_init_points();
     std::vector<T_var> xinit(ninit);
     T_var xl,xr;
     
@@ -216,24 +217,12 @@ namespace mcmc_utilities
       {
 	throw range_not_ordered();
       }
-    if(use_peak_finder)
+    for(int i=0;i<ninit;++i)
       {
-	for(int i=0;i<ninit-1;++i)
-	  {
-	    xinit[i]=xl+(xr-xl)/(ninit+1)*(i+1);
-	    //xinit[i]=xl_shifted+(xr_shifted-xl_shifted)/(ninit+2)*(i+1);
-	  }
-	xinit[ninit-1]=find_peak(myfunc);
-	std::sort(xinit.begin(),xinit.end());
+	xinit[i]=myfunc.init_point(i);
+	//xinit[i]=xl_shifted+(xr_shifted-xl_shifted)/(ninit+2)*(i+1);
       }
-    else
-      {
-	for(int i=0;i<ninit;++i)
-	  {
-	    xinit[i]=xl+(xr-xl)/(ninit+1)*(i+1);
-	    //xinit[i]=xl_shifted+(xr_shifted-xl_shifted)/(ninit+2)*(i+1);
-	  }
-      }
+    std::sort(xinit.begin(),xinit.end());
     int npoint=std::max(200,2*ninit + 2);
     T_var convex=1.;
     //int dometrop=1;

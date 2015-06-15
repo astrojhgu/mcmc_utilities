@@ -65,12 +65,12 @@ class target_model
 {
 public:
   typedef double T_p;
-  typedef std::vector<double> T_stat;
+  typedef std::vector<double> T_state;
   typedef std::vector<double> T_obs;
   typedef double T_t;
   std::vector<double> xl,xr;
 private:
-  T_p do_evol_log_prob(const T_stat& x,const T_t& t,const T_stat& prev_stat,const T_t& prev_t)const
+  T_p do_evol_log_prob(const T_state& x,const T_t& t,const T_state& prev_stat,const T_t& prev_t)const
   {
     double sx(.1),svx(.01);
     double sy(.1),svy(.01);
@@ -97,7 +97,7 @@ private:
       -(x[3]-vy2)*(x[3]-vy2)/(2*svy*svy);
   }
 
-  T_p do_obs_log_prob(const T_obs& obs,const T_stat& stat,const T_t& t)const
+  T_p do_obs_log_prob(const T_obs& obs,const T_state& stat,const T_t& t)const
   {
     //return -(x[0]-y[0])*(x[0]-y[0])/(2*.4*.4);
     double osx(1),osy(1);
@@ -105,7 +105,7 @@ private:
       -(obs[1]-stat[2])*(obs[1]-stat[2])/(2*osx*osx);
   }
 
-  void do_stat_var_range(double& xl,double& xr,const T_stat& x0,size_t ndim)const
+  void do_state_var_range(double& xl,double& xr,const T_t& t,const T_state& x0,const T_t& prev_t,size_t ndim)const
   {
     if(ndim==0||ndim==2)
       {
@@ -119,6 +119,24 @@ private:
       }
   }
 
+#if 0
+  size_t do_num_init_points(const T_t& t,const T_state& x0,const T_t& prev_t,size_t ndim)const
+  {
+    return 3;
+  }
+
+  double do_init_point(size_t n,const T_t& t,const T_state& x0,const T_t& prev_t,size_t ndim)const
+  {
+    if(ndim==0||ndim==2)
+      {
+	return ((int)n-1)*50.+x0[ndim];
+      }
+    else
+      {
+	return ((int)n-1)*10.+x0[ndim];
+      }
+  }
+#endif
 };
 
 void init_display(SDL_Window*& window,SDL_Renderer*& renderer,int h,int w)

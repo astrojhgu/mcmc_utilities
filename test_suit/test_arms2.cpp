@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <cassert>
 #include "core/gibbs_sampler.hpp"
 using namespace std;
 using namespace mcmc_utilities;
@@ -20,8 +21,30 @@ class std_norm
     x1=-100;
     x2=100;
   }
-
   
+  size_t do_num_init_points(const std::vector<double>& x,size_t ndim)const
+  {
+    return 3;
+  }
+
+  double do_init_point(size_t n,const std::vector<double>& x,size_t ndim)const
+  {
+    //return ((int)n-1)*50;
+    switch(n)
+      {
+      case 0:
+	return -50;
+	break;
+      case 1:
+	return 0;
+	break;
+      case 2:
+	return 50;
+	break;
+      default:
+	assert(0);
+      }
+  }
 };
 
 int main()

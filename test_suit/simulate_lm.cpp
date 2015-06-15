@@ -59,7 +59,7 @@ int main()
     {
       for(int i=0;i<var.size();++i)
 	{
-	  gibbs_sample(cd,var,i,true,rng,10,true);
+	  gibbs_sample(cd,var,i,true,rng,10);
 	}
       //if(n%100==0)
 	{

@@ -6,18 +6,18 @@
 //#include "optimizer.hpp"
 namespace mcmc_utilities
 {
-  template<typename T_p,typename T_var>
-  T_p brent(T_var ax,T_var bx,T_var cx,const dist_adapter<T_p,T_var>& f,T_var tol,T_var& xmin)
+  template<typename T_dist>
+  typename T_dist::T_p brent(typename T_dist::T_var ax,typename T_dist::T_var bx,typename T_dist::T_var cx,const T_dist& f,typename T_dist::T_var tol,typename T_dist::T_var& xmin)
   {
     const int ITMAX=100;
-    const T_var CGOLD=0.3819660;
-    const T_var ZEPS=std::numeric_limits<T_p>::epsilon()*1.e-3;
+    const typename T_dist::T_var CGOLD=0.3819660;
+    const typename T_dist::T_var ZEPS=std::numeric_limits<typename T_dist::T_p>::epsilon()*1.e-3;
     
     int iter;
-    T_var a=0,b=0,d(0),etemp=0,p=0,q=0
+    typename T_dist::T_var a=0,b=0,d(0),etemp=0,p=0,q=0
       ,r=0,tol1=0,tol2=0,u=0,v=0,w=0,x=0,xm=0;
-    T_p fu=0,fv=0,fw=0,fx=0;
-    T_p e=0.;
+    typename T_dist::T_p fu=0,fv=0,fw=0,fx=0;
+    typename T_dist::T_p e=0.;
     a=(ax<cx?ax:cx);
     b=(ax>cx?ax:cx);
     x=w=v=bx;
@@ -26,7 +26,7 @@ namespace mcmc_utilities
       {
 	xm=.5*(a+b);
 	tol2=2.*(tol1=tol*std::abs(x)+ZEPS);
-	if(std::abs(T_var(x-xm))<=(tol2-.5*(b-a)))
+	if(std::abs(typename T_dist::T_var(x-xm))<=(tol2-.5*(b-a)))
 	  {
 	    xmin=x;
 	    return fx;
@@ -44,7 +44,7 @@ namespace mcmc_utilities
 	    q=std::abs(q);
 	    etemp=e;
 	    e=d;
-	    if(std::abs(p)>=std::abs(T_p(T_p(.5)*p*etemp))||p<=q*(a-x)||p>=q*(b-x))
+	    if(std::abs(p)>=std::abs(typename T_dist::T_p(typename T_dist::T_p(.5)*p*etemp))||p<=q*(a-x)||p>=q*(b-x))
 	      {
 		d=CGOLD*(e=(x>=xm?a-x:b-x));
 	      }
@@ -54,7 +54,7 @@ namespace mcmc_utilities
 		u=x+d;
 		if(u-a<tol2||b-u<tol2)
 		  {
-		    d=sign(tol1,T_var(xm-x));
+		    d=sign(tol1,typename T_dist::T_var(xm-x));
 		  }
 	      }
 	    

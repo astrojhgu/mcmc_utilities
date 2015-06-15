@@ -51,7 +51,7 @@ int main()
   u_random<double> rng;
   for(int n=0;n<10000;++n)
     {
-      gibbs_sample(cd,x,1,rng,2,true);
+      gibbs_sample(cd,x,1,rng,2);
       //if(n>100)
 	{
 	  for(unsigned int i=0;i<x.size();++i)
