@@ -39,6 +39,7 @@ public:
     x1=1e1;
     x2=1e6;
   }
+
 };
 
 int main()
@@ -59,7 +60,7 @@ int main()
     {
       for(int i=0;i<var.size();++i)
 	{
-	  gibbs_sample(cd,var,i,true,rng,10);
+	  gibbs_sample(cd,var,i,true,rng,100);
 	}
       //if(n%100==0)
 	{

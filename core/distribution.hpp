@@ -87,10 +87,10 @@ namespace mcmc_utilities
     };
     virtual T_var do_init_point(size_t n)const
     {
-      T_var xl,xr;
-      var_range(xl,xr);
       if(n!=1)
 	{
+	  T_var xl,xr;
+	  var_range(xl,xr);
 	  return xl+(xr-xl)/(num_init_points()+1)*(n+1);
 	}
       return find_peak(*this);
