@@ -4,19 +4,17 @@ JAVA_INC=-I$(JAVA_HOME)/include/ -I$(JAVA_HOME)/include/linux/
 #TARGET=-python
 OS=LINUX
 CXX=g++
-all:libmcmc.so mcmc_init.java classes
+all:libmcmc.so classes
 
 libmcmc.so:mcmc_java_wrap.cpp
 	$(CXX) -shared $< -I../../ $(JAVA_INC) -o libmcmc.so -fPIC -g
 
 mcmc_java_wrap.cpp:mcmc.i
-	swig -o $@ -c++ -java -Wall -I../../ mcmc.i 
+	mkdir -p mcmc && swig -o $@ -c++ -java -Wall -package mcmc -outdir mcmc/ -I../../ mcmc.i 
 
-mcmc_init.java:
-	cp predef/mcmc_init.java .
 
-classes:mcmc_init.java
-	javac *.java
+classes:
+	cd mcmc/; javac *.java
 
 clean:
 	rm -f mcmc_java_wrap.*

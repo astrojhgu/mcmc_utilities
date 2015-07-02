@@ -61,3 +61,17 @@
 %template (logdbin) mcmc_utilities::logdbin<double,double>;
 %template (logdpoisson) mcmc_utilities::logdpoisson<double,double>;
 %template (logdpar) mcmc_utilities::logdpar<double,double>;
+
+
+%pragma(java) jniclasscode=%{
+   static {
+     try {
+       System.setProperty("java.library.path","./");
+       System.loadLibrary("mcmc");
+     } catch (UnsatisfiedLinkError e) {
+       System.err.println("Native code library failed to load. \n" + e);
+       System.exit(1);
+     }
+   }
+%}
+
