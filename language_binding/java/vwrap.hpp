@@ -1,4 +1,5 @@
 #include <core/distribution.hpp>
+#include <utility>
 #include <iostream>
 namespace mcmc_utilities
 {
@@ -14,20 +15,14 @@ namespace mcmc_utilities
 
     void do_var_range(double& x1,double& x2,const T_var& x,size_t ndim)const
     {
-      //x1=5;
-      //x2=10;
-      x1=get_lower_limit(x,ndim);
-      x2=get_upper_limit(x,ndim);
+      std::pair<double,double> result(get_limits(x,ndim));
+      x1=result.first;
+      x2=result.second;
     }
 
-    virtual double get_lower_limit(const T_var& x,size_t ndim)const
+    virtual pair<double,double> get_limits(const T_var& x,size_t ndim)const
     {
-      return 0;
-    }
-
-    virtual double get_upper_limit(const T_var& x,size_t ndim)const
-    {
-      return 0;
+      return make_pair(0.,0.);
     }
 
     void display_limits(const T_var& x,size_t ndim)const

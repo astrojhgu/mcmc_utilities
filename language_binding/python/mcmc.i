@@ -53,6 +53,7 @@
 %apply SWIGTYPE EXCEPTION_BY_VAL {mcmc_exception};
 
 %template (array) std::vector<double>;
+%template (dpair) std::pair<double,double>;
 %template (gibbs_sample_real) mcmc_utilities::gibbs_sample<double,std::vector<double> , mcmc_utilities::u_random<double> >;
 %template (pdensity) mcmc_utilities::dist_md<double,std::vector<double> >;
 %template (urand) mcmc_utilities::u_random<double>;
