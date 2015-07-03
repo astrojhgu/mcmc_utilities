@@ -9,7 +9,7 @@ all:libmcmc.so classes
 libmcmc.so:mcmc_java_wrap.cpp
 	$(CXX) -shared $< -I../../ $(JAVA_INC) -o libmcmc.so -fPIC -g
 
-mcmc_java_wrap.cpp:mcmc.i
+mcmc_java_wrap.cpp:mcmc.i vwrap.hpp
 	mkdir -p mcmc && swig -o $@ -c++ -java -Wall -package mcmc -outdir mcmc/ -I../../ mcmc.i 
 
 

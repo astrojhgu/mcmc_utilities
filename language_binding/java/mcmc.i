@@ -47,11 +47,12 @@
 
 
 %apply SWIGTYPE EXCEPTION_BY_VAL {mcmc_exception};
-
+%ignore probability_density_md;
 %template (array) std::vector<double>;
 %template (dpair) std::pair<double,double>;
-%template (gibbs_sample_real) mcmc_utilities::gibbs_sample<double,std::vector<double> , mcmc_utilities::u_random<double> >;
+%template (gibbs_sample_real) mcmc_utilities::gibbs_sample_real<double,std::vector<double> , mcmc_utilities::u_random<double> >;
 %template (pdensity) mcmc_utilities::dist_md<double,std::vector<double> >;
+
 %template (urand) mcmc_utilities::u_random<double>;
 
 %template (logdgamma) mcmc_utilities::logdgamma<double,double>;
@@ -66,10 +67,10 @@
 %pragma(java) jniclasscode=%{
    static {
      try {
-       System.setProperty("java.library.path","./");
        System.loadLibrary("mcmc");
      } catch (UnsatisfiedLinkError e) {
        System.err.println("Native code library failed to load. \n" + e);
+       System.err.println(System.getProperty("java.library.path"));
        System.exit(1);
      }
    }

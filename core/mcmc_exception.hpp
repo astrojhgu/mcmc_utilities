@@ -13,7 +13,7 @@ namespace mcmc_utilities
     std::string _what;
   public:
     mcmc_exception()
-    {};
+    {}
 
     ~mcmc_exception()throw()
     {}

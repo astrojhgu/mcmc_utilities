@@ -20,7 +20,7 @@ namespace mcmc_utilities
       x2=result.second;
     }
 
-    virtual pair<double,double> get_limits(const T_var& x,size_t ndim)const
+    virtual std::pair<double,double> get_limits(const T_var& x,size_t ndim)const
     {
       return make_pair(0.,0.);
     }
@@ -34,4 +34,17 @@ namespace mcmc_utilities
 
     ~dist_md(){}
   };
+
+  template <typename T_p,typename T_var,typename T_urand>
+  void gibbs_sample_real(const dist_md<T_p,T_var>& pd,T_var& init_var,bool dometrop,const T_urand& urand, int sample_cnt=10)
+  {
+    //cout<<"fsfaf"<<endl;
+    gibbs_sample(pd,init_var,dometrop,urand,sample_cnt);
+  }
+
+  double f()
+  {
+    return 10;
+  }
+  
 };
