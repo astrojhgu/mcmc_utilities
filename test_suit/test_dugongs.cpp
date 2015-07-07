@@ -56,22 +56,19 @@ public:
     return log_p;
   }
 
-  void do_var_range(double& x1,double& x2,const std::vector<double>& x,size_t ndim)const
+  std::pair<double,double> do_var_range(const std::vector<double>& x,size_t ndim)const
   {
     switch(ndim)
       {
       case 0:
       case 1:
-	x1=-5;
-	x2=5;
+	return make_pair(-5,5);
 	break;
       case 2:
-	x1=.1;
-	x2=4;
+	return make_pair(.1,4);
 	break;
       case 3:
-	x1=1e-10;
-	x2=200;
+	return make_pair(1e-10,200);
 	break;
       default:
 	assert(0);

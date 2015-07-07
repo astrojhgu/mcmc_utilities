@@ -87,15 +87,15 @@ public:
     return log_p;
   }
 
-  void do_var_range(double& x1,double& x2,const variable& x,size_t ndim)const
+  std::pair<double,double> do_var_range(const variable& x,size_t ndim)const
   {
     if(ndim==0||ndim==1)
       {
-	x1=.001;x2=1;
+	return make_pair(.001,1);
       }
-    else if(ndim==2||ndim==3)
+    else
       {
-	x1=.001;x2=100;
+	return make_pair(.001,100);
       }
   }
 

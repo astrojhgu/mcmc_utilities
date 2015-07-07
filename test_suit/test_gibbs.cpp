@@ -22,10 +22,9 @@ public:
     return log_p;
   }
 
-  void do_var_range(double& x1,double& x2,const std::vector<double>& x0,size_t ndim)const
+  std::pair<double,double> do_var_range(const std::vector<double>& x0,size_t ndim)const
   {
-    x1=-20;
-    x2=20;
+    return make_pair(-20.,20.);
   }  
 };
 

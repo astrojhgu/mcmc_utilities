@@ -208,20 +208,21 @@ namespace mcmc_utilities
   /* *xsamp       : to store sampled value */
     
   {
-    int ninit=myfunc.num_init_points();
-    std::vector<T_var> xinit(ninit);
-    T_var xl,xr;
-    
-    myfunc.var_range(xl,xr);
+    //int ninit=myfunc.num_init_points();
+    ///std::vector<T_var> xinit(ninit);
+    std::vector<T_var> xinit(myfunc.init_points());
+    int ninit=xinit.size();
+    //T_var xl,xr;
+
+    std::pair<T_var,T_var> xrange(myfunc.var_range());
+    T_var xl=xrange.first;
+    T_var xr=xrange.second;
+    //myfunc.var_range(xl,xr);
     if(xl>=xr)
       {
 	throw range_not_ordered();
       }
-    for(int i=0;i<ninit;++i)
-      {
-	xinit[i]=myfunc.init_point(i);
-	//xinit[i]=xl_shifted+(xr_shifted-xl_shifted)/(ninit+2)*(i+1);
-      }
+    
     std::sort(xinit.begin(),xinit.end());
     int npoint=std::max(200,2*ninit + 2);
     T_var convex=1.;

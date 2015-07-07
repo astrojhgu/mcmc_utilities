@@ -54,15 +54,15 @@ public:
     return logp;
   }
 
-  void do_var_range(double& x1,double& x2,const std::vector<double>& x,size_t ndim)const
+  std::pair<double,double> do_var_range(const std::vector<double>& x,size_t ndim)const
   {
     if(ndim==0||ndim==1)
       {
-	x1=0;x2=100;
+	return make_pair(0.,100.);
       }
     else
       {
-	x1=0;x2=year.back()+1;
+	return make_pair(0,year.back()+1);
       }
   }
 };

@@ -5,6 +5,7 @@
 #include "mcmc_traits.hpp"
 #include "mcmc_exception.hpp"
 #include <vector>
+#include <utility>
 
 namespace mcmc_utilities
 {
@@ -22,32 +23,23 @@ namespace mcmc_utilities
     virtual ~probability_density_md()
     {}
     
-    void var_range(T_var1& x1,T_var1& x2,const T_var& x,size_t ndim)const
+    std::pair<T_var1,T_var1> var_range(const T_var& x,size_t ndim)const
     {
-      do_var_range(x1,x2,x,ndim);
+      return do_var_range(x,ndim);
     }
 
-    size_t num_init_points(const T_var& x,size_t ndim)const
+    std::vector<T_var1> init_points(const T_var& x,size_t ndim)const
     {
-      return do_num_init_points(x,ndim);
-    }
-
-    T_var1 init_point(size_t n,const T_var& x,size_t ndim)const
-    {
-      return do_init_point(n,x,ndim);
+      return do_init_points(x,ndim);
     }
       
 
   private:
     virtual T_p do_eval_log(const T_var& x)const=0;
-    virtual void do_var_range(T_var1& x1,T_var1& x2,const T_var& x,size_t ndim)const=0;
-    virtual size_t do_num_init_points(const T_var& x,size_t ndim)const
+    virtual std::pair<T_var1,T_var1> do_var_range(const T_var& x,size_t ndim)const=0;
+    virtual std::vector<T_var1> do_init_points(const T_var& x,size_t ndim)const
     {
-      return 0;
-    }
-    virtual T_var1 do_init_point(size_t n,const T_var& x,size_t ndim)const
-    {
-      return T_var1();
+      return std::vector<T_var1>();
     }
   };
   
@@ -63,37 +55,37 @@ namespace mcmc_utilities
     virtual ~probability_density_1d()
     {}
     
-    void var_range(T_var& x1,T_var& x2)const
+    std::pair<T_var,T_var> var_range()const
     {
-      do_var_range(x1,x2);
+      return do_var_range();
     }
 
-    size_t num_init_points()const
+    std::vector<T_var> init_points()const
     {
-      return do_num_init_points();
-    }
-
-    T_var init_point(size_t n)const
-    {
-      return do_init_point(n);
+      return do_init_points();
     }
 
   private:
     virtual T_p do_eval_log(const T_var& x)const=0;
-    virtual void do_var_range(T_var& x1,T_var& x2)const=0;
-    virtual size_t do_num_init_points()const
+    virtual std::pair<T_var,T_var> do_var_range()const=0;
+    virtual std::vector<T_var> do_init_points()const
     {
-      return 3;
-    };
-    virtual T_var do_init_point(size_t n)const
-    {
-      if(n!=1)
+      std::vector<T_var> result(3);
+      for(int n=0;n<result.size();++n)
 	{
-	  T_var xl,xr;
-	  var_range(xl,xr);
-	  return xl+(xr-xl)/(num_init_points()+1)*(n+1);
+	  if(n!=1)
+	    {
+	      std::pair<T_var,T_var> xrange(var_range());
+	      T_var xl=xrange.first,xr=xrange.second;
+	      
+	      result[n]= xl+(xr-xl)/(4)*(n+1);
+	    }
+	  else
+	    {
+	      result[n]= find_peak(*this);
+	    }
 	}
-      return find_peak(*this);
+      return result;
     };
   };
 }

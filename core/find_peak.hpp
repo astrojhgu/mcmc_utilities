@@ -25,7 +25,10 @@ namespace mcmc_utilities
     T_dist func;
     
     func.ppd=&dist;
-    dist.var_range(func.xl,func.xr);
+    std::pair<T_var,T_var> xrange(dist.var_range());
+    func.xl=xrange.first;
+    func.xr=xrange.second;
+    //dist.var_range(func.xl,func.xr);
 
     int j=0;
     const T_p TOL=std::sqrt(std::numeric_limits<T_p>::epsilon());

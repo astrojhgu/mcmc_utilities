@@ -26,42 +26,37 @@ namespace mcmc_utilities
 	return result;
       }
       
-      void do_var_range(T_var1& xmin,T_var1& xmax)const
+      std::pair<T_var1,T_var1> do_var_range()const
       {
-	ppd->var_range(xmin,xmax,*p_init_var,(*p_idx));
-	T_var1 x=get_element(*p_init_var,*p_idx);
+	//ppd->var_range(xmin,xmax,*p_init_var,(*p_idx));
+	return ppd->var_range(*p_init_var,*p_idx);
       }
 
-      size_t do_num_init_points()const
+      std::vector<T_var1> do_init_points()const
       {
-	int n=ppd->num_init_points(*p_init_var,*p_idx);
-	if(n==0)
+	//int n=ppd->num_init_points(*p_init_var,*p_idx);
+	std::vector<T_var1> xinit(ppd->init_points(*p_init_var,*p_idx));
+	if(xinit.size()==0)
 	  {
-	    return 3;
-	  }
-	else
-	  {
-	    return n;
-	  }
-      }
+	    xinit.resize(3);
+	    
+	    std::pair<T_var1,T_var1> xrange(this->var_range());
+	    T_var1 xl=xrange.first;
+	    T_var1 xr=xrange.second;
 
-      T_var1 do_init_point(size_t n1)const
-      {
-	int n=ppd->num_init_points(*p_init_var,*p_idx);
-	if(n==0)
-	  {
-	    T_var1 xl,xr;
-	    this->var_range(xl,xr);
-	    if(n1!=1)
+	    for(int n1=0;n1<3;++n1)
 	      {
-		return xl+(xr-xl)/(this->num_init_points()+1)*(n1+1);
+		if(n1!=1)
+		  {
+		    xinit[n1]= xl+(xr-xl)/(3+1)*(n1+1);
+		  }
+		else
+		  {
+		    xinit[n1]= find_peak(*this);
+		  }
 	      }
-	    return find_peak(*this);
 	  }
-	else
-	  {
-	    return ppd->init_point(n1,*p_init_var,*p_idx);
-	  }
+	return xinit;
       }
     }cpd;
     cpd.p_idx=&idx;
@@ -100,46 +95,41 @@ namespace mcmc_utilities
 	T_p result= ppd->eval_log(*p_init_var);
 	return result;
       }
-      
-      void do_var_range(T_var1& xmin,T_var1& xmax)const
+ 
+      std::pair<T_var1,T_var1> do_var_range()const
       {
-	ppd->var_range(xmin,xmax,*p_init_var,(*p_idx));
-	T_var1 x=get_element(*p_init_var,*p_idx);
+	//ppd->var_range(xmin,xmax,*p_init_var,(*p_idx));
+	return ppd->var_range(*p_init_var,*p_idx);
       }
 
-
-      size_t do_num_init_points()const
+      std::vector<T_var1> do_init_points()const
       {
-	int n=ppd->num_init_points(*p_init_var,*p_idx);
-	if(n==0)
+	//int n=ppd->num_init_points(*p_init_var,*p_idx);
+	std::vector<T_var1> xinit(ppd->init_points(*p_init_var,*p_idx));
+	if(xinit.size()==0)
 	  {
-	    return 3;
-	  }
-	else
-	  {
-	    return n;
-	  }
-      }
+	    xinit.resize(3);
+	    
+	    std::pair<T_var1,T_var1> xrange(this->var_range());
+	    T_var1 xl=xrange.first;
+	    T_var1 xr=xrange.second;
 
-      T_var1 do_init_point(size_t n1)const
-      {
-	int n=ppd->num_init_points(*p_init_var,*p_idx);
-	if(n==0)
-	  {
-	    T_var1 xl,xr;
-	    this->var_range(xl,xr);
-	    if(n1!=1)
+	    for(int n1=0;n1<3;++n1)
 	      {
-		return xl+(xr-xl)/(this->num_init_points()+1)*(n1+1);
+		if(n1!=1)
+		  {
+		    xinit[n1]= xl+(xr-xl)/(3+1)*(n1+1);
+		  }
+		else
+		  {
+		    xinit[n1]= find_peak(*this);
+		  }
 	      }
-	    return find_peak(*this);
 	  }
-	else
-	  {
-	    return ppd->init_point(n1,*p_init_var,*p_idx);
-	  }
+	return xinit;
       }
      
+      
     }cpd;
     cpd.p_idx=&idx;
     cpd.p_init_var=&init_var;

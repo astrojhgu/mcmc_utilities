@@ -105,38 +105,18 @@ private:
       -(obs[1]-stat[2])*(obs[1]-stat[2])/(2*osx*osx);
   }
 
-  void do_state_var_range(double& xl,double& xr,const T_t& t,const T_state& x0,const T_t& prev_t,size_t ndim)const
+  std::pair<double,double> do_state_var_range(const T_t& t,const T_state& x0,const T_t& prev_t,size_t ndim)const
   {
+    
     if(ndim==0||ndim==2)
       {
-	xl=x0[ndim]-100;
-	xr=x0[ndim]+100;
+	return make_pair(x0[ndim]-100,x0[ndim]+100);
       }
     else
       {
-	xl=x0[ndim]-20;
-	xr=x0[ndim]+20;
+	return make_pair(x0[ndim]-20,x0[ndim]+20);
       }
   }
-
-#if 0
-  size_t do_num_init_points(const T_t& t,const T_state& x0,const T_t& prev_t,size_t ndim)const
-  {
-    return 3;
-  }
-
-  double do_init_point(size_t n,const T_t& t,const T_state& x0,const T_t& prev_t,size_t ndim)const
-  {
-    if(ndim==0||ndim==2)
-      {
-	return ((int)n-1)*50.+x0[ndim];
-      }
-    else
-      {
-	return ((int)n-1)*10.+x0[ndim];
-      }
-  }
-#endif
 };
 
 void init_display(SDL_Window*& window,SDL_Renderer*& renderer,int h,int w)

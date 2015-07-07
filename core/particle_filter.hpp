@@ -56,19 +56,14 @@ namespace mcmc_utilities
       return evol_log_prob(x,t,prev_state,prev_t)+obs_log_prob(y,x,t);
     }
     
-    void state_var_range(T_state1& xl,T_state1& xr,const T_t& t,const T_state& prev_state,const T_t& prev_t,size_t ndim)const
+    std::pair<T_state1,T_state1> state_var_range(const T_t& t,const T_state& prev_state,const T_t& prev_t,size_t ndim)const
     {
-      return do_state_var_range(xl,xr,t,prev_state,prev_t,ndim);
+      return do_state_var_range(t,prev_state,prev_t,ndim);
     }
 
-    size_t num_init_points(const T_t& t,const T_state& prev_state,const T_t& prev_t,size_t ndim)const
+    std::vector<T_state1> init_points(const T_t& t,const T_state& prev_state,const T_t& prev_t,size_t ndim)const
     {
-      return do_num_init_points(t,prev_state,prev_t,ndim);
-    }
-
-    T_state1 init_point(size_t n,const T_t& t,const T_state& prev_state,const T_t& prev_t,size_t ndim)const
-    {
-      return do_init_point(n,t,prev_state,prev_t,ndim);
+      return do_init_points(t,prev_state,prev_t,ndim);
     }
       
 
@@ -92,21 +87,16 @@ namespace mcmc_utilities
 	{
 	  return ptr_pf_model->evol_log_prob(x,*ptr_t,*ptr_particle,*ptr_prev_t);
 	}
-	void do_var_range(T_var1& xl,T_var1& xr,const T_state& x,size_t ndim)const
+	std::pair<T_var1,T_var1> do_var_range(const T_state& x,size_t ndim)const
 	{
 	  //ptr_pf_model->stat_var_range(x0,x1,x2);
 	  //ptr_pf_model->stat_var_range(xl,xr,*ptr_particle,ndim);
-	  ptr_pf_model->state_var_range(xl,xr,*ptr_t,*ptr_particle,*ptr_prev_t,ndim);
+	  return ptr_pf_model->state_var_range(*ptr_t,*ptr_particle,*ptr_prev_t,ndim);
 	}
 
-	size_t do_num_init_points(const T_state& x,size_t ndim)const
+	std::vector<T_var1> do_init_points(const T_state& x,size_t ndim)const
 	{
-	  return ptr_pf_model->num_init_points(*ptr_t,*ptr_particle,*ptr_prev_t,ndim);
-	}
-
-	T_var1 do_init_point(size_t n,const T_state& x,size_t ndim)const
-	{
-	  return ptr_pf_model->init_point(n,*ptr_t,*ptr_particle,*ptr_prev_t,ndim);
+	  return ptr_pf_model->init_points(*ptr_t,*ptr_particle,*ptr_prev_t,ndim);
 	}
 	
       };
@@ -169,14 +159,11 @@ namespace mcmc_utilities
   private:
     virtual T_p do_evol_log_prob(const T_state& x,const T_t& t,const T_state& particle_list,const T_t& prev_t)const=0;
     virtual T_p do_obs_log_prob(const T_obs& y,const T_state& x,const T_t& t)const=0;
-    virtual void do_state_var_range(T_state1& xl,T_state1& xr,const T_t& t,const T_state& prev_state,const T_t& prev_t,size_t ndim)const=0;
-    virtual size_t do_num_init_points(const T_t& t,const T_state& prev_state,const T_t& prev_t,size_t ndim)const
+    virtual std::pair<T_state1,T_state1> do_state_var_range(const T_t& t,const T_state& prev_state,const T_t& prev_t,size_t ndim)const=0;
+    
+    virtual std::vector<T_state1> do_init_points(const T_t& t,const T_state& prev_state,const T_t& prev_t,size_t ndim)const
     {
-      return 0;
-    }
-    virtual T_state1 do_init_point(size_t n,const T_t& t,const T_state& prev_state,const T_t& prev_t,size_t ndim)const
-    {
-      return T_state1();
+      return std::vector<T_state1>();
     }
   };
 };

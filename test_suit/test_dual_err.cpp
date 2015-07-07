@@ -127,32 +127,28 @@ public:
     return log_p;
   }
 
-  void do_var_range(double& x1,double& x2,const variable& x,size_t ndim)const
+  std::pair<double,double> do_var_range(const variable& x,size_t ndim)const
   {
     //for(int i=0;i<x_vec.size();++i)
     if(ndim>=3&&ndim<x_vec.size()+3)
       {
-	x1=-10;x2=10;
+	return make_pair(-10,10);
       }
     else if(ndim>=x_vec.size()+3&&ndim<x_vec.size()*2+3)
       {
-	x1=-20;
-	x2=20;
+	return make_pair(-20,20);
       }
     else if(ndim==0)
       {
-	x1=0;
-	x2=20;
+	return make_pair(0,20);
       }
     else if(ndim==1)
       {
-	x1=-20;
-	x2=20;
+	return make_pair(-20,20);
       }
     else
       {
-	x1=0;
-	x2=100;
+	return make_pair(0,100);
       }
   }  
 };

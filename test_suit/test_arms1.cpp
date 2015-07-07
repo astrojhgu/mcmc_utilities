@@ -13,10 +13,9 @@ class normix
   :public probability_density_1d<double,double>
 {
 private:
-  void do_var_range(double& x1,double& x2)const
+  std::pair<double,double> do_var_range()const
   {
-    x1=-40;
-    x2=40;
+    return make_pair(-40,40);
   }
 
   double do_eval_log(const double& x)const
@@ -37,7 +36,9 @@ int main(void)
   int neval,i;
   std::vector<double> xinit;
   double  xl,xr;
-  norm.var_range(xl,xr);
+  std::pair<double,double> xrange(norm.var_range());
+  xl=xrange.first;
+  xr=xrange.second;
   for(double x=xl+.1;x<xr;x+=(xr-xl)/10)
     {
       xinit.push_back(x);
