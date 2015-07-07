@@ -4,12 +4,12 @@ class Param
     implements IParameter
 {
     private double[] p=new double[2];
-    public double getValue(int i)
+    public double get(int i)
     {
 	return p[i];
     }
 
-    public void setValue(int i,double v)
+    public void set(int i,double v)
     {
 	p[i]=v;
     }
@@ -33,7 +33,7 @@ class Gdist
 	double result=0;
 	for(int i=0;i<2;++i)
 	    {
-		result+=p.getValue(i)*p.getValue(i);
+		result+=p.get(i)*p.get(i);
 	    }
 	return -result;
     }
@@ -62,7 +62,7 @@ public class Main{
 	for(int i=0;i<10000;++i)
 	    {
 		Sampler.gibbsSample(new Gdist(),p,true);
-		System.out.println(""+p.getValue(0)+" "+p.getValue(1));
+		System.out.println(""+p.get(0)+" "+p.get(1));
 	    }
     }    
 }

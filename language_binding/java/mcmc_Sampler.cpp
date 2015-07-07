@@ -33,8 +33,8 @@ public:
     eval_id=env->GetMethodID(clazz,"evalLog","(Lmcmc/IParameter;)D");
     range_id=env->GetMethodID(clazz,"varRange","(Lmcmc/IParameter;I)[D");
     ip_id=env->GetMethodID(clazz,"initPoints","(Lmcmc/IParameter;I)[D");
-    get_id=env->GetMethodID(param_class,"getValue","(I)D");
-    set_id=env->GetMethodID(param_class,"setValue","(ID)V");
+    get_id=env->GetMethodID(param_class,"get","(I)D");
+    set_id=env->GetMethodID(param_class,"set","(ID)V");
     gsize_id=env->GetMethodID(param_class,"getSize","()I");
     ssize_id=env->GetMethodID(param_class,"setSize","(I)V");
     pinit_id=env->GetMethodID(param_class,"<init>","()V");
