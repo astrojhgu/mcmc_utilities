@@ -1,27 +1,10 @@
-PYTHON_INC=`python-config --includes`
-JAVA_HOME=/usr/lib/jvm/java-7-openjdk
-JAVA_INC=-I$(JAVA_HOME)/include/ -I$(JAVA_HOME)/include/linux/
-#TARGET=-python
-OS=LINUX
-CXX=g++
-all:libmcmc.so classes
+targets=libmcmc.so
 
-libmcmc.so:mcmc_java_wrap.cpp
-	$(CXX) -shared $< -I../../ $(JAVA_INC) -o libmcmc.so -fPIC -g
-
-mcmc_java_wrap.cpp:mcmc.i vwrap.hpp
-	mkdir -p mcmc && swig -o $@ -c++ -java -Wall -package mcmc -outdir mcmc/ -I../../ mcmc.i 
+all:$(targets)
 
 
-classes:
-	cd mcmc/; javac *.java
+libmcmc.so:mcmc_Sampler.cpp mcmc_Sampler.h
+	g++ -shared $< -I ../../ ${JAVA_INC} -o $@ -fPIC -g
 
 clean:
-	rm -f mcmc_java_wrap.*
-	rm -f *~
-	rm -f *.java
-	rm -f *.class
-#	rm -f *.cs
-#	rm -f *.py
-
-
+	rm -f $(targets)

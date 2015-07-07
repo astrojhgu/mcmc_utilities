@@ -13,11 +13,9 @@ namespace mcmc_utilities
   public:
     virtual T_p do_eval_log(const T_var& x)const=0;
 
-    void do_var_range(double& x1,double& x2,const T_var& x,size_t ndim)const
+    std::pair<double,double> do_var_range(const T_var& x,size_t ndim)const
     {
-      std::pair<double,double> result(get_limits(x,ndim));
-      x1=result.first;
-      x2=result.second;
+      return get_limits(x,ndim);
     }
 
     virtual pair<double,double> get_limits(const T_var& x,size_t ndim)const
@@ -28,7 +26,9 @@ namespace mcmc_utilities
     void display_limits(const T_var& x,size_t ndim)const
     {
       double x1(0),x2(0);
-      this->do_var_range(x1,x2,x,ndim);
+      std::pair<double,double> range=this->do_var_range(x,ndim);
+      x1=range.first;
+      x2=range.second;
       std::cout<<x1<<" "<<x2<<std::endl;
     }
 
