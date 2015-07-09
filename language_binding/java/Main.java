@@ -57,6 +57,7 @@ class Gdist
 public class Main{
     public static void main(String[] argv)
     {
+	System.setProperty("java.library.path",System.getProperty("java.library.path")+":/home/astrojhgu/src/mcmc_utilities/language_binding/java/");
 	Param p=new Param();
 	
 	for(int i=0;i<10000;++i)

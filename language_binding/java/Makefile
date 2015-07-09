@@ -8,3 +8,4 @@ libmcmc.so:mcmc_Sampler.cpp mcmc_Sampler.h
 
 clean:
 	rm -f $(targets)
+	rm -f `find . -iname '*.class'`
