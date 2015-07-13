@@ -32,7 +32,11 @@ namespace mcmc_utilities
     {
       return do_init_points(x,ndim);
     }
-      
+    
+    std::vector<T_var1> candidate_points(const T_var& x,size_t ndim)const
+    {
+      return do_candidate_points(x,ndim);
+    }
 
   private:
     virtual T_p do_eval_log(const T_var& x)const=0;
@@ -41,6 +45,12 @@ namespace mcmc_utilities
     {
       return std::vector<T_var1>();
     }
+
+    virtual std::vector<T_var1> do_candidate_points(const T_var& x,size_t ndim)const
+    {
+      return std::vector<T_var1>();
+    }
+    
   };
   
   template <typename T_p,typename T_var>
@@ -65,6 +75,11 @@ namespace mcmc_utilities
       return do_init_points();
     }
 
+    std::vector<T_var> candidate_points()const
+    {
+      return do_candidate_points();
+    }
+    
   private:
     virtual T_p do_eval_log(const T_var& x)const=0;
     virtual std::pair<T_var,T_var> do_var_range()const=0;
@@ -87,6 +102,11 @@ namespace mcmc_utilities
 	}
       return result;
     };
+
+    virtual std::vector<T_var> do_candidate_points()const
+    {
+      return std::vector<T_var>();
+    }
   };
 }
 #endif

@@ -2,6 +2,7 @@
 #define GIBBS_SAMPLER_HPP
 //#include "rejection_sampler_1d.hpp"
 #include "arms.hpp"
+#include "discrete_sample.hpp"
 #include <vector>
 
 namespace mcmc_utilities
@@ -58,6 +59,11 @@ namespace mcmc_utilities
 	  }
 	return xinit;
       }
+
+      std::vector<T_var1> do_candidate_points()const
+      {
+	return ppd->candidate_points(*p_init_var,*p_idx);
+      }
     }cpd;
     cpd.p_idx=&idx;
     cpd.p_init_var=&init_var;
@@ -66,9 +72,17 @@ namespace mcmc_utilities
     std::vector<T_var1> xsamp(sample_cnt);
     for(idx=0;idx<get_size(init_var);++idx)
       {
-	xprev=get_element(init_var,idx);
-	arms_simple(cpd,xprev,xsamp,dometrop,urand);
-	set_element(init_var,idx,xsamp.back());
+	std::vector<T_var1> cp(cpd.candidate_points());
+	if(cp.empty())
+	  {
+	    xprev=get_element(init_var,idx);
+	    arms_simple(cpd,xprev,xsamp,dometrop,urand);
+	    set_element(init_var,idx,xsamp.back());
+	  }
+	else
+	  {
+	    set_element(init_var,idx,discrete_sample(cpd,urand));
+	  }
       }
   }
 
@@ -128,7 +142,11 @@ namespace mcmc_utilities
 	  }
 	return xinit;
       }
-     
+
+      std::vector<T_var1> do_candidate_points()const
+      {
+	return ppd->candidate_points(*p_init_var,*p_idx);
+      }
       
     }cpd;
     cpd.p_idx=&idx;
@@ -136,10 +154,19 @@ namespace mcmc_utilities
     cpd.ppd=&pd;
     T_var1 xprev=0.;
     std::vector<T_var1> xsamp(sample_cnt);
-    
-    xprev=get_element(init_var,idx);
-    arms_simple(cpd,xprev,xsamp,dometrop,urand);
-    set_element(init_var,idx,xsamp.back());
+
+
+    std::vector<T_var1> cp(cpd.candidate_points());
+    if(cp.empty())
+      {
+	xprev=get_element(init_var,idx);
+	arms_simple(cpd,xprev,xsamp,dometrop,urand);
+	set_element(init_var,idx,xsamp.back());
+      }
+    else
+      {
+	set_element(init_var,idx,discrete_sample(cpd,urand));
+      }
   }
   
 };

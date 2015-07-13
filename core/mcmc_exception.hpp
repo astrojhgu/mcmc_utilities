@@ -204,6 +204,14 @@ namespace mcmc_utilities
     }
   };
 
+  class no_candidate_points
+    :public mcmc_exception
+  {
+  public:
+    no_candidate_points()
+      :mcmc_exception("no candidate points")
+    {}
+  };
   
   
 }

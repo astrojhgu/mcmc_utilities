@@ -25,7 +25,23 @@ public:
   std::pair<double,double> do_var_range(const std::vector<double>& x0,size_t ndim)const
   {
     return make_pair(-20.,20.);
-  }  
+  }
+
+
+  std::vector<double> do_candidate_points(const std::vector<double>& x0,size_t ndim)const
+  {
+    if(ndim==2)
+      {
+	std::vector<double> res;
+	for(double x=-5;x<5;x+=.5)
+	  {
+	    res.push_back(x);
+	  }
+	return res;
+      }
+    return std::vector<double>();
+    
+  }
 };
 
 int main()
