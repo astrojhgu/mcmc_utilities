@@ -34,7 +34,7 @@ namespace mcmc_utilities
       return log_prior_prob()+this->log_likelihood();
     }
 
-    T_p do_eval_log(const T_var1& x)const
+    T_p do_eval_log(const T_var1& x)const override
     {
       const_cast<stochastic_node*>(this)->set_value(x);
       return log_post_prob();

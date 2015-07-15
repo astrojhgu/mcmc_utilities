@@ -5,7 +5,7 @@
 #include <vector>
 #include <map>
 #include "mcmc_exception.hpp"
-#include "gibbs_sampler.hpp"
+
 
 namespace mcmc_utilities
 {
