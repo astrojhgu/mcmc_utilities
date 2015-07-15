@@ -1,224 +1,17 @@
+#ifndef GRAPH_HPP
+#define GRAPH_HPP
+
 #include <memory>
 #include <vector>
 #include <map>
 #include "mcmc_exception.hpp"
 #include "gibbs_sampler.hpp"
+#include "base_urand.hpp"
+#include "stochastic_node.hpp"
+#include "deterministic_node.hpp"
 
 namespace mcmc_utilities
 {
-  template <typename T_p,typename T_var1>
-  class stochastic_node;
-
-  template <typename T_p,typename T_var1>
-  class deterministic_node;
-  
-  template <typename T_p,typename T_var1>
-  class node
-  {
-    friend class stochastic_node<T_p,T_var1>;
-    friend class deterministic_node<T_p,T_var1>;
-  protected:
-    std::vector<stochastic_node<T_p,T_var1>* > stochastic_children;
-    std::vector<deterministic_node<T_p,T_var1 >* > deterministic_children;
-    std::vector<node<T_p,T_var1>* > parents;
-
-  public:
-    explicit node(int nparents)
-      :parents(nparents)
-    {}
-
-    node()=delete;
-    node(const node<T_p,T_var1>& rhs)=delete;
-    node<T_p,T_var1>& operator=(const node<T_p,T_var1>& rhs)=delete;
-
-    virtual ~node(){}
-    
-  public:
-    int num_of_parents()const
-    {
-      return parents.size();
-    }
-    
-    T_var1 value()const
-    {
-      return do_value();
-    }
-
-    virtual T_p log_likelihood()const final
-    {
-      T_p result=0;
-      for(auto& p : stochastic_children)
-	{
-	  result+=p->log_prior_prob();
-	}
-      for(auto& p:deterministic_children)
-	{
-	  result+=p->log_likelihood();
-	}
-      return result;
-    }
-
-    void connect_to_parent(node<T_p,T_var1>* prhs,int n)
-    {
-      do_connect_to_parent(prhs,n);
-    }
-
-    
-    
-  private:
-    virtual T_var1 do_value()const=0;
-    virtual void do_connect_to_parent(node<T_p,T_var1>* prhs,int n)=0;
-  };
-
-  
-  template <typename T_p>
-  class base_urand
-  {
-  public:
-    T_p operator()()const
-    {
-      return do_rand();
-    }
-  private:
-    virtual T_p do_rand()const=0;
-      
-  };
-  
-
-  template <typename T_p,typename T_var1>
-  class stochastic_node
-    :public node<T_p,T_var1>,public probability_density_1d<T_p,T_var1>
-  {
-  private:
-    T_p v;
-
-  public:
-    stochastic_node(int nparents,T_var1 v_)
-      :node<T_p,T_var1>(nparents),
-      v(v_)
-    {}
-
-    stochastic_node()=delete;
-    stochastic_node(const stochastic_node<T_p,T_var1>& )=delete;
-    stochastic_node<T_p,T_var1>& operator=(const stochastic_node<T_p,T_var1>&)=delete;
-
-  public:
-    T_p log_post_prob()const
-    {
-      return log_prior_prob()+this->log_likelihood();
-    }
-
-    T_p do_eval_log(const T_var1& x)const
-    {
-      const_cast<stochastic_node*>(this)->set_value(x);
-      return log_post_prob();
-    }
-    
-    T_p log_prior_prob()const
-    {
-      return do_log_prior_prob();
-    }
-
-    void set_value(const T_var1& v_)
-    {
-      v=v_;
-    }
-
-  public:
-    void sample(const base_urand<T_p>& rnd)
-    {
-      do_sample(rnd);
-    }
-  private:
-    virtual T_p do_log_prior_prob()const=0;
-    T_var1 do_value()const override
-    {
-      return v;
-    }
-
-    void do_connect_to_parent(node<T_p,T_var1>*  rhs,int n) override
-    {
-      this->parents.at(n)=rhs;
-      rhs->stochastic_children.push_back(this);
-    }
-
-    virtual void do_sample(const base_urand<T_p>&)=0;
-  };
-
-  template <typename T_p,typename T_var1>
-  class continuous_node
-    :public stochastic_node<T_p,T_var1>
-  {
-  public:
-    continuous_node(int nparents,T_var1 v_)
-      :stochastic_node<T_p,T_var1>(nparents,v_)
-    {}
-    
-    continuous_node()=delete;
-    continuous_node(const continuous_node<T_p,T_var1>& )=delete;
-    continuous_node<T_p,T_var1>& operator=(const continuous_node<T_p,T_var1>&)=delete;
-
-  public:
-    void do_sample(const base_urand<T_p>& rnd)override
-    {
-      T_var1 xprev=this->value();
-      constexpr int nsamp=10;
-      std::vector<T_var1> xsamp(nsamp);
-      arms_simple(*this,xprev,xsamp,dometrop(),rnd);
-      this->set_value(xsamp.back());
-    }
-  private:
-    virtual bool dometrop()const
-    {
-      return true;
-    }
-  };
-
-
-  template <typename T_p,typename T_var1>
-  class discrete_node
-    :public stochastic_node<T_p,T_var1>
-  {
-  public:
-    discrete_node(int nparents,T_var1 v_)
-      :stochastic_node<T_p,T_var1>(nparents,v_)
-    {}
-    
-    discrete_node()=delete;
-    discrete_node(const discrete_node<T_p,T_var1>& )=delete;
-    discrete_node<T_p,T_var1>& operator=(const discrete_node<T_p,T_var1>&)=delete;
-
-  public:
-    void do_sample(const base_urand<T_p>& rnd)override
-    {
-      this->set_value(discrete_sample(*this,rnd));
-    }
-  };
-
-  
-  
-  template <typename T_p,typename T_var1>
-  class deterministic_node
-    :public node<T_p,T_var1>
-  {
-  public:
-    deterministic_node(int nparents)
-      :node<T_p,T_var1>(nparents)
-    {}
-    
-    deterministic_node()=delete;
-    deterministic_node(const deterministic_node<T_p,T_var1>& )=delete;
-    deterministic_node<T_p,T_var1>& operator=(const deterministic_node<T_p,T_var1>&)=delete;
-
-  private:
-    void do_connect_to_parent(node<T_p,T_var1>*  rhs,int n) override
-    {
-      this->parents.at(n)=rhs;
-      rhs->deterministic_children.push_back(this);
-    }
-  };
-
-  
   template <typename T_p,typename T_var1,typename T_str>
   class graph
   {
@@ -352,3 +145,6 @@ namespace mcmc_utilities
     }
   };
 }
+
+#endif
+
