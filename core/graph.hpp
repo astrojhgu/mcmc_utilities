@@ -17,7 +17,7 @@ namespace mcmc_utilities
     std::vector<stochastic_node<T_p,T_var1>* > stochastic_node_list;
     std::vector<deterministic_node<T_p,T_var1>* > deterministic_node_list;
     std::vector<node<T_p,T_var1>* > observed_node_list;
-    std::map<std::pair<T_str,int>,std::shared_ptr<node<T_p,T_var1> > > node_map;
+    std::map<std::pair<T_str,std::vector<int> >,std::shared_ptr<node<T_p,T_var1> > > node_map;
 
   public:
     void clear()
@@ -46,7 +46,7 @@ namespace mcmc_utilities
       return result;
     }
 
-    void set_value(const std::pair<T_str,int>& tag,
+    void set_value(const std::pair<T_str,std::vector<int> >& tag,
 		      const T_var1& v)
     {
       if(node_map.count(tag)==0)
@@ -63,7 +63,7 @@ namespace mcmc_utilities
 
     }
 
-    T_p log_likelihood(const std::pair<T_str,int>& tag)const
+    T_p log_likelihood(const std::pair<T_str,std::vector<int> >& tag)const
     {
       auto i=node_map.find(tag);
       if(i==node_map.end())
@@ -73,7 +73,7 @@ namespace mcmc_utilities
       i->second->log_likelihood();
     }
 
-    T_p log_post_prob(const std::pair<T_str,int>& tag)const
+    T_p log_post_prob(const std::pair<T_str,std::vector<int> >& tag)const
     {
       auto i=node_map.find(tag);
       if(i==node_map.end())
@@ -89,12 +89,20 @@ namespace mcmc_utilities
       return ps->log_post_prob();
     }
 
-        
+
     void add_node(node<T_p,T_var1>* pn,bool observed,
-		  const std::pair<T_str,int>& tag,
-		  const std::vector<std::pair<T_str,int> >& parents)
+		  const std::pair<T_str,std::vector<int> >& tag,
+		  const std::vector<std::pair<T_str,std::vector<int> > >& parents)
     {
-      std::shared_ptr<node<T_p,T_var1> > ptr(pn);
+      this->add_node(std::shared_ptr<node<T_p,T_var1> >(pn),observed,tag,parents);
+    }
+
+    
+    void add_node(const std::shared_ptr<node<T_p,T_var1> >& pn,bool observed,
+		  const std::pair<T_str,std::vector<int> >& tag,
+		  const std::vector<std::pair<T_str,std::vector<int> > >& parents)
+    {
+      //std::shared_ptr<node<T_p,T_var1> > ptr(pn);
       if (node_map.count(tag)!=0)
 	{
 	  throw mcmc_exception("node name already exists");
@@ -111,7 +119,7 @@ namespace mcmc_utilities
 	    }
 	}
       
-      auto ps=dynamic_cast<stochastic_node<T_p,T_var1>*>(pn);
+      auto ps=dynamic_cast<stochastic_node<T_p,T_var1>*>(pn.get());
       if(ps!=nullptr)
 	{
 	  if(!observed)
@@ -120,12 +128,12 @@ namespace mcmc_utilities
 	    }
 	  else
 	    {
-	      observed_node_list.push_back(pn);
+	      observed_node_list.push_back(pn.get());
 	    }
 	}
       else
 	{
-	  auto pd=dynamic_cast<deterministic_node<T_p,T_var1>* >(pn);
+	  auto pd=dynamic_cast<deterministic_node<T_p,T_var1>* >(pn.get());
 	  if(pd==nullptr)
 	    {
 	      throw mcmc_exception("input node is neither stochastic node, nor deterministic node");
@@ -139,7 +147,7 @@ namespace mcmc_utilities
 	  pn->connect_to_parent(n_iter->second.get(),n);
 	  ++n;
 	}
-      node_map[tag]=ptr;
+      node_map[tag]=pn;
     }
   };
 }
