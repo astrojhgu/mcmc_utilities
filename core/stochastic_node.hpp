@@ -16,7 +16,7 @@ namespace mcmc_utilities
     :public node<T_p,T_var1>,public probability_density_1d<T_p,T_var1>
   {
   private:
-    T_p v;
+    T_var1 v;
 
   public:
     stochastic_node(int nparents,T_var1 v_)
@@ -57,7 +57,7 @@ namespace mcmc_utilities
     }
   private:
     virtual T_p do_log_prior_prob()const=0;
-    T_var1 do_value()const override
+    T_var1 do_value(size_t)const override
     {
       return v;
     }

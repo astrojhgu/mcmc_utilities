@@ -20,7 +20,7 @@ namespace mcmc_utilities
   public:
     void do_sample(const base_urand<T_p>& rnd)override
     {
-      T_var1 xprev=this->value();
+      T_var1 xprev=this->value(0);
       constexpr int nsamp=10;
       std::vector<T_var1> xsamp(nsamp);
       arms_simple(*this,xprev,xsamp,dometrop(),rnd);
