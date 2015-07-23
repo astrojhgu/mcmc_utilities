@@ -16,8 +16,12 @@ namespace mcmc_utilities
     :public node<T_p,T_var1>
   {
   public:
-    observed_node(int nparents)
-      :node<T_p,T_var1>(nparents)
+    observed_node(size_t nparents,size_t ndim)
+      :node<T_p,T_var1>(nparents,ndim)
+    {}
+
+    observed_node(size_t nparents)
+      :node<T_p,T_var1>(nparents,1)
     {}
 
     observed_node()=delete;
@@ -34,21 +38,24 @@ namespace mcmc_utilities
     {
       return do_log_prior_prob();
     }
+    
+    size_t nobs()const
+    {
+      return do_nobs();
+    }
+
+
 
   private:
     virtual T_p do_log_prior_prob()const=0;
     //virtual T_p do_log_prior_prob_single(size_t obsid)const=0;
 
-    void do_connect_to_parent(node<T_p,T_var1>*  rhs,int n) override
+    virtual size_t do_nobs()const=0;
+    
+    void do_connect_to_parent(node<T_p,T_var1>*  rhs,size_t n,size_t idx) override
     {
-      this->parents.at(n)=rhs;
+      this->parents.at(n)=std::make_pair(rhs,idx);
       rhs->observed_children.push_back(this);
-    }
-
-  protected:
-    T_var1 parent(int pid,size_t obsid)const
-    {
-      return this->parents[pid]->value(obsid);
     }
   };  
 }

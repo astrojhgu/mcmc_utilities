@@ -41,17 +41,20 @@ namespace mcmc_utilities
 
     std::vector<T_var1> get_params()const
     {
-      std::vector<T_var1> result(stochastic_node_list.size());
+      std::vector<T_var1> result;
       int n=0;
       for(auto p=stochastic_node_list.begin();
 	  p!=stochastic_node_list.end();++p,++n)
 	{
-	  result[n]=(*p)->value(0);
+	  for(int i=0;i<(*p)->num_of_dims();++i)
+	    {
+	      result.push_back((*p)->value(i,0));
+	    }
 	}
       return result;
     }
 
-    void set_value(const tag_t<T_str>& tag,
+    void set_value(const tag_t<T_str>& tag,size_t idx,
 		      const T_var1& v)
     {
       if(node_map.count(tag)==0)
@@ -64,7 +67,7 @@ namespace mcmc_utilities
 	{
 	  throw mcmc_exception("this node is not a stochastic node");
 	}
-      ps->set_value(v);
+      ps->set_value(idx,v);
     }
 
     T_p log_likelihood(const tag_t<T_str>& tag)const
@@ -96,15 +99,17 @@ namespace mcmc_utilities
 
     void add_node(node<T_p,T_var1>* pn,
 		  const tag_t<T_str>& tag,
-		  const std::vector<tag_t<T_str> >& parents)
+		  const std::vector<tag_t<T_str> >& parents,
+		  const std::vector<size_t>& idx)
     {
-      this->add_node(std::shared_ptr<node<T_p,T_var1> >(pn),tag,parents);
+      this->add_node(std::shared_ptr<node<T_p,T_var1> >(pn),tag,parents,idx);
     }
 
     
     void add_node(const std::shared_ptr<node<T_p,T_var1> >& pn,
 		  const tag_t<T_str>& tag,
-		  const std::vector<tag_t<T_str> >& parents)
+		  const std::vector<tag_t<T_str> >& parents,
+		  const std::vector<size_t>& idx)
     {
       //std::shared_ptr<node<T_p,T_var1> > ptr(pn);
       if (node_map.count(tag)!=0)
@@ -146,7 +151,7 @@ namespace mcmc_utilities
       for(auto& i:parents)
 	{
 	  auto n_iter=node_map.find(i);
-	  pn->connect_to_parent(n_iter->second.get(),n);
+	  pn->connect_to_parent(n_iter->second.get(),n,idx.at(n));
 	  ++n;
 	}
       node_map[tag]=pn;
