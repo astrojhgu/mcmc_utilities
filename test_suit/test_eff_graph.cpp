@@ -206,19 +206,19 @@ int main()
 {
   graph<double,double,std::string> g;
   data_loader dl("eff.txt");
-  g.add_node(dl.get_energy(),{"E"},{},{});
-  g.add_node(dl.get_ninj(),{"ninj"},{},{});
+  g.add_node(dl.get_energy(),"E",{});
+  g.add_node(dl.get_ninj(),"ninj",{});
   //g.add_node(dl.get_ninj(),{"nrec"},{});
 
-  g.add_node(new uniform(0,1),{"A"},{},{});
-  g.add_node(new uniform(0,1),{"B"},{},{});
+  g.add_node(new uniform(0,1),"A",{});
+  g.add_node(new uniform(0,1),"B",{});
 
-  g.add_node(new uniform(0,100),{"mu"},{},{});
-  g.add_node(new uniform(0,100),{"sigma"},{},{});
+  g.add_node(new uniform(0,100),"mu",{});
+  g.add_node(new uniform(0,100),"sigma",{});
 
-  g.add_node(new eff(),{"eff"},{{"A"},{"B"},{"E"},{"mu"},{"sigma"}},{0,0,0,0,0});
+  g.add_node(new eff(),"eff",{{"A",0},{"B",0},{"E",0},{"mu",0},{"sigma",0}});
 
-  g.add_node(dl.get_nrec(),{"nrec"},{{"eff"},{"ninj"}},{0,0});
+  g.add_node(dl.get_nrec(),"nrec",{{"eff",0},{"ninj",0}});
   g.set_value({"mu"},0,30.0);
 
   for(int i=0;i<100;++i)

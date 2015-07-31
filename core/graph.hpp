@@ -9,18 +9,18 @@
 #include "stochastic_node.hpp"
 #include "deterministic_node.hpp"
 #include "observed_node.hpp"
-#include "tag.hpp"
+//#include "tag.hpp"
 
 namespace mcmc_utilities
 {
-  template <typename T_p,typename T_var1,typename T_str>
+  template <typename T_p,typename T_var1,typename T_tag>
   class graph
   {
   private:
     std::list<stochastic_node<T_p,T_var1>* > stochastic_node_list;
     std::list<deterministic_node<T_p,T_var1>* > deterministic_node_list;
     std::list<observed_node<T_p,T_var1>* > observed_node_list;
-    std::map<tag_t<T_str>,std::shared_ptr<node<T_p,T_var1> > > node_map;
+    std::map<T_tag,std::shared_ptr<node<T_p,T_var1> > > node_map;
 
   public:
     void clear()
@@ -54,7 +54,7 @@ namespace mcmc_utilities
       return result;
     }
 
-    void set_value(const tag_t<T_str>& tag,size_t idx,
+    void set_value(const T_tag& tag,size_t idx,
 		      const T_var1& v)
     {
       if(node_map.count(tag)==0)
@@ -70,7 +70,7 @@ namespace mcmc_utilities
       ps->set_value(idx,v);
     }
 
-    T_p log_likelihood(const tag_t<T_str>& tag)const
+    T_p log_likelihood(const T_tag& tag)const
     {
       auto i=node_map.find(tag);
       if(i==node_map.end())
@@ -80,7 +80,7 @@ namespace mcmc_utilities
       i->second->log_likelihood();
     }
 
-    T_p log_post_prob(const tag_t<T_str>& tag)const
+    T_p log_post_prob(const T_tag& tag)const
     {
       auto i=node_map.find(tag);
       if(i==node_map.end())
@@ -98,18 +98,18 @@ namespace mcmc_utilities
 
 
     void add_node(node<T_p,T_var1>* pn,
-		  const tag_t<T_str>& tag,
-		  const std::vector<tag_t<T_str> >& parents,
-		  const std::vector<size_t>& idx)
+		  const T_tag& tag,
+		  const std::vector<std::pair<T_tag,size_t> >& parents
+		  )
     {
-      this->add_node(std::shared_ptr<node<T_p,T_var1> >(pn),tag,parents,idx);
+      this->add_node(std::shared_ptr<node<T_p,T_var1> >(pn),tag,parents);
     }
 
     
     void add_node(const std::shared_ptr<node<T_p,T_var1> >& pn,
-		  const tag_t<T_str>& tag,
-		  const std::vector<tag_t<T_str> >& parents,
-		  const std::vector<size_t>& idx)
+		  const T_tag& tag,
+		  const std::vector<std::pair<T_tag,size_t> >& parents
+		  )
     {
       //std::shared_ptr<node<T_p,T_var1> > ptr(pn);
       if (node_map.count(tag)!=0)
@@ -122,7 +122,7 @@ namespace mcmc_utilities
 	}
       for(auto& p:parents)
 	{
-	  if(node_map.count(p)==0)
+	  if(node_map.count(p.first)==0)
 	    {
 	      throw mcmc_exception("parent should be added before hand");
 	    }
@@ -150,8 +150,8 @@ namespace mcmc_utilities
       int n=0;
       for(auto& i:parents)
 	{
-	  auto n_iter=node_map.find(i);
-	  pn->connect_to_parent(n_iter->second.get(),n,idx.at(n));
+	  auto n_iter=node_map.find(i.first);
+	  pn->connect_to_parent(n_iter->second.get(),n,i.second);
 	  ++n;
 	}
       node_map[tag]=pn;
