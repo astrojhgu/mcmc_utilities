@@ -92,7 +92,7 @@ namespace mcmc_utilities
 
   private:
     virtual T_p do_log_prior_prob()const=0;
-    T_var1 do_value(size_t idx,size_t obsid)const override
+    T_var1 do_value(size_t idx,size_t obsid)const override final
     {
       return v[idx];
     }

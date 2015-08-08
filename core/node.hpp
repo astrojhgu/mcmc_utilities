@@ -33,7 +33,7 @@ namespace mcmc_utilities
     std::vector<std::pair<node<T_p,T_var1>*,size_t> > parents;
     size_t ndim_;
   public:
-    explicit node(size_t nparents,size_t ndim1)
+    node(size_t nparents,size_t ndim1)
       :parents(nparents),ndim_(ndim1)
     {}
     
@@ -91,6 +91,8 @@ namespace mcmc_utilities
     }
 
     T_var1 parent(size_t pid,size_t obsid)const
+    //pid:parent id
+    //obsid:the id in a set of observed values
     {
       return parents[pid].first->value(parents[pid].second,obsid);
     }

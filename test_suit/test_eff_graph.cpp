@@ -206,19 +206,23 @@ int main()
 {
   graph<double,double,std::string> g;
   data_loader dl("eff.txt");
-  g.add_node(dl.get_energy(),"E",{});
-  g.add_node(dl.get_ninj(),"ninj",{});
+  g.add_node(dl.get_energy(),"E",{});//vnode("E")=observed_constant()
+  g.add_node(dl.get_ninj(),"ninj",{});//vnode("nij")=observed_constant()
   //g.add_node(dl.get_ninj(),{"nrec"},{});
 
-  g.add_node(new uniform(0,1),"A",{});
-  g.add_node(new uniform(0,1),"B",{});
+  g.add_node(new uniform(0,1),"A",{});//vnode("A")=uniform(0,1)
+  g.add_node(new uniform(0,1),"B",{});//vnode("B")=uniform(0,1)
 
-  g.add_node(new uniform(0,100),"mu",{});
-  g.add_node(new uniform(0,100),"sigma",{});
+  g.add_node(new uniform(0,100),"mu",{});//vnode("mu")=uniform(0,100)
+  g.add_node(new uniform(0,100),"sigma",{});//vnode("sigma")=uniform(0,100)
 
   g.add_node(new eff(),"eff",{{"A",0},{"B",0},{"E",0},{"mu",0},{"sigma",0}});
+  //vnode("eff")=vnode("A")+(vnode("B")-vnode("A"))*phi((vnode("E")-vnode("mu"))/vnode("sigma"));
+  
 
   g.add_node(dl.get_nrec(),"nrec",{{"eff",0},{"ninj",0}});
+  //vnode("nrec")=bin(vnode("eff",0),vnode("ninj",0))
+  
   g.set_value({"mu"},0,30.0);
 
   for(int i=0;i<100;++i)

@@ -54,6 +54,20 @@ namespace mcmc_utilities
       return result;
     }
 
+    T_var1 get_value(const T_tag& tag,size_t idx)
+    {
+      if(node_map.count(tag)==0)
+	{
+	  throw mcmc_exception("node not found by tag");
+	}
+      stochastic_node<T_p,T_var1>* ps=dynamic_cast<stochastic_node<T_p,T_var1>* >(node_map[tag].get());
+      if(ps==nullptr)
+	{
+	  throw mcmc_exception("this node is not a stochastic node");
+	}
+      return ps->value(idx,0);
+    }
+
     void set_value(const T_tag& tag,size_t idx,
 		      const T_var1& v)
     {
