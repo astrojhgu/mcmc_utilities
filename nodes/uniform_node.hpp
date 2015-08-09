@@ -39,14 +39,14 @@ namespace mcmc_utilities
   
   
   template <typename T_p,typename T_var1>
-  class _uniform_vnode
-    :public _vnode<T_p,T_var1>
+  class uniform_vnode
+    :public vnode<T_p,T_var1>
   {
     T_var1 a;
     T_var1 b;
   public:
-    _uniform_vnode(std::string n,T_var1 _a,T_var1 _b)
-      :_vnode<T_p,T_var1>("uniform",n,{}),a(_a),b(_b)
+    uniform_vnode(std::string n,T_var1 _a,T_var1 _b)
+      :vnode<T_p,T_var1>("uniform",n,{}),a(_a),b(_b)
     {
       this->binded=true;
     }
@@ -55,21 +55,12 @@ namespace mcmc_utilities
     {
       return std::shared_ptr<node<T_p,T_var1> >(new uniform_node<T_p,T_var1>(a,b));
     }
+    
+    std::shared_ptr<vnode<T_p,T_var1> > clone()const override
+    {
+      return std::shared_ptr<vnode<T_p,T_var1> >(new uniform_vnode<T_p,T_var1>(*this));
+    }
   };
-  
-  template <typename T_p,typename T_var1>
-  auto uniform_vnode(std::string n,T_var1 a,T_var1 b)
-  {
-    return shared_ptr<_vnode<T_p,T_var1> >(new _uniform_vnode<T_p,T_var1>(n,a,b));
-  }
-  
-  
-  template <typename T_p,typename T_var1>
-  auto uniform_vnode(T_var1 a,T_var1 b)
-  {
-    return shared_ptr<_vnode<T_p,T_var1> >(new _uniform_vnode<T_p,T_var1>(std::string("uniform")+node_count<_uniform_vnode<T_p,T_var1> >(),a,b));
-  }
-  
 };
 
 #endif

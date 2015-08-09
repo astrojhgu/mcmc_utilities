@@ -44,12 +44,12 @@ namespace mcmc_utilities
   
   
   template <typename T_p,typename T_var1>
-  class _normal_vnode
-    :public _vnode<T_p,T_var1>
+  class normal_vnode
+    :public vnode<T_p,T_var1>
   {
   public:
-    _normal_vnode(std::string n,const std::initializer_list<std::pair<std::shared_ptr<_vnode<T_p,T_var1> >,size_t> >& p)
-      :_vnode<T_p,T_var1>("normal",n,p)
+    normal_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T_p,T_var1>&,size_t> >& p)
+      :vnode<T_p,T_var1>("normal",n,p)
     {
       this->binded=true;
     }
@@ -58,20 +58,12 @@ namespace mcmc_utilities
     {
       return std::shared_ptr<node<T_p,T_var1> >(new normal_node<T_p,T_var1>);
     }
+
+    std::shared_ptr<vnode<T_p,T_var1> > clone()const override
+    {
+      return std::shared_ptr<vnode<T_p,T_var1> >(new normal_vnode<T_p,T_var1>(*this));
+    }
   };
-  
-  template <typename T_p,typename T_var1>
-  auto normal_vnode(std::string n,const std::pair<std::shared_ptr<_vnode<T_p,T_var1> >,size_t> & p1,const std::pair<std::shared_ptr<_vnode<T_p,T_var1> >,size_t> & p2)
-  {
-    return shared_ptr<_vnode<T_p,T_var1> >(new _normal_vnode<T_p,T_var1>(n,{p1,p2}));
-  }
-  
-  
-  template <typename T_p,typename T_var1>
-  auto normal_vnode(const std::pair<std::shared_ptr<_vnode<T_p,T_var1> >,size_t> & p1,const std::pair<std::shared_ptr<_vnode<T_p,T_var1> >,size_t> & p2)
-  {
-    return shared_ptr<_vnode<T_p,T_var1> >(new _normal_vnode<T_p,T_var1>(std::string("normal")+node_count<_normal_vnode<T_p,T_var1> >(),{p1,p2}));
-  }
   
 };
 

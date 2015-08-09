@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 #include <string>
-#include <initializer_list>
+
 
 
 namespace mcmc_utilities
@@ -29,12 +29,13 @@ namespace mcmc_utilities
 
 
   template <typename T_p,typename T_var1>
-  class _phi_vnode
-    :public _vnode<T_p,T_var1>
+  class phi_vnode
+    :public vnode<T_p,T_var1>
   {
   public:
-    _phi_vnode(std::string n,const std::initializer_list<std::pair<std::shared_ptr<_vnode<T_p,T_var1> >,size_t> >& p)
-      :_vnode<T_p,T_var1>("phi",n,p)
+    phi_vnode(std::string n,
+	      const std::pair<const vnode<T_p,T_var1>&,size_t>& p)
+      :vnode<T_p,T_var1>("phi",n,{p})
     {
       this->binded=true;
     }
@@ -43,13 +44,17 @@ namespace mcmc_utilities
     {
       return std::shared_ptr<node<T_p,T_var1> >(new phi_node<T_p,T_var1>);
     }
+
+    std::shared_ptr<vnode<T_p,T_var1> > clone()const override
+    {
+      return std::shared_ptr<vnode<T_p,T_var1> >(new phi_vnode<T_p,T_var1>(*this));
+    }
   };
 
   template <typename T_p,typename T_var1>
-  auto phi(const cpnt<T_p,T_var1>& n1)
+  auto phi(const vnode<T_p,T_var1>& n1)
   {
-    return cpnt<T_p,T_var1>(std::shared_ptr<_vnode<T_p,T_var1> >(
-								 new _phi_vnode<T_p,T_var1>(std::string("phi")+node_count<_add_vnode<T_p,T_var1> >(),{{n1.pn,n1.n}})));
+    return phi_vnode<T_p,T_var1>(std::string("phi")+node_count<phi_vnode<T_p,T_var1> >(),{n1,(size_t)0});
   }
 }
 

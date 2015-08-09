@@ -15,32 +15,30 @@ namespace mcmc_utilities
   class graph_builder
   {
   public:
-    std::map<std::string,shared_ptr<_vnode<T_p,T_var1> > > vnode_map;
+    std::map<std::string,shared_ptr<vnode<T_p,T_var1> > > vnode_map;
     
   public:
-    void add_node(const std::shared_ptr<_vnode<T_p,T_var1> >& vn)
+    void add_node(std::string name,const vnode<T_p,T_var1>& vn)
     {
-      auto p=vnode_map.find(vn->name);
+      auto p=vnode_map.find(name);
       if(p!=vnode_map.end())
 	{
-	  if(p->second->binded==true && vn->binded==true &&p->second!=vn)
+	  if(p->second->binded==true && vn.binded==true )
 	    {
 	      assert(0);
 	    }
-	  else if(p->second->binded==false && vn->binded==true)
-	    {
-	      p->second=vn;
-	    }
 	}
-      else if(vn->binded==true)
+      else if(vn.binded==true)
 	{
-	  vnode_map.insert(std::make_pair(vn->name,vn));
+	  auto p=vn.clone();
+	  p->name=name;
+	  vnode_map.insert(std::make_pair(name,p));
 	}
-      for(auto& i: vn->parents)
+      for(auto& i: vn.parents)
 	{
 	  if(i.first->binded)
 	    {
-	      add_node(i.first);
+	      add_node(i.first->name,*(i.first));
 	    }
 	}
     }
@@ -49,7 +47,6 @@ namespace mcmc_utilities
     {
       for(auto& p:vnode_map)
 	{
-	  int n=0;
 	  for(auto& q:(p.second)->parents)
 	    {
 	      auto r=vnode_map.find(q.first->name);
@@ -58,22 +55,8 @@ namespace mcmc_utilities
 		  //should never happen.
 		  throw mcmc_exception("node not defined");
 		}
-	      if((r->second)->binded==false)
-		{
-		  throw mcmc_exception("not all the nodes have been defined");
-		}
-	      if(q.first->binded==true)
-		{
-		  //assert((vnode_map.find(q.first->name)->second)==q.first);
-		  if(r==vnode_map.end()||r->second!=q.first)
-		    {
-		      throw mcmc_exception("binded node not existed");
-		    }
-		}
-	      else
-		{
-		  q.first=r->second;
-		}
+	      assert((r->second->binded));
+	      q.first=r->second;
 	    }
 	}
       return true;
@@ -94,7 +77,7 @@ namespace mcmc_utilities
 	}
     }
 
-    void add(graph<T_p,T_var1,std::string>& g,std::shared_ptr<_vnode<T_p,T_var1> >& pn)
+    void add(graph<T_p,T_var1,std::string>& g,std::shared_ptr<vnode<T_p,T_var1> >& pn)
     {
       std::vector<std::pair<std::string,size_t> > parents;
       for(auto& i:pn->parents)
@@ -105,7 +88,7 @@ namespace mcmc_utilities
 	    }
 	  parents.push_back({i.first->name,i.second});
 	}
-      
+      //cout<<pn->name<<" "<<typeid(*(pn.get())).name()<<" "<< pn->binded <<endl;
       g.add_node(pn->get_node(),pn->name,parents);
       pn->added=true;
     }

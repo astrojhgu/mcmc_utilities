@@ -26,14 +26,14 @@ namespace mcmc_utilities
   };
 
   template <typename T_p,typename T_var1>
-  class _obs_const_vnode
-    :public _vnode<T_p,T_var1>
+  class obs_const_vnode
+    :public vnode<T_p,T_var1>
   {
   private:
     std::vector<T_var1> data;
   public:
-    _obs_const_vnode(std::string n,const std::vector<T_var1>& d)
-      :_vnode<T_p,T_var1>("obs_const",n,{}),data(d)
+    obs_const_vnode(std::string n,const std::vector<T_var1>& d)
+      :vnode<T_p,T_var1>("obs_const",n,{}),data(d)
     {
       this->binded=true;
     }
@@ -42,19 +42,12 @@ namespace mcmc_utilities
     {
       return std::shared_ptr<node<T_p,T_var1> >(new obs_const_node<T_p,T_var1>(data));
     }
+
+    std::shared_ptr<vnode<T_p,T_var1> > clone()const override
+    {
+      return std::shared_ptr<vnode<T_p,T_var1> >(new obs_const_vnode<T_p,T_var1>(*this));
+    }
   };
-
-  template <typename T_p,typename T_var1>
-  auto obs_const_vnode(std::string n,const std::vector<T_var1>& d)
-  {
-    return shared_ptr<_vnode<T_p,T_var1> >(new _obs_const_vnode<T_p,T_var1>(n,d));
-  }
-
-  template <typename T_p,typename T_var1>
-  auto obs_const_vnode(const std::vector<T_var1>& d)
-  {
-    return shared_ptr<_vnode<T_p,T_var1> >(new _obs_const_vnode<T_p,T_var1>(std::string("obs_const")+node_count<_obs_const_vnode<T_p,T_var1> >(),d));
-  }
 
 }
 

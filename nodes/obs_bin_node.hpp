@@ -30,36 +30,40 @@ namespace mcmc_utilities
   };
 
   template <typename T_p,typename T_var1>
-  class _obs_bin_vnode
-    :public _vnode<T_p,T_var1>
+  class obs_bin_vnode
+    :public vnode<T_p,T_var1>
   {
   private:
     std::vector<T_var1> data;
   public:
-    _obs_bin_vnode(std::string n,const std::vector<T_var1>& d,const std::initializer_list<std::pair<std::shared_ptr<_vnode<T_p,T_var1> >,size_t> >& p)
-      :_vnode<T_p,T_var1>("obs_bin",n,p),data(d)
+    
+    obs_bin_vnode(std::string n,const std::vector<T_var1>& d,
+		  const std::pair<const vnode<T_p,T_var1>&,size_t>& p1,
+		  const std::pair<const vnode<T_p,T_var1>&,size_t>& p2)
+      :vnode<T_p,T_var1>("obs_bin",n,{p1,p2}),data(d)
     {
       this->binded=true;
     }
 
+    obs_bin_vnode(const std::vector<T_var1>& d,
+		  const std::pair<const vnode<T_p,T_var1>&,size_t>& p1,
+		  const std::pair<const vnode<T_p,T_var1>&,size_t>& p2)
+      :vnode<T_p,T_var1>("obs_bin",std::string("obs_bin")+node_count<obs_bin_vnode<T_p,T_var1> >(),{p1,p2}),data(d)
+    {
+      this->binded=true;
+    }
+    
+    
     std::shared_ptr<node<T_p,T_var1> > get_node()const override
     {
       return std::shared_ptr<node<T_p,T_var1> >(new obs_bin_node<T_p,T_var1>(data));
     }
+    
+    std::shared_ptr<vnode<T_p,T_var1> > clone()const override
+    {
+      return std::shared_ptr<vnode<T_p,T_var1> >(new obs_bin_vnode<T_p,T_var1>(*this));
+    }
   };
-
-  template <typename T_p,typename T_var1>
-  auto obs_bin_vnode(std::string n,const std::vector<T_var1>& d,const std::pair<std::shared_ptr<_vnode<T_p,T_var1> >,size_t> & p1,const std::pair<std::shared_ptr<_vnode<T_p,T_var1> >,size_t> & p2)
-  {
-    return shared_ptr<_vnode<T_p,T_var1> >(new _obs_bin_vnode<T_p,T_var1>(n,d,{p1,p2}));
-  }
-
-  template <typename T_p,typename T_var1>
-  auto obs_bin_vnode(const std::vector<T_var1>& d,const std::pair<std::shared_ptr<_vnode<T_p,T_var1> >,size_t> & p1,const std::pair<std::shared_ptr<_vnode<T_p,T_var1> >,size_t> & p2)
-  {
-    return shared_ptr<_vnode<T_p,T_var1> >(new _obs_bin_vnode<T_p,T_var1>(std::string("obs_bin")+node_count<_obs_bin_vnode<T_p,T_var1> >(),d,{p1,p2}));
-  }
-
 }
 
 
