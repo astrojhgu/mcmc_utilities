@@ -64,7 +64,8 @@ namespace mcmc_utilities
       return std::shared_ptr<vnode<T_p,T_var1> >(new normal_vnode<T_p,T_var1>(*this));
     }
   };
-  
+
+  using vnormal=normal_vnode<double,double>;
 };
 
 #endif

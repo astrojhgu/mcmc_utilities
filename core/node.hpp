@@ -1,3 +1,7 @@
+#include "mcmc_exception.hpp"
+#include "stochastic_node.hpp"
+#include "observed_node.hpp"
+
 #ifndef NODE_HPP
 #define NODE_HPP
 
@@ -5,8 +9,6 @@
 #include <vector>
 #include <list>
 #include <map>
-#include "mcmc_exception.hpp"
-
 
 namespace mcmc_utilities
 {
@@ -22,10 +24,6 @@ namespace mcmc_utilities
   template <typename T_p,typename T_var1>
   class node
   {
-    friend class stochastic_node<T_p,T_var1>;
-    friend class observed_node<T_p,T_var1>;
-    friend class deterministic_node<T_p,T_var1>;
-    
   protected:
     std::list<stochastic_node<T_p,T_var1>* > stochastic_children;
     std::list<observed_node<T_p,T_var1>* > observed_children;
@@ -88,6 +86,21 @@ namespace mcmc_utilities
 	  throw mcmc_exception("n exceeds the num of parents");
 	}
       do_connect_to_parent(prhs,n,idx);
+    }
+
+    void add_observed_child(observed_node<T_p,T_var1>* prhs)
+    {
+      observed_children.push_back(prhs);
+    }
+
+    void add_stochastic_child(stochastic_node<T_p,T_var1>* prhs)
+    {
+      stochastic_children.push_back(prhs);
+    }
+
+    void add_deterministic_child(deterministic_node<T_p,T_var1>* prhs)
+    {
+      deterministic_children.push_back(prhs);
     }
 
     T_var1 parent(size_t pid,size_t obsid)const

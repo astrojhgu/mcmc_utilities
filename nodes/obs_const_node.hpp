@@ -33,7 +33,7 @@ namespace mcmc_utilities
     std::vector<T_var1> data;
   public:
     obs_const_vnode(std::string n,const std::vector<T_var1>& d)
-      :vnode<T_p,T_var1>("obs_const",n,{}),data(d)
+      :vnode<T_p,T_var1>("obs_const",n),data(d)
     {
       this->binded=true;
     }
@@ -49,6 +49,7 @@ namespace mcmc_utilities
     }
   };
 
+  using obs_vconst=obs_const_vnode<double,double>;
 }
 
 

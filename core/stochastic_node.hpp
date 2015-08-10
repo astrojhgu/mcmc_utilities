@@ -101,7 +101,7 @@ namespace mcmc_utilities
     void do_connect_to_parent(node<T_p,T_var1>*  rhs,size_t n,size_t idx) override
     {
       this->parents.at(n)=std::make_pair(rhs,idx);
-      rhs->stochastic_children.push_back(this);
+      rhs->add_stochastic_child(this);
     }
 
     virtual bool is_continuous(size_t idx)const=0;

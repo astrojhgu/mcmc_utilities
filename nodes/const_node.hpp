@@ -49,6 +49,8 @@ namespace mcmc_utilities
       return std::shared_ptr<vnode<T_p,T_var1> >(new const_vnode<T_p,T_var1>(*this));
     }
   };
+
+  using vconst=const_vnode<double,double>;
 };
 
 #endif

@@ -118,7 +118,7 @@ namespace mcmc_utilities
     {
       this->add_node(std::shared_ptr<node<T_p,T_var1> >(pn),tag,parents);
     }
-
+    
     
     void add_node(const std::shared_ptr<node<T_p,T_var1> >& pn,
 		  const T_tag& tag,

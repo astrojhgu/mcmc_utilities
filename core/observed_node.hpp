@@ -55,7 +55,7 @@ namespace mcmc_utilities
     void do_connect_to_parent(node<T_p,T_var1>*  rhs,size_t n,size_t idx) override
     {
       this->parents.at(n)=std::make_pair(rhs,idx);
-      rhs->observed_children.push_back(this);
+      rhs->add_observed_child(this);
     }
   };  
 }

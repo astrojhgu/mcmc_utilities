@@ -46,7 +46,7 @@ namespace mcmc_utilities
     T_var1 b;
   public:
     uniform_vnode(std::string n,T_var1 _a,T_var1 _b)
-      :vnode<T_p,T_var1>("uniform",n,{}),a(_a),b(_b)
+      :vnode<T_p,T_var1>("uniform",n),a(_a),b(_b)
     {
       this->binded=true;
     }
@@ -61,6 +61,8 @@ namespace mcmc_utilities
       return std::shared_ptr<vnode<T_p,T_var1> >(new uniform_vnode<T_p,T_var1>(*this));
     }
   };
+
+  using vuniform=uniform_vnode<double,double>;
 };
 
 #endif

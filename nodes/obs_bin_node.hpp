@@ -51,6 +51,7 @@ namespace mcmc_utilities
       :vnode<T_p,T_var1>("obs_bin",std::string("obs_bin")+node_count<obs_bin_vnode<T_p,T_var1> >(),{p1,p2}),data(d)
     {
       this->binded=true;
+      this->named=false;
     }
     
     
@@ -64,6 +65,8 @@ namespace mcmc_utilities
       return std::shared_ptr<vnode<T_p,T_var1> >(new obs_bin_vnode<T_p,T_var1>(*this));
     }
   };
+  
+  using obs_vbin=obs_bin_vnode<double,double>;
 }
 
 

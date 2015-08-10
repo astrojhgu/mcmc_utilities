@@ -25,23 +25,25 @@ namespace mcmc_utilities
     std::vector<std::pair<std::shared_ptr<vnode<T_p,T_var1> >,size_t> > parents;
     bool binded;
     bool added;
+    bool named;
     
     vnode(const std::string& n)
-      :vnode("unbinded",n,{})
+      :vnode("unbinded",n)
     {}
     
     vnode(const std::string& t,const std::string& n)
-      :vnode(t,n,{})
+      :type(t),name(n),binded(false),added(false),named(true)
     {}
     
     vnode(const std::string& t,const std::string& n,const std::initializer_list<std::pair<const vnode<T_p,T_var1>&,size_t> >& p)
-      :type(t),name(n),binded(false),added(false)
+      :type(t),name(n),binded(false),added(false),named(true)
     {
       for (auto & i : p)
 	{
 	  parents.push_back({i.first.clone(),i.second});
 	}
     }
+
     
     virtual ~vnode()
     {}
@@ -57,6 +59,12 @@ namespace mcmc_utilities
     virtual std::shared_ptr<vnode<T_p,T_var1> > clone()const
     {
       return std::shared_ptr<vnode<T_p,T_var1> >(new vnode<T_p,T_var1>(*this));
+    }
+
+    void set_name(const std::string& n)
+    {
+      name=n;
+      named=true;
     }
 
   public:
@@ -75,6 +83,7 @@ namespace mcmc_utilities
       :vnode<T_p,T_var1>("eq",std::string("eq")+node_count<eq_vnode<T_p,T_var1> >(),{p})
     {
       this->binded=true;
+      this->named=false;
     }
 
   public:
@@ -105,24 +114,8 @@ namespace mcmc_utilities
     }
   };
   
-  
-  template <typename T_p,typename T_var1>
-  class new_node
-  {
-  public:
-    std::string name;
-  public:
-    new_node(const std::string& n)
-      :name(n)
-    {}
-    
-    auto operator=(const vnode<T_p,T_var1>& rhs)
-    {
-      const_cast<vnode<T_p,T_var1>&>(rhs).name=name;
-      cout<<typeid(rhs).name() << " " << rhs.name<<endl;
-      return rhs;
-    }
-  };
+ 
+  using vn=vnode<double,double>;
 }
 
 #endif

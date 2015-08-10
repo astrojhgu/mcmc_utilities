@@ -5,7 +5,7 @@
 #include <map>
 #include <utility>
 #include <cassert>
-
+#include <set>
 
 namespace mcmc_utilities
 {
@@ -18,7 +18,12 @@ namespace mcmc_utilities
     std::map<std::string,shared_ptr<vnode<T_p,T_var1> > > vnode_map;
     
   public:
-    void add_node(std::string name,const vnode<T_p,T_var1>& vn)
+    std::string add_node(const vnode<T_p,T_var1>& vn)
+    {
+      return add_node(vn.name,vn);
+    }
+    
+    std::string add_node(std::string name,const vnode<T_p,T_var1>& vn)
     {
       auto p=vnode_map.find(name);
       if(p!=vnode_map.end())
@@ -31,7 +36,10 @@ namespace mcmc_utilities
       else if(vn.binded==true)
 	{
 	  auto p=vn.clone();
-	  p->name=name;
+	  if(p->name!=name)
+	    {
+	      p->set_name(name);
+	    }
 	  vnode_map.insert(std::make_pair(name,p));
 	}
       for(auto& i: vn.parents)
@@ -41,6 +49,7 @@ namespace mcmc_utilities
 	      add_node(i.first->name,*(i.first));
 	    }
 	}
+      return name;
     }
     
     bool validate()
@@ -97,23 +106,120 @@ namespace mcmc_utilities
   
   
   template <typename T_p,typename T_var1>
-  void graph2gv(const graph_builder<T_p,T_var1>& gb,ostream& os)
+  std::set<std::shared_ptr<vnode<T_p,T_var1> > > enumerate_all_named_parents(const graph_builder<T_p,T_var1>& gb,const std::shared_ptr<vnode<T_p,T_var1> >& pn)
+  {
+    std::set<std::shared_ptr<vnode<T_p,T_var1> > > result;
+    for(auto & i : pn->parents)
+      {
+	if(i.first->named==true)
+	  {
+	    result.insert(i.first);
+	  }
+	else
+	  {
+	    for (auto& j:enumerate_all_named_parents(gb,i.first))
+
+	      {
+		result.insert(j);
+	      }
+	  }
+      }
+    return result;
+  }
+
+  std::string draw_node(std::string name,std::string type,int ninput,int noutput)
+  {
+    std::string result;
+    result+=name;
+    result+="[label=\"{";
+    result+="{";
+    for(int i=0;i<ninput;++i)
+      {
+	result+="<";
+	result+="i";
+	result+=to_string(i);
+	result+=">";
+	result+="i";
+	result+=to_string(i);
+	if(i!=ninput-1)
+	  {
+	    result+="|";
+	  }
+      }
+    result+="}|";
+    result+=name;
+    result+=":";
+    result+=type;
+      
+    result+="|{";
+    for(int i=0;i<noutput;++i)
+      {
+	result+="<";
+	result+="o";
+	result+=to_string(i);
+	result+=">";
+	result+="o";
+	result+=to_string(i);
+	if(i!=noutput-1)
+	  {
+	    result+="|";
+	  }
+      }
+    result+="}}\"];";
+    return result;
+  }
+  
+  template <typename T_p,typename T_var1>
+  void graph2dot1(const graph_builder<T_p,T_var1>& gb,ostream& os)
   {
     os<<"digraph{"<<endl;
+    os<<"node [shape=record];"<<endl;
+    for( const auto& i : gb.vnode_map )
+      {
+	std::string node_name = i.first;
+	auto p=i.second->get_node();
+	int nparents=p->num_of_parents();
+	int ndim=p->num_of_dims();
+	os<<draw_node(node_name,i.second->type,nparents,ndim)<<endl;;
+      }
     
     for (const auto& i : gb.vnode_map)
       {
-	std::string node1=string("\"")+i.first+":"+i.second->type+"\"";
+	std::string node1=i.first;
+	int n=0;
 	for (const auto& j: i.second->parents)
 	  {
-	    std::string node2=string("\"")+j.first->name+":"+j.first->type+"\"";
-	    os<<node2<<" -> "<<node1<<" ;"<<endl;
+	    std::string node2=j.first->name;
+	    os<<node2<<":o"<<j.second<<" -> "<<node1<<":i"<<n<<" ;"<<endl;
+	    ++n;
 	  }
       }
     
     os<<"}"<<endl;
   }
   
+  template <typename T_p,typename T_var1>
+  void graph2dot2(const graph_builder<T_p,T_var1>& gb,ostream& os)
+  {
+    os<<"digraph{"<<endl;
+    
+    for (const auto& i : gb.vnode_map)
+      {
+	std::string node1=string("\"")+i.first+":"+i.second->type+"\"";
+	if(i.second->named)
+	  {
+	    for (const auto& j:enumerate_all_named_parents(gb,i.second))
+	      {
+		std::string node2=string("\"")+j->name+":"+j->type+"\"";
+		os<<node2<<" -> "<<node1<<" ;"<<endl;
+		
+	      }
+	  }
+	
+      }
+    
+    os<<"}"<<endl;
+  }
 }
 
 
