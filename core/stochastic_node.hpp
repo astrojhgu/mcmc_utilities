@@ -71,11 +71,17 @@ namespace mcmc_utilities
   public:
     void sample(const base_urand<T_p>& rnd)
     {
+      do_sample(rnd);
+    }
+
+  private:
+    virtual void do_sample(const base_urand<T_p>& rnd)
+    {
       constexpr size_t nsamp=10;
       for(int i=0;i<this->num_of_dims();++i)
 	{
 	  this->set_current_idx(i);
-
+	  
 	  if(is_continuous(i))
 	    {
 	      T_var1 xprev=this->value(i,0);
@@ -89,8 +95,7 @@ namespace mcmc_utilities
 	    }
 	}
     }
-
-  private:
+    
     virtual T_p do_log_prior_prob()const=0;
     T_var1 do_value(size_t idx,size_t obsid)const override final
     {
