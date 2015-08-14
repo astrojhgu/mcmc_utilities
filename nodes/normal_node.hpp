@@ -4,6 +4,7 @@
 #include <helper/vnode.hpp>
 #include <helper/node_counter.hpp>
 #include <string>
+#include <helper/abstract_node_factory.hpp>
 
 namespace mcmc_utilities
 {
@@ -65,6 +66,25 @@ namespace mcmc_utilities
     }
   };
 
+  template <typename T_p,typename T_var1>
+  class normal_node_factory
+    :public abstract_node_factory<T_p,T_var1>
+  {
+  public:
+    normal_node_factory()
+      :abstract_node_factory<T_p,T_var1>({"mu","sigma"},{"x"},{},{})
+    {}
+    
+  public:
+    std::shared_ptr<node<T_p,T_var1> >
+    do_get_node(
+	     const std::vector<T_var1>& scalar_param,
+	     const std::vector<std::vector<T_var1> >& vector_param)const override
+    {
+      return std::shared_ptr<node<T_p,T_var1> >(new normal_node<T_p,T_var1>);
+    }      
+  };
+  
   using vnormal=normal_vnode<double,double>;
 };
 

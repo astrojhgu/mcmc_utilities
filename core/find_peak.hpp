@@ -30,7 +30,7 @@ namespace mcmc_utilities
     func.xr=xrange.second;
     //dist.var_range(func.xl,func.xr);
 
-    int j=0;
+    
     const T_p TOL=std::sqrt(std::numeric_limits<T_p>::epsilon());
     T_p xx=0,peak_x=0,fx=0,fb=0,fa=0,bx=0,ax=0;
 

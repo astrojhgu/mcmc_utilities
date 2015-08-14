@@ -50,6 +50,25 @@ namespace mcmc_utilities
     }
   };
 
+  template <typename T_p,typename T_var1>
+  class const_node_factory
+    :public abstract_node_factory<T_p,T_var1>
+  {
+  public:
+    const_node_factory()
+      :abstract_node_factory<T_p,T_var1>({""},{"value"},{"value"},{})
+    {}
+    
+  public:
+    std::shared_ptr<node<T_p,T_var1> >
+    do_get_node(
+	     const std::vector<T_var1>& scalar_param,
+	     const std::vector<std::vector<T_var1> >& vector_param)const override
+    {
+      return std::shared_ptr<node<T_p,T_var1> >(new const_node<T_p,T_var1>(scalar_param[0]));
+    }      
+  };
+  
   using vconst=const_vnode<double,double>;
 };
 

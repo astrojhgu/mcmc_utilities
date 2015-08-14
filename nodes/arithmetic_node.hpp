@@ -7,6 +7,7 @@
 #include <utility>
 #include <string>
 #include <initializer_list>
+#include <helper/abstract_node_factory.hpp>
 
 namespace mcmc_utilities
 {
@@ -25,7 +26,24 @@ namespace mcmc_utilities
       return this->parent(0,obsid)+this->parent(1,obsid);
     }
   };
-  
+
+  template <typename T_p,typename T_var1>
+  class add_node_factory
+    :public abstract_node_factory<T_p,T_var1>
+  {
+  public:
+    add_node_factory()
+      :abstract_node_factory<T_p,T_var1>({"op1","op2"},{"result"},{},{})
+    {}
+    
+    std::shared_ptr<node<T_p,T_var1> >
+    do_get_node(
+	     const std::vector<T_var1>& scalar_param,
+	     const std::vector<std::vector<T_var1> >& vector_param)const override
+    {
+      return std::shared_ptr<node<T_p,T_var1> >(new add_node<T_p,T_var1>);
+    }      
+  };
   
   
   template <typename T_p,typename T_var1>
@@ -74,7 +92,24 @@ namespace mcmc_utilities
       return this->parent(0,obsid)-this->parent(1,obsid);
     }
   };
-  
+
+  template <typename T_p,typename T_var1>
+  class sub_node_factory
+    :public abstract_node_factory<T_p,T_var1>
+  {
+  public:
+    sub_node_factory()
+      :abstract_node_factory<T_p,T_var1>({"op1","op2"},{"result"},{},{})
+    {}
+  public:
+    std::shared_ptr<node<T_p,T_var1> >
+    do_get_node(
+	     const std::vector<T_var1>& scalar_param,
+	     const std::vector<std::vector<T_var1> >& vector_param)const override
+    {
+      return std::shared_ptr<node<T_p,T_var1> >(new sub_node<T_p,T_var1>);
+    }      
+  };
   
   
   template <typename T_p,typename T_var1>
@@ -125,7 +160,24 @@ namespace mcmc_utilities
     }
   };
   
-  
+  template <typename T_p,typename T_var1>
+  class mul_node_factory
+    :public abstract_node_factory<T_p,T_var1>
+  {
+  public:
+    mul_node_factory()
+      :abstract_node_factory<T_p,T_var1>({"op1","op2"},{"result"},{},{})
+    {}
+    
+  public:
+    std::shared_ptr<node<T_p,T_var1> >
+    do_get_node(
+		const std::vector<T_var1>& scalar_param,
+		const std::vector<std::vector<T_var1> >& vector_param)const override
+    {
+      return std::shared_ptr<node<T_p,T_var1> >(new mul_node<T_p,T_var1>);
+    }      
+  };
   
   template <typename T_p,typename T_var1>
   class mul_vnode
@@ -173,7 +225,25 @@ namespace mcmc_utilities
       return this->parent(0,obsid)/this->parent(1,obsid);
     }
   };
-  
+
+  template <typename T_p,typename T_var1>
+  class div_node_factory
+    :public abstract_node_factory<T_p,T_var1>
+  {
+  public:
+    div_node_factory()
+      :abstract_node_factory<T_p,T_var1>({"op1","op2"},{"result"},{},{})
+    {}
+    
+  public:
+    std::shared_ptr<node<T_p,T_var1> >
+    do_get_node(
+	     const std::vector<T_var1>& scalar_param,
+	     const std::vector<std::vector<T_var1> >& vector_param)const override
+    {
+      return std::shared_ptr<node<T_p,T_var1> >(new div_node<T_p,T_var1>);
+    }      
+  };
   
   
   template <typename T_p,typename T_var1>

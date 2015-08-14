@@ -86,7 +86,7 @@ namespace mcmc_utilities
     virtual std::vector<T_var> do_init_points()const
     {
       std::vector<T_var> result(3);
-      for(int n=0;n<result.size();++n)
+      for(size_t n=0;n<result.size();++n)
 	{
 	  if(n!=1)
 	    {

@@ -105,7 +105,7 @@ namespace mcmc_utilities
       std::vector<particle<T_p,T_state> > updated_state(particle_list.size());
       std::vector<T_p> log_weight(particle_list.size());
 #pragma omp parallel for
-      for(int i=0;i<particle_list.size();++i)
+      for(size_t i=0;i<particle_list.size();++i)
 	{
 	  cprob prob;
 	  prob.ptr_pf_model=this;
@@ -125,30 +125,32 @@ namespace mcmc_utilities
 	}
       T_p max_log_weight=*(std::max_element(log_weight.begin(),log_weight.end()));
 #pragma omp parallel for
-      for(int i=0;i<particle_list.size();++i)
+      for(size_t i=0;i<particle_list.size();++i)
 	{
 	  particle_list[i].weight=std::exp(log_weight[i]-max_log_weight);
 	}
       weight_cdf[0]=particle_list[0].weight;
-      for(int i=1;i<particle_list.size();++i)
+      for(size_t i=1;i<particle_list.size();++i)
 	{
 	  weight_cdf[i]=weight_cdf[i-1]+particle_list[i].weight;
 	}
 #pragma omp parallel for
-      for(int i=0;i<particle_list.size();++i)
+      for(size_t i=0;i<particle_list.size();++i)
 	{
 	  T_p p=random()/(T_p)RAND_MAX*weight_cdf.back();
 
-	  int n=-1;
-	  for(int j=0;j<weight_cdf.size();++j)
+	  size_t n=0;
+	  bool changed=false;
+	  for(size_t j=0;j<weight_cdf.size();++j)
 	    {
 	      if(weight_cdf[j]>=p)
 		{
 		  n=j;
+		  changed=true;
 		  break;
 		}
 	    }
-	  assert(n!=-1);
+	  assert(changed);
 	  updated_state[i]=particle_list[n];
 	  updated_state[i].weight=1;
 	}

@@ -78,7 +78,7 @@ namespace mcmc_utilities
     virtual void do_sample(const base_urand<T_p>& rnd)
     {
       constexpr size_t nsamp=10;
-      for(int i=0;i<this->num_of_dims();++i)
+      for(size_t i=0;i<this->num_of_dims();++i)
 	{
 	  this->set_current_idx(i);
 	  

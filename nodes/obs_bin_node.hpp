@@ -21,12 +21,31 @@ namespace mcmc_utilities
     T_p do_log_prior_prob()const override
     {
       T_p result=0;
-      for(int i=0;i<this->nobs();++i)
+      for(size_t i=0;i<this->nobs();++i)
 	{
 	  result+=logdbin(this->value(0,i),this->parent(0,i),this->parent(1,i));
 	}
       return result;
     }
+  };
+
+  template <typename T_p,typename T_var1>
+  class obs_bin_node_factory
+    :public abstract_node_factory<T_p,T_var1>
+  {
+  public:
+    obs_bin_node_factory()
+      :abstract_node_factory<T_p,T_var1>({"p","n"},{"x"},{},{})
+    {}
+    
+  public:
+    std::shared_ptr<node<T_p,T_var1> >
+    do_get_node(
+	     const std::vector<T_var1>& scalar_param,
+	     const std::vector<std::vector<T_var1> >& vector_param)const override
+    {
+      return std::shared_ptr<node<T_p,T_var1> >(new obs_bin_node<T_p,T_var1>(vector_param[0]));
+    }      
   };
 
   template <typename T_p,typename T_var1>

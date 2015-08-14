@@ -36,7 +36,25 @@ namespace mcmc_utilities
       //return make_pair(-10,10);
     }
   };
-  
+
+  template <typename T_p,typename T_var1>
+  class uniform_node_factory
+    :public abstract_node_factory<T_p,T_var1>
+  {
+  public:
+    uniform_node_factory()
+      :abstract_node_factory<T_p,T_var1>({},{"x"},{"a","b"},{})
+    {}
+    
+  public:
+    std::shared_ptr<node<T_p,T_var1> >
+    do_get_node(
+	     const std::vector<T_var1>& scalar_param,
+	     const std::vector<std::vector<T_var1> >& vector_param)const override
+    {
+      return std::shared_ptr<node<T_p,T_var1> >(new uniform_node<T_p,T_var1>(scalar_param.at(0),scalar_param.at(1)));
+    }      
+  };
   
   template <typename T_p,typename T_var1>
   class uniform_vnode

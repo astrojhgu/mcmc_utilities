@@ -5,6 +5,7 @@
 #include <helper/node_counter.hpp>
 #include <math/distributions.hpp>
 #include <math/functions.hpp>
+#include <cassert>
 
 namespace mcmc_utilities
 {
@@ -23,6 +24,25 @@ namespace mcmc_utilities
       assert(0);//should never be called
       return 0;
     }
+  };
+
+  template <typename T_p,typename T_var1>
+  class obs_const_node_factory
+    :public abstract_node_factory<T_p,T_var1>
+  {
+  public:
+    obs_const_node_factory()
+      :abstract_node_factory<T_p,T_var1>({},{"data"},{},{"data"})
+    {}
+    
+  public:
+    std::shared_ptr<node<T_p,T_var1> >
+    do_get_node(
+	     const std::vector<T_var1>& scalar_param,
+	     const std::vector<std::vector<T_var1> >& vector_param)const override
+    {
+      return std::shared_ptr<node<T_p,T_var1> >(new obs_const_node<T_p,T_var1>(vector_param[0]));
+    }      
   };
 
   template <typename T_p,typename T_var1>

@@ -42,11 +42,11 @@ namespace mcmc_utilities
     std::vector<T_var1> get_params()const
     {
       std::vector<T_var1> result;
-      int n=0;
+      size_t n=0;
       for(auto p=stochastic_node_list.begin();
 	  p!=stochastic_node_list.end();++p,++n)
 	{
-	  for(int i=0;i<(*p)->num_of_dims();++i)
+	  for(size_t i=0;i<(*p)->num_of_dims();++i)
 	    {
 	      result.push_back((*p)->value(i,0));
 	    }
@@ -161,7 +161,7 @@ namespace mcmc_utilities
 	{
 	  throw mcmc_exception("input node is neither stochastic node, nor deterministic node");
 	}
-      int n=0;
+      size_t n=0;
       for(auto& i:parents)
 	{
 	  auto n_iter=node_map.find(i.first);

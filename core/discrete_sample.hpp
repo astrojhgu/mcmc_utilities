@@ -20,7 +20,7 @@ namespace mcmc_utilities
       }
     std::vector<T_p> prob(cp.size());
     prob[0]=std::exp(pd.eval_log(cp[0]));
-    for(int i=1;i<cp.size();++i)
+    for(size_t i=1;i<cp.size();++i)
       {
 	prob[i]=prob[i-1]+std::exp(pd.eval_log(cp[i]));
       }
