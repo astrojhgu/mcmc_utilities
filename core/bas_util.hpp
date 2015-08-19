@@ -7,6 +7,9 @@
 #include "distribution.hpp"
 namespace mcmc_utilities
 {
+  template <typename T_p,typename T_var>
+  class probability_density_1d;
+
   template <typename Tp,typename Tvar>
   struct dist_adapter
   {

@@ -35,7 +35,7 @@ namespace mcmc_utilities
   {
   public:
     obs_bin_node_factory()
-      :abstract_node_factory<T_p,T_var1>({"p","n"},{"x"},{},{})
+      :abstract_node_factory<T_p,T_var1>({"p","n"},{"x"},{},{"data"})
     {}
     
   public:

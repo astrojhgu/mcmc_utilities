@@ -1,6 +1,7 @@
 #include <core/distribution.hpp>
 #include <core/gibbs_sampler.hpp>
 #include <math/distributions.hpp>
+#include <uvsamplers/arms/arms_sampler.hpp>
 #include <vector>
 #include <fstream>
 #include <cassert>
@@ -86,9 +87,10 @@ int main()
   x.push_back(100);
   u_random<double> rng;
   //cout<<cd.eval_log(x)<<endl;
+  arms_sampler<double,double> as;
   for(int n=0;n<10000;++n)
     {
-      gibbs_sample(cd,x,1,rng);
+      gibbs_sample(cd,x,as);
       if(n>1000)
 	{
 	  for(unsigned int i=0;i<x.size();++i)

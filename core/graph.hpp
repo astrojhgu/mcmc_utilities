@@ -31,11 +31,11 @@ namespace mcmc_utilities
       observed_node_list.clear();
     }
 
-    void sample(const base_urand<T_p>& urand)
+    void sample(const uvsampler<T_p,T_var1>& smp)
     {
       for(auto& p:stochastic_node_list)
 	{
-	  p->sample(urand);
+	  p->sample(smp);
 	}
     }
 

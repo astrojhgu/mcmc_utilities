@@ -4,11 +4,19 @@
 #include <limits>
 #include "mcmc_traits.hpp"
 #include "mcmc_exception.hpp"
+#include "find_peak.hpp"
 #include <vector>
 #include <utility>
 
 namespace mcmc_utilities
 {
+  template <typename T_p,typename T_var>
+  class probability_density_1d;
+
+  template<typename T_p,typename T_var>
+  T_var find_peak(const probability_density_1d<T_p,T_var>& dist);
+
+  
   template <typename T_p,typename T_var>
   class probability_density_md
   {
@@ -59,7 +67,8 @@ namespace mcmc_utilities
   public:
     T_p eval_log(const T_var& x)const
     {
-      return do_eval_log(x);
+      T_p result=do_eval_log(x);
+      return result;
     }
 
     virtual ~probability_density_1d()
@@ -93,7 +102,7 @@ namespace mcmc_utilities
 	      std::pair<T_var,T_var> xrange(var_range());
 	      T_var xl=xrange.first,xr=xrange.second;
 	      
-	      result[n]= xl+(xr-xl)/(4)*(n+1);
+	      result[n]= xl+(xr-xl)/(result.size()+1)*(n+1);
 	    }
 	  else
 	    {
@@ -103,6 +112,7 @@ namespace mcmc_utilities
       return result;
     };
 
+    //possible values when this distribution is discrete
     virtual std::vector<T_var> do_candidate_points()const
     {
       return std::vector<T_var>();

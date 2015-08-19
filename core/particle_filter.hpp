@@ -28,7 +28,7 @@ namespace mcmc_utilities
   };
   
  
-  template <typename T_p,typename T_state,typename T_obs,typename T_t,typename T_urand>
+  template <typename T_p,typename T_state,typename T_obs,typename T_t>
   class pf_model
   {
   public:
@@ -68,7 +68,7 @@ namespace mcmc_utilities
       
 
   public:
-    void update_sir(const T_obs& y,const T_t& t,std::vector<particle<T_p,T_state> >& particle_list,T_t& prev_t, const T_urand& urand)const
+    void update_sir(const T_obs& y,const T_t& t,std::vector<particle<T_p,T_state> >& particle_list,T_t& prev_t, const uvsampler<T_p,T_state1>& sampler)const
     {
       class cprob
 	:public probability_density_md<T_p,T_state>
@@ -76,12 +76,12 @@ namespace mcmc_utilities
       public:
 	typedef typename element_type_trait<T_state>::element_type T_var1;
       private:
-	const pf_model<T_p,T_state,T_obs,T_t, T_urand>*  ptr_pf_model;
+	const pf_model<T_p,T_state,T_obs,T_t>*  ptr_pf_model;
 	const T_obs* ptr_obs_vec;
 	const T_state* ptr_particle;
 	const T_t* ptr_prev_t;
 	const T_t* ptr_t;
-	friend class pf_model<T_p,T_state,T_obs,T_t,T_urand>;
+	friend class pf_model<T_p,T_state,T_obs,T_t>;
       public:
 	T_p do_eval_log(const T_state& x)const
 	{
@@ -116,7 +116,7 @@ namespace mcmc_utilities
 	  T_state new_pred(particle_list[i].state);
 	  //ofstream ofs("log.txt");
 
-	  gibbs_sample(prob,new_pred, 1 ,urand);
+	  gibbs_sample(prob,new_pred,sampler);
 	  
 	  particle_list[i].state=new_pred;
 	  //particle_list[i].weight=std::exp(obs_log_prob(y,new_pred,t));

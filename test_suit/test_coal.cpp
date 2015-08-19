@@ -1,6 +1,7 @@
 #include <core/distribution.hpp>
 #include <core/gibbs_sampler.hpp>
 #include <math/distributions.hpp>
+#include <uvsamplers/arms/arms_sampler.hpp>
 #include <vector>
 #include <fstream>
 #include <cassert>
@@ -32,6 +33,8 @@ public:
 
   double do_eval_log(const std::vector<double>& x)const
   {
+    
+    
     double lambda1=x[0];
     double lambda2=x[1];
     double k=x[2];
@@ -51,6 +54,7 @@ public:
 	double logp1=logdpoisson(n,lambda);
 	logp+=logp1;
       }
+
     return logp;
   }
 
@@ -58,7 +62,7 @@ public:
   {
     if(ndim==0||ndim==1)
       {
-	return make_pair(0.,100.);
+	return make_pair(0.0001,100.);
       }
     else
       {
@@ -74,11 +78,14 @@ int main()
   x.push_back(3);
   x.push_back(4);
   x.push_back(50);
-  u_random<double> rng;
+  //u_random<double> rng;
+  arms_sampler<double,double> as;
+
   //cout<<cd.eval_log(x)<<endl;
   for(int n=0;n<10000;++n)
     {
-      gibbs_sample(cd,x,1,rng);
+      //gibbs_sample<double,std::vector<double> >(cd,x,1,as,10);
+      gibbs_sample(cd,x,as);
       for(int i=0;i<x.size();++i)
 	{
 	  cout<<x[i]<<" ";

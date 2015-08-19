@@ -1,14 +1,14 @@
 #ifndef GIBBS_SAMPLER_HPP
 #define GIBBS_SAMPLER_HPP
 //#include "rejection_sampler_1d.hpp"
-#include "arms.hpp"
+#include "uvsampler.hpp"
 #include "discrete_sample.hpp"
 #include <vector>
 
 namespace mcmc_utilities
 {
-  template <typename T_p,typename T_var,typename T_urand>
-  void gibbs_sample(const probability_density_md<T_p,T_var>& pd,T_var& init_var,bool dometrop,const T_urand& urand, int sample_cnt=10)
+  template <typename T_p,typename T_var>
+  void gibbs_sample(const probability_density_md<T_p,T_var>& pd,T_var& init_var,const uvsampler<T_p,typename element_type_trait<T_var>::element_type>& sampler)
   {
     size_t idx=0;
     typedef typename element_type_trait<T_var>::element_type T_var1;
@@ -69,26 +69,17 @@ namespace mcmc_utilities
     cpd.p_init_var=&init_var;
     cpd.ppd=&pd;
     T_var1 xprev=0.;
-    std::vector<T_var1> xsamp(sample_cnt);
     for(idx=0;idx<get_size(init_var);++idx)
       {
-	std::vector<T_var1> cp(cpd.candidate_points());
-	if(cp.empty())
-	  {
-	    xprev=get_element(init_var,idx);
-	    arms_simple(cpd,xprev,xsamp,dometrop,urand);
-	    set_element(init_var,idx,xsamp.back());
-	  }
-	else
-	  {
-	    set_element(init_var,idx,discrete_sample(cpd,urand));
-	  }
+	xprev=get_element(init_var,idx);
+	T_var1 x=sampler.sample(cpd,xprev);
+	set_element(init_var,idx,x);
       }
   }
 
   template <typename T_p,typename T_var,typename T_urand>
-  void gibbs_sample(const probability_density_md<T_p,T_var>& pd,
-		    T_var& init_var,size_t idx,bool dometrop,const T_urand& urand, int sample_cnt=10)
+  void gibbs_sample1(const probability_density_md<T_p,T_var>& pd,
+		    T_var& init_var,size_t idx,const uvsampler<T_p,T_var>& sampler)
   {
     if(idx>=get_size(init_var))
       {
@@ -153,20 +144,11 @@ namespace mcmc_utilities
     cpd.p_init_var=&init_var;
     cpd.ppd=&pd;
     T_var1 xprev=0.;
-    std::vector<T_var1> xsamp(sample_cnt);
 
 
-    std::vector<T_var1> cp(cpd.candidate_points());
-    if(cp.empty())
-      {
-	xprev=get_element(init_var,idx);
-	arms_simple(cpd,xprev,xsamp,dometrop,urand);
-	set_element(init_var,idx,xsamp.back());
-      }
-    else
-      {
-	set_element(init_var,idx,discrete_sample(cpd,urand));
-      }
+    xprev=get_element(init_var,idx);
+    T_var1 x=sampler.sample(cpd,xprev);
+    set_element(init_var,idx,x);
   }
   
 };

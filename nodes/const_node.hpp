@@ -56,7 +56,7 @@ namespace mcmc_utilities
   {
   public:
     const_node_factory()
-      :abstract_node_factory<T_p,T_var1>({""},{"value"},{"value"},{})
+      :abstract_node_factory<T_p,T_var1>({},{"value"},{"value"},{})
     {}
     
   public:

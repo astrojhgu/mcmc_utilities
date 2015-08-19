@@ -1,6 +1,7 @@
 #include <core/graph.hpp>
 #include <math/distributions.hpp>
 #include <core/stochastic_node.hpp>
+#include <uvsamplers/arms/arms_sampler.hpp>
 #include <math/functions.hpp>
 #include <cassert>
 #include <fstream>
@@ -76,8 +77,13 @@ public:
     for(int i=0;i<nobs();++i)
       {
 	result+=logdbin(value(0,i),parent(0,i),parent(1,i));
-
       }
+    if(std::isnan(result))
+      {
+	std::cerr<<value(0,0)<<" "<<parent(0,0)<<" "<<parent(1,0)<<endl;
+      }
+    
+    assert(!std::isnan(result));
     return result;
   }
 
@@ -225,14 +231,15 @@ int main()
   
   g.set_value({"mu"},0,30.0);
 
+  arms_sampler<double,double> as;
   for(int i=0;i<100;++i)
     {
-      g.sample(rnd1);
+      g.sample(as);
     }
   
   for(int i=0;i<30000;++i)
     {
-      g.sample(rnd1);
+      g.sample(as);
       auto p(g.get_params());
       for(auto& x:p)
 	{

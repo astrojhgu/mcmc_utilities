@@ -1,6 +1,7 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <uvsamplers/arms/arms_sampler.hpp>
 using namespace std;
 #include "core/particle_filter.hpp"
 #include "random/normal.h"
@@ -61,7 +62,7 @@ public:
 
 
 class target_model
-  :public pf_model<double,std::vector<double>,std::vector<double>,double,u_random<double> >
+  :public pf_model<double,std::vector<double>,std::vector<double>,double>
 {
 public:
   typedef double T_p;
@@ -220,7 +221,7 @@ int main()
   
   //ifstream ifs("noisy_motion.txt");
   double t=0;
-  u_random<double> rng;
+  arms_sampler<double,double> as;
   for(int step=0;step<10000;++step)
     {
       t+=1;
@@ -232,7 +233,7 @@ int main()
       double y_mean=0;
       double vy_mean=0;
 
-      tm.update_sir(obs,t,particles,prev_t,rng);
+      tm.update_sir(obs,t,particles,prev_t,as);
      
       double x,vx,y,vy;
       //cout<<t<<" "<<x_mean<<" "<<v_mean<<endl;

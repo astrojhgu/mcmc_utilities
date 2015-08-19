@@ -4,7 +4,6 @@
 #include <vector>
 #include <map>
 #include "mcmc_exception.hpp"
-#include "arms.hpp"
 #include "discrete_sample.hpp"
 #include "base_urand.hpp"
 #include "node.hpp"

@@ -4,8 +4,7 @@
 #include <vector>
 #include <map>
 #include "mcmc_exception.hpp"
-#include "arms.hpp"
-#include "discrete_sample.hpp"
+#include "uvsampler.hpp"
 #include "base_urand.hpp"
 #include "node.hpp"
 
@@ -69,30 +68,26 @@ namespace mcmc_utilities
     }
 
   public:
-    void sample(const base_urand<T_p>& rnd)
+    void sample(const uvsampler<T_p,T_var1>& smp)
     {
-      do_sample(rnd);
+      do_sample(smp);
     }
 
   private:
-    virtual void do_sample(const base_urand<T_p>& rnd)
+    virtual void do_sample(const uvsampler<T_p,T_var1>& smp)
     {
-      constexpr size_t nsamp=10;
+      //constexpr size_t nsamp=10;
       for(size_t i=0;i<this->num_of_dims();++i)
 	{
 	  this->set_current_idx(i);
+	  T_var1 xprev=this->value(i,0);
+	  std::pair<T_var1,T_var1> xrange(this->var_range());
+	  xprev=xprev<xrange.first?xrange.first:xprev;
+	  xprev=xprev>xrange.second?xrange.second:xprev;
 	  
-	  if(is_continuous(i))
-	    {
-	      T_var1 xprev=this->value(i,0);
-	      std::vector<T_var1> xsamp(nsamp);
-	      arms_simple(*this,xprev,xsamp,dometrop(),rnd);
-	      this->set_value(i,xsamp.back());
-	    }
-	  else
-	    {
-	      this->set_value(i,discrete_sample(*this,rnd));
-	    }
+	  //arms_simple(*this,xprev,xsamp,dometrop(),rnd);
+	  
+	  this->set_value(i,smp.sample(*this,xprev));
 	}
     }
     
@@ -110,10 +105,6 @@ namespace mcmc_utilities
     }
 
     virtual bool is_continuous(size_t idx)const=0;
-    virtual bool dometrop()const
-    {
-      return true;
-    }
   };  
 }
 
