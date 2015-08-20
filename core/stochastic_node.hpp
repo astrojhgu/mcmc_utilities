@@ -4,7 +4,7 @@
 #include <vector>
 #include <map>
 #include "mcmc_exception.hpp"
-#include "uvsampler.hpp"
+#include "arms.hpp"
 #include "base_urand.hpp"
 #include "node.hpp"
 
@@ -68,13 +68,13 @@ namespace mcmc_utilities
     }
 
   public:
-    void sample(const uvsampler<T_p,T_var1>& smp)
+    void sample(const base_urand<T_p>& urand)
     {
-      do_sample(smp);
+      do_sample(urand);
     }
 
   private:
-    virtual void do_sample(const uvsampler<T_p,T_var1>& smp)
+    virtual void do_sample(const base_urand<T_p>& urand)
     {
       //constexpr size_t nsamp=10;
       for(size_t i=0;i<this->num_of_dims();++i)
@@ -86,8 +86,17 @@ namespace mcmc_utilities
 	  xprev=xprev>xrange.second?xrange.second:xprev;
 	  
 	  //arms_simple(*this,xprev,xsamp,dometrop(),rnd);
+
+	  if(is_continuous(i))
+	    {
+	      xprev=arms(*this,xprev,10,urand);
+	    }
+	  else
+	    {
+	      xprev=discrete_sample(*this,urand);
+	    }   
 	  
-	  this->set_value(i,smp.sample(*this,xprev));
+	  this->set_value(i,xprev);
 	}
     }
     

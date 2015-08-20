@@ -1,7 +1,7 @@
 #include <core/distribution.hpp>
 #include <core/gibbs_sampler.hpp>
 #include <math/distributions.hpp>
-#include <uvsamplers/arms/arms_sampler.hpp>
+#include <core/urand.hpp>
 #include <vector>
 #include <fstream>
 #include <cassert>
@@ -78,14 +78,13 @@ int main()
   x.push_back(3);
   x.push_back(4);
   x.push_back(50);
-  //u_random<double> rng;
-  arms_sampler<double,double> as;
-
+  urand<double> rng;
+  
   //cout<<cd.eval_log(x)<<endl;
   for(int n=0;n<10000;++n)
     {
       //gibbs_sample<double,std::vector<double> >(cd,x,1,as,10);
-      gibbs_sample(cd,x,as);
+      gibbs_sample(cd,x,rng);
       for(int i=0;i<x.size();++i)
 	{
 	  cout<<x[i]<<" ";

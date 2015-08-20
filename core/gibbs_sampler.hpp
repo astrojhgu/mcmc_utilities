@@ -1,14 +1,15 @@
 #ifndef GIBBS_SAMPLER_HPP
 #define GIBBS_SAMPLER_HPP
 //#include "rejection_sampler_1d.hpp"
-#include "uvsampler.hpp"
+#include "base_urand.hpp"
+#include "arms.hpp"
 #include "discrete_sample.hpp"
 #include <vector>
 
 namespace mcmc_utilities
 {
   template <typename T_p,typename T_var>
-  void gibbs_sample(const probability_density_md<T_p,T_var>& pd,T_var& init_var,const uvsampler<T_p,typename element_type_trait<T_var>::element_type>& sampler)
+  void gibbs_sample(const probability_density_md<T_p,T_var>& pd,T_var& init_var,const base_urand<T_p>& rnd)
   {
     size_t idx=0;
     typedef typename element_type_trait<T_var>::element_type T_var1;
@@ -72,14 +73,16 @@ namespace mcmc_utilities
     for(idx=0;idx<get_size(init_var);++idx)
       {
 	xprev=get_element(init_var,idx);
-	T_var1 x=sampler.sample(cpd,xprev);
+		
+	//T_var1 x=sampler.sample(cpd,xprev);
+	T_var1 x=arms(cpd,xprev,10,rnd);
 	set_element(init_var,idx,x);
       }
   }
 
   template <typename T_p,typename T_var,typename T_urand>
   void gibbs_sample1(const probability_density_md<T_p,T_var>& pd,
-		    T_var& init_var,size_t idx,const uvsampler<T_p,T_var>& sampler)
+		    T_var& init_var,size_t idx,const base_urand<T_p>& rnd)
   {
     if(idx>=get_size(init_var))
       {
@@ -147,7 +150,8 @@ namespace mcmc_utilities
 
 
     xprev=get_element(init_var,idx);
-    T_var1 x=sampler.sample(cpd,xprev);
+    //T_var1 x=sampler.sample(cpd,xprev);
+    T_var1 x=arms(cpd,xprev,10,rnd);
     set_element(init_var,idx,x);
   }
   

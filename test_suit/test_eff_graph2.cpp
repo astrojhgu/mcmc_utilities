@@ -11,7 +11,6 @@
 #include <nodes/obs_const_node.hpp>
 #include <nodes/uniform_node.hpp>
 #include <nodes/phi_node.hpp>
-#include <uvsamplers/arms/arms_sampler.hpp>
 #include <cmath>
 #include <cassert>
 #include <fstream>
@@ -36,7 +35,7 @@ private:
 
 int main()
 {
-  arms_sampler<double,double> as;
+  
   graph_builder<double,double> gb;
   
 
@@ -65,15 +64,15 @@ int main()
 
   graph<double,double,std::string> g;
   gb.build(g);
-  g.sample(as);
+  g.sample(rnd1);
   //return 0;
   for(int i=0;i<10;++i)
     {
-      g.sample(as);
+      g.sample(rnd1);
     }
   for(int i=0;i<30000;++i)
     {
-      g.sample(as);
+      g.sample(rnd1);
       auto p=g.get_params();
       for(auto j : p)
 	{

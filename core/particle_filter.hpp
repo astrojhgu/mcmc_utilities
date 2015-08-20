@@ -68,7 +68,7 @@ namespace mcmc_utilities
       
 
   public:
-    void update_sir(const T_obs& y,const T_t& t,std::vector<particle<T_p,T_state> >& particle_list,T_t& prev_t, const uvsampler<T_p,T_state1>& sampler)const
+    void update_sir(const T_obs& y,const T_t& t,std::vector<particle<T_p,T_state> >& particle_list,T_t& prev_t, const base_urand<T_p>& rnd)const
     {
       class cprob
 	:public probability_density_md<T_p,T_state>
@@ -116,7 +116,7 @@ namespace mcmc_utilities
 	  T_state new_pred(particle_list[i].state);
 	  //ofstream ofs("log.txt");
 
-	  gibbs_sample(prob,new_pred,sampler);
+	  gibbs_sample(prob,new_pred,rnd);
 	  
 	  particle_list[i].state=new_pred;
 	  //particle_list[i].weight=std::exp(obs_log_prob(y,new_pred,t));

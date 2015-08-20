@@ -1,6 +1,7 @@
 #ifndef MYARMS_HPP
 #define MYARMS_HPP
-#include <core/distribution.hpp>
+#include "distribution.hpp"
+#include <algorithm>
 #include <cassert>
 #include <list>
 #include <utility>

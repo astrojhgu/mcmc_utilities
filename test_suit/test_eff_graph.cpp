@@ -1,7 +1,7 @@
 #include <core/graph.hpp>
 #include <math/distributions.hpp>
 #include <core/stochastic_node.hpp>
-#include <uvsamplers/arms/arms_sampler.hpp>
+#include <core/urand.hpp>
 #include <math/functions.hpp>
 #include <cassert>
 #include <fstream>
@@ -233,15 +233,14 @@ int main()
   
   g.set_value({"mu"},0,30.0);
 
-  arms_sampler<double,double> as;
   for(int i=0;i<100;++i)
     {
-      g.sample(as);
+      g.sample(rnd1);
     }
   
   for(int i=0;i<30000;++i)
     {
-      g.sample(as);
+      g.sample(rnd1);
       auto p(g.get_params());
       for(auto& x:p)
 	{

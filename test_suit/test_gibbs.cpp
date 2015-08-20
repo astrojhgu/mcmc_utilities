@@ -2,7 +2,7 @@
 #include <core/gibbs_sampler.hpp>
 #include <math/distributions.hpp>
 #include <random/uniform.h>
-#include <uvsamplers/arms/arms_sampler.hpp>
+#include <core/urand.hpp>
 #include <vector>
 #include <fstream>
 #include <cassert>
@@ -48,11 +48,11 @@ int main()
 {
   test_distribution cd;
   std::vector<double> x(3);
-  arms_sampler<double,double> as;
-  gibbs_sample(cd,x,as);
+  urand<double> rng;
+  gibbs_sample(cd,x,rng);
   for(int n=0;n<10000;++n)
     {
-      gibbs_sample(cd,x,as);
+      gibbs_sample(cd,x,rng);
       if(n>100)
 	{
 	  for(int i=0;i<3;++i)

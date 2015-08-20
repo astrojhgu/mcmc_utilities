@@ -1,8 +1,8 @@
 #include <core/distribution.hpp>
 #include <core/gibbs_sampler.hpp>
 #include <math/distributions.hpp>
-#include <uvsamplers/arms/arms_sampler.hpp>
 #include <random/uniform.h>
+#include <core/urand.hpp>
 #include <vector>
 #include <set>
 #include <fstream>
@@ -173,11 +173,11 @@ int main()
   //gibbs_sample(cd,x);
   ranlib::Uniform<double> uf;
   //cout<<cd.eval_log(x)<<endl;
-  arms_sampler<double,double> as;
-  gibbs_sample(cd,p,as);
+  urand<double> rng;
+  gibbs_sample(cd,p,rng);
   for(int n=0;n<10000;++n)
     {
-      gibbs_sample(cd,p,as);
+      gibbs_sample(cd,p,rng);
       if(n>100)
 	{
 	  for(int i=0;i<3;++i)

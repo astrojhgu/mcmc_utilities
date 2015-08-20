@@ -1,10 +1,11 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
-#include <uvsamplers/arms/arms_sampler.hpp>
-using namespace std;
 #include "core/particle_filter.hpp"
 #include "random/normal.h"
+#include <core/urand.hpp>
+
+using namespace std;
 using namespace mcmc_utilities;
 #include <SDL2/SDL.h>
 
@@ -221,7 +222,7 @@ int main()
   
   //ifstream ifs("noisy_motion.txt");
   double t=0;
-  arms_sampler<double,double> as;
+  urand<double> rng;
   for(int step=0;step<10000;++step)
     {
       t+=1;
@@ -233,7 +234,7 @@ int main()
       double y_mean=0;
       double vy_mean=0;
 
-      tm.update_sir(obs,t,particles,prev_t,as);
+      tm.update_sir(obs,t,particles,prev_t,rng);
      
       double x,vx,y,vy;
       //cout<<t<<" "<<x_mean<<" "<<v_mean<<endl;
