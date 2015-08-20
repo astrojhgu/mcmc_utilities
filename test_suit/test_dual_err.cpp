@@ -108,6 +108,7 @@ public:
     log_p+=log_prior_a;
     log_p+=log_prior_b;
     log_p+=log_prior_scat;
+
     double log_p1=0,log_p2=0,log_p3=0;
     for(int i=0;i<x_vec.size();++i)
       {
@@ -149,7 +150,7 @@ public:
       }
     else
       {
-	return make_pair(0,100);
+	return make_pair(0.0001,100);
       }
   }  
 };

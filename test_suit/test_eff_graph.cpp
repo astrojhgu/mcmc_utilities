@@ -76,13 +76,15 @@ public:
     double result=0;
     for(int i=0;i<nobs();++i)
       {
-	result+=logdbin(value(0,i),parent(0,i),parent(1,i));
+	//result+=logdbin(value(0,i),parent(0,i),parent(1,i));
+	double result1=logdbin(value(0,i),parent(0,i),parent(1,i));
+	if(std::isnan(result1))
+	  {
+	    std::cerr<<value(0,i)<<" "<<parent(0,i)<<" "<<parent(1,i)<<endl;
+	  }
+	   
+	result+=result1;
       }
-    if(std::isnan(result))
-      {
-	std::cerr<<value(0,0)<<" "<<parent(0,0)<<" "<<parent(1,0)<<endl;
-      }
-    
     assert(!std::isnan(result));
     return result;
   }
@@ -216,8 +218,8 @@ int main()
   g.add_node(dl.get_ninj(),"ninj",{});//vnode("nij")=observed_constant()
   //g.add_node(dl.get_ninj(),{"nrec"},{});
 
-  g.add_node(new uniform(0,1),"A",{});//vnode("A")=uniform(0,1)
-  g.add_node(new uniform(0,1),"B",{});//vnode("B")=uniform(0,1)
+  g.add_node(new uniform(0,1-1e-5),"A",{});//vnode("A")=uniform(0,1)
+  g.add_node(new uniform(0,1-1e-5),"B",{});//vnode("B")=uniform(0,1)
 
   g.add_node(new uniform(0,100),"mu",{});//vnode("mu")=uniform(0,100)
   g.add_node(new uniform(0,100),"sigma",{});//vnode("sigma")=uniform(0,100)

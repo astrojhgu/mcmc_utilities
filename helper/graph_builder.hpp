@@ -15,7 +15,7 @@ namespace mcmc_utilities
   class graph_builder
   {
   public:
-    std::map<std::string,shared_ptr<vnode<T_p,T_var1> > > vnode_map;
+    std::map<std::string,std::shared_ptr<vnode<T_p,T_var1> > > vnode_map;
     
   public:
     std::string add_node(const vnode<T_p,T_var1>& vn)
@@ -137,10 +137,10 @@ namespace mcmc_utilities
       {
 	result+="<";
 	result+="i";
-	result+=to_string(i);
+	result+=std::to_string(i);
 	result+=">";
 	result+="i";
-	result+=to_string(i);
+	result+=std::to_string(i);
 	if(i!=ninput-1)
 	  {
 	    result+="|";
@@ -156,10 +156,10 @@ namespace mcmc_utilities
       {
 	result+="<";
 	result+="o";
-	result+=to_string(i);
+	result+=std::to_string(i);
 	result+=">";
 	result+="o";
-	result+=to_string(i);
+	result+=std::to_string(i);
 	if(i!=noutput-1)
 	  {
 	    result+="|";
@@ -170,17 +170,17 @@ namespace mcmc_utilities
   }
   
   template <typename T_p,typename T_var1>
-  void graph2dot1(const graph_builder<T_p,T_var1>& gb,ostream& os)
+  void graph2dot1(const graph_builder<T_p,T_var1>& gb,std::ostream& os)
   {
-    os<<"digraph{"<<endl;
-    os<<"node [shape=record];"<<endl;
+    os<<"digraph{"<<std::endl;
+    os<<"node [shape=record];"<<std::endl;
     for( const auto& i : gb.vnode_map )
       {
 	std::string node_name = i.first;
 	auto p=i.second->get_node();
 	int nparents=p->num_of_parents();
 	int ndim=p->num_of_dims();
-	os<<draw_node(node_name,i.second->type,nparents,ndim)<<endl;;
+	os<<draw_node(node_name,i.second->type,nparents,ndim)<<std::endl;;
       }
     
     for (const auto& i : gb.vnode_map)
@@ -190,35 +190,35 @@ namespace mcmc_utilities
 	for (const auto& j: i.second->parents)
 	  {
 	    std::string node2=j.first->name;
-	    os<<node2<<":o"<<j.second<<" -> "<<node1<<":i"<<n<<" ;"<<endl;
+	    os<<node2<<":o"<<j.second<<" -> "<<node1<<":i"<<n<<" ;"<<std::endl;
 	    ++n;
 	  }
       }
     
-    os<<"}"<<endl;
+    os<<"}"<<std::endl;
   }
   
   template <typename T_p,typename T_var1>
-  void graph2dot2(const graph_builder<T_p,T_var1>& gb,ostream& os)
+  void graph2dot2(const graph_builder<T_p,T_var1>& gb,std::ostream& os)
   {
-    os<<"digraph{"<<endl;
+    os<<"digraph{"<<std::endl;
     
     for (const auto& i : gb.vnode_map)
       {
-	std::string node1=string("\"")+i.first+":"+i.second->type+"\"";
+	std::string node1=std::string("\"")+i.first+":"+i.second->type+"\"";
 	if(i.second->named)
 	  {
 	    for (const auto& j:enumerate_all_named_parents(gb,i.second))
 	      {
-		std::string node2=string("\"")+j->name+":"+j->type+"\"";
-		os<<node2<<" -> "<<node1<<" ;"<<endl;
+		std::string node2=std::string("\"")+j->name+":"+j->type+"\"";
+		os<<node2<<" -> "<<node1<<" ;"<<std::endl;
 		
 	      }
 	  }
 	
       }
     
-    os<<"}"<<endl;
+    os<<"}"<<std::endl;
   }
 }
 

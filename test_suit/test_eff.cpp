@@ -76,7 +76,7 @@ public:
   double do_eval_log(const variable& x)const
   {
     double log_p=0;
-    
+
     for(unsigned int i=0;i<E.size();++i)
       {
 	double eff=x.A+(x.B-x.A)*phi((E[i]-x.mu)/x.sigma);
@@ -92,7 +92,7 @@ public:
   {
     if(ndim==0||ndim==1)
       {
-	return make_pair(.001,1);
+	return make_pair(.001,1-1e-3);
       }
     else
       {
@@ -110,7 +110,7 @@ int main()
   variable x;
   
   x.A=.5;
-  x.B=1;
+  x.B=.75;
   x.mu=15;
   x.sigma=12;
   arms_sampler<double,double> as;

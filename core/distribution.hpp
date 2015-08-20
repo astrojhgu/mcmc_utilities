@@ -4,7 +4,7 @@
 #include <limits>
 #include "mcmc_traits.hpp"
 #include "mcmc_exception.hpp"
-#include "find_peak.hpp"
+//#include "find_peak.hpp"
 #include <vector>
 #include <utility>
 
@@ -13,8 +13,8 @@ namespace mcmc_utilities
   template <typename T_p,typename T_var>
   class probability_density_1d;
 
-  template<typename T_p,typename T_var>
-  T_var find_peak(const probability_density_1d<T_p,T_var>& dist);
+  //template<typename T_p,typename T_var>
+  //T_var find_peak(const probability_density_1d<T_p,T_var>& dist);
 
   
   template <typename T_p,typename T_var>
@@ -97,16 +97,16 @@ namespace mcmc_utilities
       std::vector<T_var> result(3);
       for(size_t n=0;n<result.size();++n)
 	{
-	  if(n!=1)
+	  //if(n!=1)
 	    {
 	      std::pair<T_var,T_var> xrange(var_range());
 	      T_var xl=xrange.first,xr=xrange.second;
 	      
 	      result[n]= xl+(xr-xl)/(result.size()+1)*(n+1);
 	    }
-	  else
+	    //else
 	    {
-	      result[n]= find_peak(*this);
+	      //result[n]= find_peak(*this);
 	    }
 	}
       return result;

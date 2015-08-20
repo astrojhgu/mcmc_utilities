@@ -1,6 +1,7 @@
 #ifndef DISTRIBUTIONS_HPP
 #define DISTRIBUTIONS_HPP
 #include <cmath>
+#include <cassert>
 #include "../core/mcmc_exception.hpp"
 #include "functions.hpp"
 namespace mcmc_utilities
@@ -31,6 +32,9 @@ namespace mcmc_utilities
   {
     if(sigma<=0)
       {
+	std::cerr<<"sigma="<<sigma<<std::endl;
+	std::cerr<<"x="<<x<<std::endl;
+	//assert(0);
 	throw var_out_of_range();
       }
     static const T_p pi=std::atan(1)*4;

@@ -47,13 +47,13 @@ namespace mcmc_utilities
 
 	    for(int n1=0;n1<3;++n1)
 	      {
-		if(n1!=1)
+		//if(n1!=1)
 		  {
-		    xinit[n1]= xl+(xr-xl)/(3+1)*(n1+1);
+		    xinit[n1]= xl+(xr-xl)/(xinit.size()+1)*(n1+1);
 		  }
-		else
+		  //else
 		  {
-		    xinit[n1]= find_peak(*this);
+		    // xinit[n1]= find_peak(*this);
 		  }
 	      }
 	  }
@@ -121,13 +121,13 @@ namespace mcmc_utilities
 
 	    for(int n1=0;n1<3;++n1)
 	      {
-		if(n1!=1)
+		//if(n1!=1)
 		  {
-		    xinit[n1]= xl+(xr-xl)/(3+1)*(n1+1);
+		    xinit[n1]= xl+(xr-xl)/(xinit.size()+1)*(n1+1);
 		  }
-		else
+		  //else
 		  {
-		    xinit[n1]= find_peak(*this);
+		    //xinit[n1]= find_peak(*this);
 		  }
 	      }
 	  }

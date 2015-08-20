@@ -32,7 +32,7 @@ namespace mcmc_utilities
     
     std::pair<T_var1,T_var1> do_var_range()const override
     {
-      return make_pair(a,b);
+      return std::make_pair(a,b);
       //return make_pair(-10,10);
     }
   };

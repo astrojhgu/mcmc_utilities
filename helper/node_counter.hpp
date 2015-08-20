@@ -9,7 +9,7 @@ namespace mcmc_utilities
   template <typename T>
   std::string node_count()
   {
-    static atomic<int> c(0);
+    static std::atomic<int> c(0);
     ++c;
     return std::to_string(c);
   }

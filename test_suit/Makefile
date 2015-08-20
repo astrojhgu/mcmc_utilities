@@ -1,4 +1,4 @@
-targets=test_coal.out  test_dual_err.out  test_dugongs.out  test_eff.out  test_gibbs.out  test_pf.out test_eff_graph.out test_eff_graph2.out
+targets=test_coal.out  test_dual_err.out  test_eff.out  test_gibbs.out  test_pf.out test_eff_graph.out test_eff_graph2.out
 
 all:$(targets)
 

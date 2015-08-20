@@ -2,6 +2,7 @@
 #define ARMSSAMPLER_HPP
 #include <core/uvsampler.hpp>
 #include <arms.hpp>
+#include "myarms.hpp"
 #include <cstdlib>
 
 namespace mcmc_utilities
@@ -21,10 +22,14 @@ namespace mcmc_utilities
     T_var do_sample(const probability_density_1d<T_p,T_var>& pd,
 		    const T_var& xprev)const override
     {
+#if 0
       std::vector<T_var> xsamp(10);
       arms_simple(pd,xprev,xsamp,true,rnd);
-      //return arms(pd,xprev,10,rnd);
       return xsamp.back();
+#else
+      return arms(pd,xprev,10,rnd);
+#endif
+      
     }
   };
 };
