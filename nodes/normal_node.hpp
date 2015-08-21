@@ -38,7 +38,7 @@ namespace mcmc_utilities
       T_var1 mu=this->parent(0,0);
       T_var1 sigma=std::abs(this->parent(1,0));
 
-      return make_pair(mu-5*sigma,mu+5*sigma);
+      return std::make_pair(mu-5*sigma,mu+5*sigma);
       //return make_pair(-10,10);
     }
   };

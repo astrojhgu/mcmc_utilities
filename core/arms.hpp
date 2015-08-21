@@ -6,6 +6,7 @@
 #include <list>
 #include <utility>
 #include <limits>
+#include <fstream>
 
 //all the y in following program actually equal to log p(x)
 
@@ -24,7 +25,7 @@ namespace mcmc_utilities
     if(y1!=y2)
       {
 	T result=0;
-	T a=(x*y1-x*y2+x1*y2-x2*y1)/(x1-x2)-y1;
+	const T a=(x*y1-x*y2+x1*y2-x2*y1)/(x1-x2)-y1;
 	if(a<50)
 	  {
 	    result=(std::exp(a)-1)*(x1-x2)/(y1-y2)*std::exp(y1);
@@ -35,8 +36,9 @@ namespace mcmc_utilities
 	  }
 	if(isnan(result))
 	  {
-	    assert(0);
+	    throw mcmc_exception("nan");
 	  }
+	result=std::max(static_cast<T>(0),result);
 	return result;
       }
     else
@@ -60,8 +62,10 @@ namespace mcmc_utilities
 	  {
 	    result=x1+(x1-x2)/(y1-y2)*(std::log(y*(y1-y2)/(x1-x2))-y1);
 	  }
-	assert(!std::isnan(result));
-	assert(!std::isinf(result));
+	if(std::isnan(result)||std::isinf(result))
+	  {
+	    throw mcmc_exception("nan or inf");
+	  }
 	return result;
       }
     else
@@ -226,17 +230,15 @@ namespace mcmc_utilities
 	  }
       }
     
-    
-
-    
-    
     if(std::isnan(x_i)||std::isnan(y_i))
       {
 	std::cerr<<x1<<" "<<y1<<std::endl;
 	std::cerr<<x2<<" "<<y2<<std::endl;
 	std::cerr<<x3<<" "<<y3<<std::endl;
 	std::cerr<<x4<<" "<<y4<<std::endl;
-	assert(0);	
+	
+	throw mcmc_exception("nan or inf");
+	    
       }
     return std::make_pair(x_i,y_i);
   }
@@ -255,6 +257,17 @@ namespace mcmc_utilities
     i->cum_int_exp_y_l=cum_from+i->int_exp_y_l;
     i->cum_int_exp_y_u=i->cum_int_exp_y_l+i->int_exp_y_u;
     assert(!std::isnan(i->cum_int_exp_y_u));
+    assert(i->cum_int_exp_y_u>=0);
+
+    if(std::isnan(i->cum_int_exp_y_u))
+      {
+	throw mcmc_exception("nan");
+      }
+
+    if(i->cum_int_exp_y_u<0)
+      {
+	throw mcmc_exception("cum int <0");
+      }
   }
 
   template <typename T>
@@ -262,11 +275,11 @@ namespace mcmc_utilities
   {
     auto i_next=i;
     auto i_prev=i;
-    i_next++;
-    i_prev--;
+    
     
     if(i==section_list.begin())
       {
+	i_next++;
 	auto p=solve_intersection(*i,
 				  std::make_pair(i->x_l,i->y_l),
 				  std::make_pair(i->x_l,(T)INFINITY),
@@ -277,6 +290,7 @@ namespace mcmc_utilities
       }
     else if(i_next==section_list.end())
       {
+	i_prev--;
 	auto p=solve_intersection(*i,
 				  std::make_pair((i_prev)->x_l,(i_prev)->y_l),
 				  std::make_pair((i_prev)->x_u,(i_prev)->y_u),
@@ -287,6 +301,8 @@ namespace mcmc_utilities
       }
     else
       {
+	i_next++;
+	i_prev--;
 	auto p=solve_intersection(*i,
 				  std::make_pair((i_prev)->x_l,(i_prev)->y_l),
 				  std::make_pair((i_prev)->x_u,(i_prev)->y_u),
@@ -310,7 +326,7 @@ namespace mcmc_utilities
     std::vector<T> init_x;
     std::pair<T,T> xrange(pd.var_range());
     std::sort(init_x1.begin(),init_x1.end());
-    init_x.push_back(xrange.first);
+    init_x.push_back(xrange.first+std::numeric_limits<T>::epsilon());
     for(auto& x:init_x1)
       {
 	if(std::abs(x-init_x.back())<std::numeric_limits<T>::epsilon()*10||
@@ -320,7 +336,7 @@ namespace mcmc_utilities
 	  }
 	init_x.push_back(x);
       }
-    init_x.push_back(xrange.second);
+    init_x.push_back(xrange.second-std::numeric_limits<T>::epsilon());
     if(init_x.size()<5)
       {
 	throw mcmc_exception("too few init points");
@@ -334,14 +350,16 @@ namespace mcmc_utilities
 	s.x_u=init_x[i+1];
 	s.y_l=pd.eval_log(init_x[i]);
 	s.y_u=pd.eval_log(init_x[i+1]);
-	assert(s.x_l>=xrange.first&&s.x_l<=xrange.second);
-	assert(s.x_u>=xrange.first&&s.x_u<=xrange.second);
+	if(!(xrange.first<=s.x_l&&s.x_l<=s.x_u&&s.x_u<=xrange.second))
+	  {
+	    throw mcmc_exception("data not in order");
+	  }
 
 	if(std::isnan(s.y_l)||std::isnan(s.y_u))
 	  {
 	    std::cerr<<s.x_l<<" "<<s.x_u<<std::endl;
 	    std::cerr<<s.y_l<<" "<<s.y_u<<std::endl;
-	    assert(0);
+	    throw mcmc_exception("nan value obtained for y");
 	  }
 	
 	section_list.push_back(s);
@@ -459,6 +477,12 @@ namespace mcmc_utilities
     
     auto r=equal_range(ls.begin(),ls.end(),v,[](auto x,auto y){return x.cum_int_exp_y_u<y.cum_int_exp_y_u;});
 
+    if(r.first==ls.end())
+      {
+	std::cerr<<(p*ls.back().cum_int_exp_y_u)<<std::endl;
+	std::cerr<<ls.back().cum_int_exp_y_u<<std::endl;
+	throw mcmc_exception("no point found");
+      }
     while(1)
       {
 	if(r.first==r.second)
@@ -474,7 +498,7 @@ namespace mcmc_utilities
 	    break;
 	  }
       }
-
+    
     auto i=r.first;
     return r.first;
   }
@@ -523,6 +547,7 @@ namespace mcmc_utilities
 	    
 	    x2 = iter -> x_i;	   
 	    y2 = iter -> y_i;
+
 	  }
 	if ( y == ybase )
 	  {
@@ -532,41 +557,12 @@ namespace mcmc_utilities
 	  {
 	    result=inv_int_exp_y(y-ybase,std::make_pair(x1,y1),std::make_pair(x2,y2));
 	  }
-	assert(!std::isnan(result));
+	if(isnan(result))
+	  {
+	    throw mcmc_exception("nan value");
+	  }
       }while(std::isnan(result));
     return result;
-  }
-
-  
-  template <typename T,typename T_urand>
-  T ars(const probability_density_1d<T,T>& pd,const T_urand& rnd)
-  {
-    std::list<section<T> > ls;
-    init(pd,ls);
-    auto xrange=pd.var_range();
-    while(1)
-      {
-	T x=sample(ls,rnd);
-	assert(x>=xrange.first&&x<=xrange.second);
-	T u=rnd();
-	T result=0;
-	if(u==0)
-	  {
-    
-	    return x;
-	  }
-	else
-	  {
-	    if(std::log(u)+eval(x,ls)>pd.eval_log(x))
-	      {
-		insert_point(pd,ls,x);
-	      }
-	    else
-	      {
-		return x;
-	      }
-	  }
-      }
   }
 
   template <typename T,typename T_urand>
@@ -578,7 +574,11 @@ namespace mcmc_utilities
     //bool xmchanged=false;
     size_t xmchange_count=0;
     auto xrange=pd.var_range();
-    assert(xcur>=xrange.first&&xcur<=xrange.second);
+    //assert(xcur>=xrange.first&&xcur<=xrange.second);
+    if(xcur<xrange.first||xcur>xrange.second)
+      {
+	throw mcmc_exception("data not in range");
+      }
     
     for(size_t i=0;i<n;)
       {
@@ -589,7 +589,7 @@ namespace mcmc_utilities
 	  }
 	while(x<=xrange.first||x>=xrange.second);
 	  
-	assert(x>=xrange.first&&x<=xrange.second);
+	
 	T u=rnd();
 	T xa=0;
 	if(std::log(u)+eval(x,ls)>pd.eval_log(x))
@@ -607,19 +607,15 @@ namespace mcmc_utilities
 	  {
 	    xm=xcur;
 	    ++i;
-	    assert(xm>=xrange.first&&xm<=xrange.second);
 	  }
 	else
 	  {
 	    ++xmchange_count;
 	    xm=xa;
 	    ++i;
-	    assert(xa>=xrange.first&&xa<=xrange.second);
 	  }
 	xcur=xm;
-	assert(xcur>=xrange.first&&xcur<=xrange.second);
       }
-    assert(xm>=xrange.first&&xm<=xrange.second);
     return xm;
   }
 

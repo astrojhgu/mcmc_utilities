@@ -43,8 +43,8 @@ int main()
   std::vector<double> nrec_vec{23,71,115,159,200,221,291,244,44,221,210,182,136,119,79,81,61,41,32,32,31,22,18,11,277};
   std::vector<double> ninj_vec{96,239,295,327,345,316,349,281,45,235,217,185,140,121,79,81,61,41,32,32,31,22,18,11,298};
 
-  gb.add_node(vuniform("A",0,1-1e-5));
-  gb.add_node(vuniform("B",0,1-1e-5));
+  gb.add_node(vuniform("A",0,1));
+  gb.add_node(vuniform("B",0,1));
   gb.add_node(vuniform("mu",0.,100.));
   gb.add_node(vuniform("sigma",0.,100.));
   gb.add_node("eff",
