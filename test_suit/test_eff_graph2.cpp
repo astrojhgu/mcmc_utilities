@@ -70,6 +70,7 @@ int main()
     {
       g.sample(rnd1);
     }
+  
   for(int i=0;i<30000;++i)
     {
       g.sample(rnd1);

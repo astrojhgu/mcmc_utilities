@@ -54,6 +54,31 @@ namespace mcmc_utilities
       return result;
     }
 
+    auto get_monitor(const T_tag& tag,size_t n)const
+    {
+      auto iter=node_map.find(tag);
+      if(iter==node_map.end())
+	{
+	  throw mcmc_exception("not not found by tag");
+	}
+      stochastic_node<T_p,T_var1>* ps=dynamic_cast<stochastic_node<T_p,T_var1>*> (iter->second.get());
+      deterministic_node<T_p,T_var1>* pd=dynamic_cast<deterministic_node<T_p,T_var1>*> (iter->second.get());
+      if(ps==nullptr&&pd==nullptr)
+	{
+	  throw mcmc_exception("this node is not stochastic node either a deterministic node");
+	}
+      std::weak_ptr<node<T_p,T_var1> > wp(iter->second);
+      const node<T_p,T_var1>* pn=iter->second.get();
+
+      return [n,wp,pn](){
+	if(wp.expired())
+	  {
+	    throw mcmc_exception("expired");
+	  }
+	return pn->value(n,0);
+      };
+    }
+
     T_var1 get_value(const T_tag& tag,size_t idx)
     {
       if(node_map.count(tag)==0)

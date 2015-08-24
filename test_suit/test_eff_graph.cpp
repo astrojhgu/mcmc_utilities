@@ -237,15 +237,15 @@ int main()
     {
       g.sample(rnd1);
     }
-  
+  auto A=g.get_monitor("A",0);
+  auto B=g.get_monitor("B",0);
+  auto mu=g.get_monitor("mu",0);
+  auto sigma=g.get_monitor("sigma",0);
   for(int i=0;i<30000;++i)
     {
       g.sample(rnd1);
-      auto p(g.get_params());
-      for(auto& x:p)
-	{
-	  cout<<x<<" ";
-	}
-      cout<<endl;
+
+      cout<<A()<<" "<<B()<<" "<<mu()<<" "<<sigma()<<endl;
+      
     }
 }
