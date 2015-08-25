@@ -6,7 +6,6 @@
 #include <list>
 #include <utility>
 #include <limits>
-#include <fstream>
 
 //all the y in following program actually equal to log p(x)
 
@@ -38,7 +37,7 @@ namespace mcmc_utilities
 	  {
 	    throw mcmc_exception("nan");
 	  }
-	result=std::max(static_cast<T>(0),result);
+	//result=std::max(static_cast<T>(0),result);
 	return result;
       }
     else
@@ -276,10 +275,14 @@ namespace mcmc_utilities
     auto i_next=i;
     auto i_prev=i;
     
-    
+
+    i_next++;
+    if(i!=section_list.begin())
+      {
+	i_prev--;
+      }
     if(i==section_list.begin())
       {
-	i_next++;
 	auto p=solve_intersection(*i,
 				  std::make_pair(i->x_l,i->y_l),
 				  std::make_pair(i->x_l,(T)INFINITY),
@@ -290,7 +293,6 @@ namespace mcmc_utilities
       }
     else if(i_next==section_list.end())
       {
-	i_prev--;
 	auto p=solve_intersection(*i,
 				  std::make_pair((i_prev)->x_l,(i_prev)->y_l),
 				  std::make_pair((i_prev)->x_u,(i_prev)->y_u),
@@ -301,8 +303,6 @@ namespace mcmc_utilities
       }
     else
       {
-	i_next++;
-	i_prev--;
 	auto p=solve_intersection(*i,
 				  std::make_pair((i_prev)->x_l,(i_prev)->y_l),
 				  std::make_pair((i_prev)->x_u,(i_prev)->y_u),
