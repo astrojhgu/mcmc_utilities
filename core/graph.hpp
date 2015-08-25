@@ -68,14 +68,14 @@ namespace mcmc_utilities
 	  throw mcmc_exception("this node is not stochastic node either a deterministic node");
 	}
       std::weak_ptr<node<T_p,T_var1> > wp(iter->second);
-      const node<T_p,T_var1>* pn=iter->second.get();
+      
 
-      return [n,wp,pn](){
+      return [n,wp](){
 	if(wp.expired())
 	  {
 	    throw mcmc_exception("expired");
 	  }
-	return pn->value(n,0);
+	return wp.lock()->value(n,0);
       };
     }
 
