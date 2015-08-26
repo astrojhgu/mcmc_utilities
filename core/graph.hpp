@@ -59,13 +59,13 @@ namespace mcmc_utilities
       auto iter=node_map.find(tag);
       if(iter==node_map.end())
 	{
-	  throw mcmc_exception("not not found by tag");
+	  throw node_not_found();
 	}
       stochastic_node<T_p,T_var1>* ps=dynamic_cast<stochastic_node<T_p,T_var1>*> (iter->second.get());
       deterministic_node<T_p,T_var1>* pd=dynamic_cast<deterministic_node<T_p,T_var1>*> (iter->second.get());
       if(ps==nullptr&&pd==nullptr)
 	{
-	  throw mcmc_exception("this node is not stochastic node either a deterministic node");
+	  throw invalid_node_type();
 	}
       std::weak_ptr<node<T_p,T_var1> > wp(iter->second);
       
@@ -73,7 +73,7 @@ namespace mcmc_utilities
       return [n,wp](){
 	if(wp.expired())
 	  {
-	    throw mcmc_exception("expired");
+	    throw pointer_expired();
 	  }
 	return wp.lock()->value(n,0);
       };
@@ -83,12 +83,12 @@ namespace mcmc_utilities
     {
       if(node_map.count(tag)==0)
 	{
-	  throw mcmc_exception("node not found by tag");
+	  throw node_not_found();
 	}
       stochastic_node<T_p,T_var1>* ps=dynamic_cast<stochastic_node<T_p,T_var1>* >(node_map[tag].get());
       if(ps==nullptr)
 	{
-	  throw mcmc_exception("this node is not a stochastic node");
+	  throw invalid_node_type();
 	}
       return ps->value(idx,0);
     }
@@ -98,13 +98,13 @@ namespace mcmc_utilities
     {
       if(node_map.count(tag)==0)
 	{
-	  throw mcmc_exception("node not found by tag");
+	  throw node_not_found();
 	}
       
       stochastic_node<T_p,T_var1>* ps=dynamic_cast<stochastic_node<T_p,T_var1>* >(node_map[tag].get());
       if(ps==nullptr)
 	{
-	  throw mcmc_exception("this node is not a stochastic node");
+	  throw invalid_node_type();
 	}
       ps->set_value(idx,v);
     }
@@ -114,7 +114,7 @@ namespace mcmc_utilities
       auto i=node_map.find(tag);
       if(i==node_map.end())
 	{
-	  throw mcmc_exception("node not found");
+	  throw node_not_found();
 	}
       i->second->log_likelihood();
     }
@@ -124,13 +124,13 @@ namespace mcmc_utilities
       auto i=node_map.find(tag);
       if(i==node_map.end())
 	{
-	  throw mcmc_exception("node not found");
+	  throw node_not_found();
 	}
 
       auto ps=dynamic_cast<stochastic_node<T_p,T_var1>*>(i->second.get());
       if(ps==nullptr)
 	{
-	  throw mcmc_exception("this node is not a stochastic node");
+	  throw invalid_node_type();
 	}
       return ps->log_post_prob();
     }
@@ -153,17 +153,17 @@ namespace mcmc_utilities
       //std::shared_ptr<node<T_p,T_var1> > ptr(pn);
       if (node_map.count(tag)!=0)
 	{
-	  throw mcmc_exception("node name already exists");
+	  throw node_name_already_used();
 	}
       if(pn->num_of_parents()!=parents.size())
 	{
-	  throw mcmc_exception("parent num do not match");
+	  throw parent_num_mismatch();
 	}
       for(auto& p:parents)
 	{
 	  if(node_map.count(p.first)==0)
 	    {
-	      throw mcmc_exception("parent should be added before hand");
+	      throw parents_not_exist();
 	    }
 	}
       
@@ -184,7 +184,7 @@ namespace mcmc_utilities
 	}
       else
 	{
-	  throw mcmc_exception("input node is neither stochastic node, nor deterministic node");
+	  throw invalid_node_type();
 	}
       size_t n=0;
       for(auto& i:parents)

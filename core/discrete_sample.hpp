@@ -16,7 +16,7 @@ namespace mcmc_utilities
     
     if(cp.empty())
       {
-	throw no_candidate_points();
+	throw no_candidate_point();
       }
     std::vector<T_p> prob(cp.size());
     prob[0]=std::exp(pd.eval_log(cp[0]));

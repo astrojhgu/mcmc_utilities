@@ -61,11 +61,11 @@ namespace mcmc_utilities
     {
       if (elements.count(tag)!=0)
 	{
-	  throw mcmc_exception("node name already exists");
+	  throw node_name_already_used();
 	}
       if(pn->num_of_parents()!=parents.size())
 	{
-	  throw mcmc_exception("parent num do not match");
+	  throw parent_num_mismatch();
 	}
       for(size_t i=0;i<parents.size();++i)
 	{
@@ -74,7 +74,7 @@ namespace mcmc_utilities
 	    {
 	      if(param_list.size()==this->num_of_parents())
 		{
-		  throw mcmc_exception("parents number exceeds defined value");
+		  throw parent_num_mismatch();
 		}
 	      //param_list.push_back(make_pair(pn,i));
 	      param_list.push_back({std::shared_ptr<deterministic_node<T_p,T_var1> >(new forward_node<T_p,T_var1>),i});
@@ -90,11 +90,11 @@ namespace mcmc_utilities
 	{
 	  if(return_list.size()==this->num_of_dims())
 	    {
-	      throw mcmc_exception("number of return values exceeds defined value");
+	      throw output_num_mismatch();
 	    }
 	  if(i>=pn->num_of_dims())
 	    {
-	      throw mcmc_exception("number of return values exceeds defined value");
+	      throw output_num_mismatch();
 	    } 
 	  return_list.push_back({pn,i});
 	}

@@ -3,6 +3,7 @@
 #include <core/observed_node1d.hpp>
 #include <helper/vnode.hpp>
 #include <helper/node_counter.hpp>
+#include <helper/abstract_node_factory.hpp>
 #include <math/distributions.hpp>
 #include <math/functions.hpp>
 

@@ -79,11 +79,11 @@ namespace mcmc_utilities
     {
       if(idx>=prhs->num_of_dims())
 	{
-	  throw mcmc_exception("idx exceeds the num of children");
+	  throw output_num_mismatch();
 	}
       if(n>=parents.size())
 	{
-	  throw mcmc_exception("n exceeds the num of parents");
+	  throw parent_num_mismatch();
 	}
       do_connect_to_parent(prhs,n,idx);
     }

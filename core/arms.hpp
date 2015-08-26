@@ -35,7 +35,7 @@ namespace mcmc_utilities
 	  }
 	if(isnan(result))
 	  {
-	    throw mcmc_exception("nan");
+	    throw nan_or_inf();
 	  }
 	//result=std::max(static_cast<T>(0),result);
 	return result;
@@ -63,7 +63,7 @@ namespace mcmc_utilities
 	  }
 	if(std::isnan(result)||std::isinf(result))
 	  {
-	    throw mcmc_exception("nan or inf");
+	    throw nan_or_inf();
 	  }
 	return result;
       }
@@ -152,7 +152,7 @@ namespace mcmc_utilities
 	  }
       }
     //cerr<<"x="<<x<<endl;
-    throw mcmc_exception("x out of range");
+    throw var_out_of_range();
     return 0;
   }
 
@@ -236,7 +236,7 @@ namespace mcmc_utilities
 	std::cerr<<x3<<" "<<y3<<std::endl;
 	std::cerr<<x4<<" "<<y4<<std::endl;
 	
-	throw mcmc_exception("nan or inf");
+	throw nan_or_inf();
 	    
       }
     return std::make_pair(x_i,y_i);
@@ -260,12 +260,12 @@ namespace mcmc_utilities
 
     if(std::isnan(i->cum_int_exp_y_u))
       {
-	throw mcmc_exception("nan");
+	throw nan_or_inf();
       }
 
     if(i->cum_int_exp_y_u<0)
       {
-	throw mcmc_exception("cum int <0");
+	throw cum_lt_zero();
       }
   }
 
@@ -321,7 +321,7 @@ namespace mcmc_utilities
 
     if(init_x1.size()<3)
       {
-	throw mcmc_exception("too few init points");
+	throw too_few_init_points();
       }
     std::vector<T> init_x;
     std::pair<T,T> xrange(pd.var_range());
@@ -339,7 +339,7 @@ namespace mcmc_utilities
     init_x.push_back(xrange.second-std::numeric_limits<T>::epsilon());
     if(init_x.size()<5)
       {
-	throw mcmc_exception("too few init points");
+	throw too_few_init_points();
       }
     
     for(size_t i=0;i!=init_x.size()-1;++i)
@@ -352,14 +352,14 @@ namespace mcmc_utilities
 	s.y_u=pd.eval_log(init_x[i+1]);
 	if(!(xrange.first<=s.x_l&&s.x_l<=s.x_u&&s.x_u<=xrange.second))
 	  {
-	    throw mcmc_exception("data not in order");
+	    throw data_not_in_order();
 	  }
 
 	if(std::isnan(s.y_l)||std::isnan(s.y_u))
 	  {
 	    std::cerr<<s.x_l<<" "<<s.x_u<<std::endl;
 	    std::cerr<<s.y_l<<" "<<s.y_u<<std::endl;
-	    throw mcmc_exception("nan value obtained for y");
+	    throw nan_or_inf();
 	  }
 	
 	section_list.push_back(s);
@@ -405,7 +405,7 @@ namespace mcmc_utilities
 	    std::cerr<<i.x_l<<" "<<i.y_l<<"|"<<i.x_i<<" "<<i.y_i<<"|"<<i.x_u<<" "<<i.y_u<<std::endl;
 	  }
 	
-	throw mcmc_exception("illed-shaped pdf, may insert more initial points");
+	throw more_init_points_needed();
       }
   }
 
@@ -481,7 +481,7 @@ namespace mcmc_utilities
       {
 	std::cerr<<(p*ls.back().cum_int_exp_y_u)<<std::endl;
 	std::cerr<<ls.back().cum_int_exp_y_u<<std::endl;
-	throw mcmc_exception("no point found");
+	throw search_failed();
       }
     while(1)
       {
@@ -559,7 +559,7 @@ namespace mcmc_utilities
 	  }
 	if(isnan(result))
 	  {
-	    throw mcmc_exception("nan value");
+	    throw nan_or_inf();
 	  }
       }while(std::isnan(result));
     return result;
@@ -577,7 +577,7 @@ namespace mcmc_utilities
     //assert(xcur>=xrange.first&&xcur<=xrange.second);
     if(xcur<xrange.first||xcur>xrange.second)
       {
-	throw mcmc_exception("data not in range");
+	throw var_out_of_range();
       }
     
     for(size_t i=0;i<n;)
