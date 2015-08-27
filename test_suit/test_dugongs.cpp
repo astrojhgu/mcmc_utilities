@@ -1,7 +1,6 @@
 #include <core/distribution.hpp>
 #include <core/gibbs_sampler.hpp>
 #include <math/distributions.hpp>
-#include <uvsamplers/arms/arms_sampler.hpp>
 #include <vector>
 #include <fstream>
 #include <cassert>
@@ -69,7 +68,7 @@ public:
 	return make_pair(.1,4);
 	break;
       case 3:
-	return make_pair(1e-10,200);
+	return make_pair(1e-8,200);
 	break;
       default:
 	assert(0);
@@ -77,21 +76,33 @@ public:
   }  
 };
 
+
+class rnd
+  :public base_urand<double>
+{
+private:
+  double do_rand()const
+  {
+    return rand()/(double)RAND_MAX;
+  }
+}rnd1;
+
+
+
 int main()
 {
   dugongs cd;
   std::vector<double> x;
   x.push_back(2.6);
-  x.push_back(.9);
+  x.push_back(.5);
   x.push_back(.87);
   x.push_back(100);
-  u_random<double> rng;
+  
   //cout<<cd.eval_log(x)<<endl;
-  arms_sampler<double,double> as;
   for(int n=0;n<10000;++n)
     {
-      gibbs_sample(cd,x,as);
-      if(n>1000)
+      gibbs_sample(cd,x,rnd1);
+      //if(n>1000)
 	{
 	  for(unsigned int i=0;i<x.size();++i)
 	    {

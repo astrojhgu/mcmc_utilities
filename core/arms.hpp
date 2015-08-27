@@ -554,7 +554,7 @@ namespace mcmc_utilities
   {
     T result=0;
 
-#ifdef DEBUG
+#if 0
     static int n=0;
     
     std::string fname("cum_");
@@ -636,7 +636,7 @@ namespace mcmc_utilities
     T scale=0;
 
     init(pd,ls,scale);
-#ifdef DEBUG
+#if 0
     
     for(auto i=ls.begin();i!=ls.end();++i)
       {
@@ -663,8 +663,8 @@ namespace mcmc_utilities
 	throw var_out_of_range();
       }
 
-
-    for(size_t i=0;i<n;)
+    
+    for(size_t i=0,cnt=0;i<n;)
       {
 	T x=0;
 	do
@@ -680,6 +680,39 @@ namespace mcmc_utilities
 	  {
 	    insert_point(pd,ls,x,scale);
 	    update_scale(ls,scale);
+
+	    if(cnt++>100*i)
+	      {
+		
+#ifdef DEBUG
+		std::ofstream ofs("dump.qdp");
+		for(auto& i:ls)
+		  {
+		    ofs<<i.x_l<<" "<<i.y_l<<std::endl;
+		    ofs<<i.x_i<<" "<<i.y_i<<std::endl;
+		    ofs<<i.x_u<<" "<<i.y_u<<std::endl;	
+		  }
+		
+		ofs<<"no no no"<<std::endl;
+		
+		for(T x=0.001;x<100;x+=.01)
+		  {
+		    ofs<<x<<" "<<eval_log(pd,x,scale)<<std::endl;
+		  }
+		ofs.close();
+		ofs.open("cum.qdp");
+		for(auto& i:ls)
+		  {
+		    ofs<<i.x_i<<" "<<i.cum_int_exp_y_l<<std::endl;
+		    ofs<<i.x_u<<" "<<i.cum_int_exp_y_u<<std::endl;
+		  }
+		exit(0);
+#endif
+		if(cnt>100)
+		  {
+		    throw too_many_rejections();
+		  }
+	      }
 	    continue;
 	  }
 	else
@@ -702,22 +735,6 @@ namespace mcmc_utilities
 	xcur=xm;
       }
 
-#ifdef DEBUG
-    std::ofstream ofs("dump.qdp");
-    for(auto& i:ls)
-      {
-	ofs<<i.x_l<<" "<<i.y_l<<std::endl;
-	ofs<<i.x_i<<" "<<i.y_i<<std::endl;
-	ofs<<i.x_u<<" "<<i.y_u<<std::endl;	
-      }
-
-    ofs<<"no no no"<<std::endl;
-
-    for(T x=0.001;x<100;x+=.01)
-      {
-	ofs<<x<<" "<<eval_log(pd,x,scale)<<std::endl;
-      }
-#endif    
     
     return xm;
   }

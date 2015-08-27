@@ -177,6 +177,14 @@ namespace mcmc_utilities
     {}    
   };
 
+  class too_many_rejections
+    :public mcmc_exception
+  {
+  public:
+    too_many_rejections()
+      :mcmc_exception("too may rejections, maybe illed-shaped pdf")
+    {}    
+  };
 }
 
 #endif

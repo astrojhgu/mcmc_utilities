@@ -1,17 +1,17 @@
-targets=test_coal.out  test_dual_err.out  test_eff.out  test_gibbs.out  test_pf.out test_eff_graph.out test_eff_graph2.out test_normal.out
+targets=test_coal  test_dual_err  test_eff  test_gibbs  test_pf test_eff_graph test_eff_graph2 test_normal test_dugongs
 
 all:$(targets)
 
 CXX=clang++
 CXXFLAGS=-I ../ -O2 -std=c++14 -g -I ../../arms/
-LIBFLAGS=-lSDL2 -lfio -lcfitsio -O3
+LDFLAGS=-lSDL2 -lfio -lcfitsio -O3
 
+% :	%.o
+	$(CXX) $< -o $@ $(LDFLAGS)
 
-%.out:%.o
-	$(CXX) $< -o $@ $(LIBFLAGS)
+%.o:	%.cpp
+	$(CXX) -c $< -o $@ $(CXXFLAGS)
 
-%.o:	%.CXX ../core/arms.hpp
-	$(CXX) -c $(CXXFLAGS) $< 
 
 clean:
 	rm -f $(targets) *.o
