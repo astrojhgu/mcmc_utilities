@@ -10,7 +10,7 @@ LIBFLAGS=-lSDL2 -lfio -lcfitsio -O3
 %.out:%.o
 	$(CXX) $< -o $@ $(LIBFLAGS)
 
-%.o:	%.CXX
+%.o:	%.CXX ../core/arms.hpp
 	$(CXX) -c $(CXXFLAGS) $< 
 
 clean:

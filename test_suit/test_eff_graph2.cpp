@@ -64,6 +64,14 @@ int main()
 
   graph<double,double,std::string> g;
   gb.build(g);
+  g.set_value("A",0,5.14989e-05);
+  g.set_value("B",0,0.999406);
+  g.set_value("mu",0,13.2949);
+  //g.set_value("mu",0,31.7934);
+  //g.set_value("sigma",0,17.5035);
+  g.set_value("sigma",0,17.6002);
+
+  
   g.sample(rnd1);
   //return 0;
   for(int i=0;i<10;++i)

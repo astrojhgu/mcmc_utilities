@@ -64,6 +64,8 @@ int main(int argc,char* argv[])
   auto pnorm=dynamic_pointer_cast<obs_normal_node<double,double> >(pmodel);
   
   g.add_node(pmodel,"gauss",{{"A",0},{"B",0}});
+
+  /*
   pu2->set_value(0,3);
   pu1->set_value(0,2);
   for(double x=1;x<5;x+=.01)
@@ -75,6 +77,7 @@ int main(int argc,char* argv[])
 
 
   return 0;
+  */
   for(int i=0;i<100;++i)
     {
       g.sample(rnd1);
@@ -83,7 +86,7 @@ int main(int argc,char* argv[])
 
   auto A=g.get_monitor("A",0);
   auto B=g.get_monitor("B",0);
-  for(int i=0;i<30000;++i)
+  for(int i=0;i<1000;++i)
     {
       g.sample(rnd1);
 

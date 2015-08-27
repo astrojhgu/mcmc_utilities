@@ -217,11 +217,11 @@ int main()
   g.add_node(dl.get_energy(),"E",{});//vnode("E")=observed_constant()
   g.add_node(dl.get_ninj(),"ninj",{});//vnode("nij")=observed_constant()
   //g.add_node(dl.get_ninj(),{"nrec"},{});
-
-  g.add_node(new uniform(0,1-1e-5),"A",{});//vnode("A")=uniform(0,1)
+  auto p=new uniform(0,1-1e-5);
+  g.add_node(p,"A",{});//vnode("A")=uniform(0,1)
   g.add_node(new uniform(0,1-1e-5),"B",{});//vnode("B")=uniform(0,1)
-
-  g.add_node(new uniform(0,100),"mu",{});//vnode("mu")=uniform(0,100)
+  auto pmu=new uniform(0,100);
+  g.add_node(pmu,"mu",{});//vnode("mu")=uniform(0,100)
   g.add_node(new uniform(0,100),"sigma",{});//vnode("sigma")=uniform(0,100)
 
   g.add_node(new eff(),"eff",{{"A",0},{"B",0},{"E",0},{"mu",0},{"sigma",0}});
@@ -231,21 +231,29 @@ int main()
   g.add_node(dl.get_nrec(),"nrec",{{"eff",0},{"ninj",0}});
   //vnode("nrec")=bin(vnode("eff",0),vnode("ninj",0))
   
-  g.set_value({"mu"},0,30.0);
+  g.set_value("A",0,5.14989e-05);
+  g.set_value("B",0,0.999406);
+  g.set_value("mu",0,13.2949);
+  //g.set_value("mu",0,31.7934);
+  //g.set_value("sigma",0,17.5035);
+  g.set_value("sigma",0,17.6002);
 
-  for(int i=0;i<100;++i)
-    {
-      g.sample(rnd1);
-    }
+  //g.set_value("A",0,0.535597);
+  //g.set_value("B",0,0.996047);
+
+  
   auto A=g.get_monitor("A",0);
   auto B=g.get_monitor("B",0);
   auto mu=g.get_monitor("mu",0);
   auto sigma=g.get_monitor("sigma",0);
-  for(int i=0;i<30000;++i)
+  double x=mu();
+  for(int i=0;i<10000;++i)
     {
       g.sample(rnd1);
-
-      cout<<A()<<" "<<B()<<" "<<mu()<<" "<<sigma()<<endl;
-      
+      //cout<<arms(*pmu,x,1,rnd1)<<endl;
+      //if(i%100==0)
+	{
+	  cout<<A()<<" "<<B()<<" "<<mu()<<" "<<sigma()<<endl;
+	}
     }
 }

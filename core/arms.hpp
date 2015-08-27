@@ -2,6 +2,12 @@
 #define MYARMS_HPP
 #include "distribution.hpp"
 #include <algorithm>
+//#define DEBUG
+#ifdef DEBUG
+#include <fstream>
+#endif
+
+
 #include <cassert>
 #include <list>
 #include <utility>
@@ -11,6 +17,12 @@
 
 namespace mcmc_utilities
 {
+  template <typename T>
+  T eval_log(const probability_density_1d<T,T>& pd,T x,T scale)
+  {
+    return pd.eval_log(x)-scale;
+  }
+  
   template <typename T>
   T int_exp_y(const T& x,const std::pair<T,T> p1,const std::pair<T,T>& p2)
   {
@@ -25,7 +37,7 @@ namespace mcmc_utilities
       {
 	T result=0;
 	const T a=(x*y1-x*y2+x1*y2-x2*y1)/(x1-x2)-y1;
-	if(a<50)
+	if(a<30)
 	  {
 	    result=(std::exp(a)-1)*(x1-x2)/(y1-y2)*std::exp(y1);
 	  }
@@ -37,7 +49,7 @@ namespace mcmc_utilities
 	  {
 	    throw nan_or_inf();
 	  }
-	//result=std::max(static_cast<T>(0),result);
+	result=std::max(static_cast<T>(0),result);
 	return result;
       }
     else
@@ -312,13 +324,43 @@ namespace mcmc_utilities
 	i->y_i=p.second;
       }
   }
+
+  template <typename T>
+  T calc_scale(const std::list<section<T> >& ls)
+  {
+    T scale=-INFINITY;
+    for(auto& i:ls)
+      {
+	scale=std::max(scale,std::max(i.y_l,i.y_u));
+      }
+    return scale;
+  }
+
+  template <typename T>
+  void update_scale(std::list<section<T> >& section_list,T& scale)
+  {
+    T new_scale=calc_scale(section_list);
+    for(auto i=section_list.begin();i!=section_list.end();++i)
+      {
+	i->y_l-=new_scale;
+	i->y_u-=new_scale;
+      }
+    
+    scale+=new_scale;
+    for(auto i=section_list.begin();i!=section_list.end();++i)
+      {
+	calc_intersection(section_list,i);
+	calc_cum_int_exp_y(section_list,i);
+      }
+  }
   
   
   template <typename T>
-  void init(const probability_density_1d<T,T>& pd,std::list<section<T> >& section_list)
+  void init(const probability_density_1d<T,T>& pd,std::list<section<T> >& section_list,T& scale)
   {
     std::vector<T> init_x1(pd.init_points());
-
+    
+    //scale=0;
     if(init_x1.size()<3)
       {
 	throw too_few_init_points();
@@ -348,8 +390,8 @@ namespace mcmc_utilities
 	
 	s.x_l=init_x[i];
 	s.x_u=init_x[i+1];
-	s.y_l=pd.eval_log(init_x[i]);
-	s.y_u=pd.eval_log(init_x[i+1]);
+	s.y_l=eval_log(pd,init_x[i],(T)0);
+	s.y_u=eval_log(pd,init_x[i+1],(T)0);
 	if(!(xrange.first<=s.x_l&&s.x_l<=s.x_u&&s.x_u<=xrange.second))
 	  {
 	    throw data_not_in_order();
@@ -364,9 +406,17 @@ namespace mcmc_utilities
 	
 	section_list.push_back(s);
       }
+    
+    scale=calc_scale(section_list);
+    
+    //scale=0;
+    for(auto i=section_list.begin();i!=section_list.end();++i)
+      {
+	i->y_l-=scale;
+	i->y_u-=scale;
+      }
 
-    size_t nsec=section_list.size();
-    //size_t n=0;
+    
     for(auto i=section_list.begin();i!=section_list.end();++i)
       {
 	calc_intersection(section_list,i);
@@ -385,18 +435,20 @@ namespace mcmc_utilities
 	      {
 		has_inf=true;
 		T x=(iter->x_l+iter->x_u)/2;
-		insert_point(pd,section_list,x);
+
+		insert_point(pd,section_list,x,scale);
+		update_scale(section_list,scale);
 		break;
 	      }
 	  }
+	
 	if(!has_inf)
 	  {
 	    break;
 	  }
       }
     
-    
-    
+
     if(std::isinf(section_list.back().cum_int_exp_y_u))
       {
 	std::cerr<<"initial points:"<<std::endl;
@@ -410,7 +462,7 @@ namespace mcmc_utilities
   }
 
   template <typename T>
-  void insert_point(const probability_density_1d<T,T>& pd,std::list<section<T> >& section_list,const T& x)
+  void insert_point(const probability_density_1d<T,T>& pd,std::list<section<T> >& section_list,const T& x,T scale)
   {
 
 #if 0
@@ -452,22 +504,16 @@ namespace mcmc_utilities
     section<T> s;
     s.x_l=iter->x_l;
     s.x_u=x;
-    s.y_l=pd.eval_log(s.x_l);
-    s.y_u=pd.eval_log(s.x_u);
+    s.y_l=eval_log(pd,s.x_l,scale);
+    s.y_u=eval_log(pd,s.x_u,scale);
 
     iter->x_l=x;
-    iter->y_l=pd.eval_log(iter->x_l);
-    
-    section_list.insert(iter,s);
-    calc_intersection(section_list,iter);
-    iter--;
-    calc_intersection(section_list,iter);
+    iter->y_l=eval_log(pd,iter->x_l,scale);
 
-    for(;iter!=section_list.end();++iter)
-      {
-	calc_cum_int_exp_y(section_list,iter);
-      }
+    section_list.insert(iter,s);
   }
+
+
 
   template <typename T>
   auto search_point(const std::list<section<T> >& ls,T p)
@@ -507,9 +553,25 @@ namespace mcmc_utilities
   T sample(const std::list<section<T> >& ls,const T_urand& rnd)
   {
     T result=0;
+
+#ifdef DEBUG
+    static int n=0;
+    
+    std::string fname("cum_");
+    fname+=std::to_string(n);
+    fname+=".qdp";
+    n++;
+    std::ofstream ofs(fname.c_str());
+    for(auto& i:ls)
+      {
+	ofs<<i.x_i<<" "<<i.cum_int_exp_y_l<<std::endl;
+	ofs<<i.x_u<<" "<<i.cum_int_exp_y_u<<std::endl;
+      }
+#endif
     do
       {
 	T p=rnd();
+	//std::cerr<<"p="<<p<<" ";
 	auto iter=search_point(ls,p);
 	T y=ls.back().cum_int_exp_y_u*p;
 	T x1,x2,y1,y2;
@@ -562,6 +624,7 @@ namespace mcmc_utilities
 	    throw nan_or_inf();
 	  }
       }while(std::isnan(result));
+    //std::cerr<<result<<std::endl;
     return result;
   }
 
@@ -569,7 +632,27 @@ namespace mcmc_utilities
   T arms(const probability_density_1d<T,T>& pd,T xcur,size_t n,const T_urand& rnd)
   {
     std::list<section<T> > ls;
-    init(pd,ls);
+    
+    T scale=0;
+
+    init(pd,ls,scale);
+#ifdef DEBUG
+    
+    for(auto i=ls.begin();i!=ls.end();++i)
+      {
+	std::cout<<i->x_l<<" "<<std::exp(i->y_l)<<std::endl;
+	std::cout<<i->x_i<<" "<<std::exp(i->y_i)<<std::endl;
+	std::cout<<i->x_u<<" "<<std::exp(i->y_u)<<std::endl;
+      }
+
+    std::cout<<"no no no"<<std::endl;
+
+    for(double x=.01;x<100;x+=.01)
+      {
+	std::cout<<x<<" "<<std::exp(eval_log(pd,x,scale))<<std::endl;
+      }
+#endif
+    
     T xm=-1;
     //bool xmchanged=false;
     size_t xmchange_count=0;
@@ -579,7 +662,8 @@ namespace mcmc_utilities
       {
 	throw var_out_of_range();
       }
-    
+
+
     for(size_t i=0;i<n;)
       {
 	T x=0;
@@ -592,9 +676,10 @@ namespace mcmc_utilities
 	
 	T u=rnd();
 	T xa=0;
-	if(std::log(u)+eval(x,ls)>pd.eval_log(x))
+	if(std::log(u)+eval(x,ls)>eval_log(pd,x,scale))
 	  {
-	    insert_point(pd,ls,x);
+	    insert_point(pd,ls,x,scale);
+	    update_scale(ls,scale);
 	    continue;
 	  }
 	else
@@ -603,7 +688,7 @@ namespace mcmc_utilities
 	  }
 	u=rnd();
 	
-	if(std::log(u)>std::min(0.,pd.eval_log(xa)-pd.eval_log(xcur)+std::min(pd.eval_log(xcur),eval(xcur,ls))-std::min(pd.eval_log(xa),eval(xa,ls))))
+	if(std::log(u)>std::min(0.,eval_log(pd,xa,scale)-eval_log(pd,xcur,scale)+std::min(eval_log(pd,xcur,scale),eval(xcur,ls))-std::min(eval_log(pd,xa,scale),eval(xa,ls))))
 	  {
 	    xm=xcur;
 	    ++i;
@@ -616,6 +701,24 @@ namespace mcmc_utilities
 	  }
 	xcur=xm;
       }
+
+#ifdef DEBUG
+    std::ofstream ofs("dump.qdp");
+    for(auto& i:ls)
+      {
+	ofs<<i.x_l<<" "<<i.y_l<<std::endl;
+	ofs<<i.x_i<<" "<<i.y_i<<std::endl;
+	ofs<<i.x_u<<" "<<i.y_u<<std::endl;	
+      }
+
+    ofs<<"no no no"<<std::endl;
+
+    for(T x=0.001;x<100;x+=.01)
+      {
+	ofs<<x<<" "<<eval_log(pd,x,scale)<<std::endl;
+      }
+#endif    
+    
     return xm;
   }
 
