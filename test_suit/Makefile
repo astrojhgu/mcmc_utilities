@@ -3,7 +3,7 @@ targets=test_coal  test_dual_err  test_eff  test_gibbs  test_pf test_eff_graph t
 all:$(targets)
 
 CXX=clang++
-CXXFLAGS=-I ../ -O2 -std=c++14 -g -I ../../arms/
+CXXFLAGS=-I ../ -O2 -std=c++11 -g -I ../../arms/
 LDFLAGS=-lSDL2 -lfio -lcfitsio -O3
 
 % :	%.o

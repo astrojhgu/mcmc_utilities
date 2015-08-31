@@ -70,7 +70,7 @@ namespace mcmc_utilities
   };
 
   template <typename T_p,typename T_var1>
-  auto vphi(const vnode<T_p,T_var1>& n1)
+  phi_vnode<T_p,T_var1> vphi(const vnode<T_p,T_var1>& n1)
   {
     auto result= phi_vnode<T_p,T_var1>(std::string("phi")+node_count<phi_vnode<T_p,T_var1> >(),{n1,(size_t)0});
     result.named=false;

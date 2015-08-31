@@ -5,6 +5,7 @@
 #include <vector>
 #include <list>
 #include <map>
+#include <functional>
 #include "mcmc_exception.hpp"
 #include "stochastic_node.hpp"
 #include "deterministic_node.hpp"
@@ -54,7 +55,7 @@ namespace mcmc_utilities
       return result;
     }
 
-    auto get_monitor(const T_tag& tag,size_t n)const
+    std::function<T_var1()> get_monitor(const T_tag& tag,size_t n)const
     {
       auto iter=node_map.find(tag);
       if(iter==node_map.end())

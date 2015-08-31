@@ -3,6 +3,7 @@
 #include <core/stochastic_node.hpp>
 #include <math/functions.hpp>
 #include <helper/vnode.hpp>
+#include <nodes/unary_node.hpp>
 #include <helper/graph_builder.hpp>
 #include <nodes/normal_node.hpp>
 #include <nodes/const_node.hpp>
@@ -35,7 +36,6 @@ private:
 
 int main()
 {
-  
   graph_builder<double,double> gb;
   
 
@@ -48,7 +48,8 @@ int main()
   gb.add_node(vuniform("mu",0.,100.));
   gb.add_node(vuniform("sigma",0.,100.));
   gb.add_node("eff",
-	      vn("A")+(vn("B")-vn("A"))*vphi((obs_vconst("E",E_vec)-vn("mu"))/vn("sigma"))
+	      //vn("A")+(vn("B")-vn("A"))*vphi((obs_vconst("E",E_vec)-vn("mu"))/vn("sigma"))
+	      vn("A")+(vn("B")-vn("A"))*vunary((obs_vconst("E",E_vec)-vn("mu"))/vn("sigma"),{[](const double& x){return phi(x);}})
 	      );
   gb.add_node("ninj",obs_vconst("ninj",ninj_vec));
   gb.add_node("nrec",

@@ -69,7 +69,7 @@ namespace mcmc_utilities
   };
   
   template <typename T_p,typename T_var1>
-  auto operator+(const vnode<T_p,T_var1>& n1,
+  add_vnode<T_p,T_var1> operator+(const vnode<T_p,T_var1>& n1,
 		 const vnode<T_p,T_var1>& n2)
   {
     auto result= add_vnode<T_p,T_var1>(std::string("add")+node_count<add_vnode<T_p,T_var1> >(),{{n1,0},{n2,0}});
@@ -135,7 +135,7 @@ namespace mcmc_utilities
   };
   
   template <typename T_p,typename T_var1>
-  auto operator-(const vnode<T_p,T_var1>& n1,
+  sub_vnode<T_p,T_var1> operator-(const vnode<T_p,T_var1>& n1,
 		 const vnode<T_p,T_var1>& n2)
   {
     auto result = sub_vnode<T_p,T_var1>(std::string("sub")+node_count<sub_vnode<T_p,T_var1> >(),{{n1,0},{n2,0}});
@@ -202,7 +202,7 @@ namespace mcmc_utilities
   };
   
   template <typename T_p,typename T_var1>
-  auto operator*(const vnode<T_p,T_var1>& n1,
+  mul_vnode<T_p,T_var1> operator*(const vnode<T_p,T_var1>& n1,
 		 const vnode<T_p,T_var1>& n2)
   {
     auto result= mul_vnode<T_p,T_var1>(std::string("mul")+node_count<mul_vnode<T_p,T_var1> >(),{{n1,0},{n2,0}});
@@ -269,7 +269,7 @@ namespace mcmc_utilities
   };
   
   template <typename T_p,typename T_var1>
-  auto operator/(const vnode<T_p,T_var1>& n1,
+  div_vnode<T_p,T_var1> operator/(const vnode<T_p,T_var1>& n1,
 		 const vnode<T_p,T_var1>& n2)
   {
     auto result= div_vnode<T_p,T_var1>(std::string("div")+node_count<div_vnode<T_p,T_var1> >(),{{n1,0},{n2,0}});

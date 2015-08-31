@@ -477,7 +477,7 @@ namespace mcmc_utilities
       }
 
 #else
-    auto iter=lower_bound(section_list.begin(),section_list.end(),x,[](auto& x,auto& y)
+    auto iter=lower_bound(section_list.begin(),section_list.end(),x,[](const section<T>& x,const T& y)
 		       {
 			 if( (x.x_l-y)*(x.x_u-y)<=0  )
 			   {
@@ -516,12 +516,12 @@ namespace mcmc_utilities
 
 
   template <typename T>
-  auto search_point(const std::list<section<T> >& ls,T p)
+  typename std::list<section<T> >::const_iterator search_point(const std::list<section<T> >& ls,T p)
   {
     section<T> v;
     v.cum_int_exp_y_u=p*ls.back().cum_int_exp_y_u;
     
-    auto r=equal_range(ls.begin(),ls.end(),v,[](auto x,auto y){return x.cum_int_exp_y_u<y.cum_int_exp_y_u;});
+    auto r=equal_range(ls.begin(),ls.end(),v,[](const section<T>& x,const section<T>& y){return x.cum_int_exp_y_u<y.cum_int_exp_y_u;});
 
     if(r.first==ls.end())
       {
