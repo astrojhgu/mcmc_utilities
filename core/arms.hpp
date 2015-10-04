@@ -545,7 +545,6 @@ namespace mcmc_utilities
 	  }
       }
     
-    auto i=r.first;
     return r.first;
   }
 
@@ -577,7 +576,6 @@ namespace mcmc_utilities
 	T x1,x2,y1,y2;
 	T ybase;
 
-	int s=0;
 	if(y>=iter->cum_int_exp_y_l)
 	  {
 	    ybase = iter->cum_int_exp_y_l;
@@ -586,7 +584,6 @@ namespace mcmc_utilities
 
 	    x2 = iter -> x_u;
 	    y2 = iter -> y_u;
-	    s=1;
 	  }
 	else
 	  {
@@ -596,12 +593,10 @@ namespace mcmc_utilities
 	      {
 		--iter1;
 		ybase = iter1->cum_int_exp_y_u;
-		s=2;
 	      }
 	    else
 	      {
 		ybase = 0;
-		s=3;
 	      }
 	    
 	    x1 = iter -> x_l;

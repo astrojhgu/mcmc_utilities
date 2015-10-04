@@ -1,12 +1,13 @@
 #include "mcmc_Sampler.h"
 #include <iostream>
 #include <core/gibbs_sampler.hpp>
+#include <core/urand.hpp>
 #include <vector>
 #include <cassert>
 using namespace std;
 using namespace mcmc_utilities;
 
-u_random<double> rng;
+urand<double> rng;
 
 class JSampleable
   :public probability_density_md<double,std::vector<double> >
@@ -125,7 +126,7 @@ JNIEXPORT void JNICALL Java_mcmc_Sampler_gibbsSample
 
   std::vector<double> p(js.param2vec(init_var));
   
-  gibbs_sample(js,p,1,rng);
+  gibbs_sample(js,p,rng);
 
 
   for(int i=0;i<p.size();++i)
