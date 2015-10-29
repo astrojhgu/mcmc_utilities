@@ -20,7 +20,7 @@ namespace mcmc_utilities
     {}
     
   private:
-    T_p do_log_prior_prob()const override
+    T_p do_log_prob()const override
     {
       return 0;
     }

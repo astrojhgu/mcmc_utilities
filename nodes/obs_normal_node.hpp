@@ -19,7 +19,7 @@ namespace mcmc_utilities
     {}
 
   public:
-    T_p do_log_prior_prob()const override
+    T_p do_log_prob()const override
     {
       T_p result=0;
       for(size_t i=0;i<this->nobs();++i)

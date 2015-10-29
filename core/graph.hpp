@@ -120,7 +120,7 @@ namespace mcmc_utilities
       i->second->log_likelihood();
     }
 
-    T_p log_post_prob(const T_tag& tag)const
+    T_p log_posterior_prob(const T_tag& tag)const
     {
       auto i=node_map.find(tag);
       if(i==node_map.end())
@@ -133,7 +133,7 @@ namespace mcmc_utilities
 	{
 	  throw invalid_node_type();
 	}
-      return ps->log_post_prob();
+      return ps->log_posterior_prob();
     }
 
 

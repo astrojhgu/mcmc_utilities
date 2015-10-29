@@ -62,11 +62,11 @@ namespace mcmc_utilities
       T_p result=0;
       for(auto& p : stochastic_children)
 	{
-	  result+=p->log_prior_prob();
+	  result+=p->log_prob();
 	}
       for(auto& p: observed_children)
 	{
-	  result+=p->log_prior_prob();
+	  result+=p->log_prob();
 	}
       for(auto& p:deterministic_children)
 	{

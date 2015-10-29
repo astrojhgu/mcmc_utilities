@@ -71,7 +71,7 @@ int main(int argc,char* argv[])
   for(double x=1;x<5;x+=.01)
     {
       pu2->set_value(0,x);
-      cout<<x<<" "<<pnorm->log_prior_prob()<<endl;
+      cout<<x<<" "<<pnorm->log_prob()<<endl;
     }
 
 

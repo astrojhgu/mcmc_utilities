@@ -31,10 +31,14 @@ namespace mcmc_utilities
 	     const std::vector<T_var1>& scalar_param,
 	     const std::vector<std::vector<T_var1> >& vector_param)const
     {
-      if(scalar_param.size()!=scalar_hparam_names.size()||
-	 vector_param.size()!=vector_hparam_names.size())
+      if(scalar_param.size()!=scalar_hparam_names.size())
 	{
-	  throw mcmc_exception("param number mismatch");
+	  throw mcmc_exception("scalar param number mismatch");
+	}
+      
+      if(vector_param.size()!=vector_hparam_names.size())
+	{
+	  throw mcmc_exception("vector param number mismatch");
 	}
       return do_get_node(scalar_param,vector_param);
     }

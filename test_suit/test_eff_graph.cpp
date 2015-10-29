@@ -42,7 +42,7 @@ public:
   {
   };
 
-  double do_log_prior_prob()const override
+  double do_log_prob()const override
   {
     return 0;
   }
@@ -71,7 +71,7 @@ public:
     :observed_node<double,double>(2)
   {}
 
-  double do_log_prior_prob()const override
+  double do_log_prob()const override
   {
     double result=0;
     for(int i=0;i<nobs();++i)
@@ -112,7 +112,7 @@ class ninj
     :observed_node<double,double>(0)
   {}
 
-  double do_log_prior_prob()const override
+  double do_log_prob()const override
   {
     assert(0);
     return 0;
@@ -139,7 +139,7 @@ public:
     :observed_node<double,double>(0)
   {}
 
-  double do_log_prior_prob()const override
+  double do_log_prob()const override
   {
     assert(0);
     return 0;

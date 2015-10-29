@@ -101,13 +101,13 @@ public:
     double log_p=0;
     
     double intrscat=1/std::sqrt(p.scat);
-    double log_prior_a=logdt(p.a,0.,1.,1.);
-    double log_prior_b=logdnorm(p.b,0.,100.);
-    double log_prior_scat=logdgamma(p.scat,1e-2,1e-2);
+    double log_a=logdt(p.a,0.,1.,1.);
+    double log_b=logdnorm(p.b,0.,100.);
+    double log_scat=logdgamma(p.scat,1e-2,1e-2);
 
-    log_p+=log_prior_a;
-    log_p+=log_prior_b;
-    log_p+=log_prior_scat;
+    log_p+=log_a;
+    log_p+=log_b;
+    log_p+=log_scat;
 
     double log_p1=0,log_p2=0,log_p3=0;
     for(int i=0;i<x_vec.size();++i)

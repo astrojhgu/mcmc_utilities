@@ -28,14 +28,14 @@ namespace mcmc_utilities
     observed_node<T_p,T_var1>& operator=(const observed_node<T_p,T_var1>&)=delete;
 
   public:
-    T_p log_post_prob()const
+    T_p log_posterior_prob()const
     {
-      return log_prior_prob()+this->log_likelihood();
+      return log_prob()+this->log_likelihood();
     }
 
-    T_p log_prior_prob()const
+    T_p log_prob()const
     {
-      return do_log_prior_prob();
+      return do_log_prob();
     }
     
     size_t nobs()const
@@ -46,8 +46,8 @@ namespace mcmc_utilities
 
 
   private:
-    virtual T_p do_log_prior_prob()const=0;
-    //virtual T_p do_log_prior_prob_single(size_t obsid)const=0;
+    virtual T_p do_log_prob()const=0;
+    //virtual T_p do_log_prob_single(size_t obsid)const=0;
 
     virtual size_t do_nobs()const=0;
     

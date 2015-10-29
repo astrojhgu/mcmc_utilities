@@ -35,16 +35,16 @@ namespace mcmc_utilities
     stochastic_node(const stochastic_node<T_p,T_var1>& )=delete;
     stochastic_node<T_p,T_var1>& operator=(const stochastic_node<T_p,T_var1>&)=delete;
   public:
-    T_p log_post_prob()const
+    T_p log_posterior_prob()const
     {
-      return log_prior_prob()+this->log_likelihood();
+      return log_prob()+this->log_likelihood();
     }
 
     T_p do_eval_log(const T_var1& x)const override
     {
       
       const_cast<stochastic_node*>(this)->v[current_idx]=x;
-      return log_post_prob();
+      return log_posterior_prob();
     }
 
     void set_current_idx(size_t i)
@@ -57,9 +57,9 @@ namespace mcmc_utilities
       return current_idx;
     }
     
-    T_p log_prior_prob()const
+    T_p log_prob()const
     {
-      return do_log_prior_prob();
+      return do_log_prob();
     }
 
     void set_value(size_t idx,const T_var1& v_)
@@ -100,7 +100,7 @@ namespace mcmc_utilities
 	}
     }
     
-    virtual T_p do_log_prior_prob()const=0;
+    virtual T_p do_log_prob()const=0;
     T_var1 do_value(size_t idx,size_t obsid)const override final
     {
       return v[idx];

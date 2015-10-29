@@ -19,7 +19,7 @@ namespace mcmc_utilities
     {}
 
   public:
-    T_p do_log_prior_prob()const override
+    T_p do_log_prob()const override
     {
       assert(0);//should never be called
       return 0;
