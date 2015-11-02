@@ -82,7 +82,13 @@ namespace mcmc_utilities
 	     const std::vector<std::vector<T_var1> >& vector_param)const override
     {
       return std::shared_ptr<node<T_p,T_var1> >(new normal_node<T_p,T_var1>);
-    }      
+    }
+
+    std::string do_get_node_type()const override
+    {
+      return std::string("stochastic node");
+    }
+
   };
   
   using vnormal=normal_vnode<double,double>;

@@ -60,12 +60,21 @@ namespace mcmc_utilities
     {
       return get_node({},{});
     }
+
+  public:
+    std::string get_node_type()const
+    {
+      return do_get_node_type();
+    }
     
   private:
     virtual std::shared_ptr<node<T_p,T_var1> >
     do_get_node(
 		const std::vector<T_var1>& scalar_param,
 		const std::vector<std::vector<T_var1> >& vector_param)const=0;
+
+    virtual std::string do_get_node_type()const=0;
+    
   };
 }
 
