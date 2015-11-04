@@ -12,6 +12,7 @@
 #include <nodes/obs_const_node.hpp>
 #include <nodes/uniform_node.hpp>
 #include <nodes/phi_node.hpp>
+#include <nodes/bvnormal_node.hpp>
 #include <cmath>
 #include <cassert>
 #include <fstream>

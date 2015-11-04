@@ -15,7 +15,7 @@ namespace mcmc_utilities
     :public node<T_p,T_var1>,public probability_density_1d<T_p,T_var1>
   {
   private:
-    std::vector<T_var1> v;
+    std::vector<T_var1> v;//store current value(s) of this node
     size_t current_idx;
   public:
     stochastic_node(size_t nparents,const std::vector<T_var1>& v_)
