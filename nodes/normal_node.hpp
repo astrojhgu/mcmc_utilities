@@ -21,7 +21,7 @@ namespace mcmc_utilities
   private:
     T_p do_log_prob()const override
     {
-      T_var1 PI=std::atan(1.0)*4;
+      const static T_var1 PI=std::atan(1.0)*4;
       T_var1 x=this->value(0,0);
       T_var1 mu=this->parent(0,0);
       T_var1 sigma=this->parent(1,0);

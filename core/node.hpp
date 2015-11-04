@@ -47,6 +47,11 @@ namespace mcmc_utilities
       return parents.size();
     }
 
+    const std::pair<node<T_p,T_var1>*,size_t>& get_parent(size_t i)const
+    {
+      return parents[i];
+    }
+
     size_t num_of_dims()const
     {
       return ndim_;
