@@ -6,6 +6,7 @@
 #include "mcmc_exception.hpp"
 #include "arms.hpp"
 #include "base_urand.hpp"
+#include "discrete_sample.hpp"
 #include "node.hpp"
 
 namespace mcmc_utilities
@@ -16,16 +17,17 @@ namespace mcmc_utilities
   {
   private:
     std::vector<T_var1> v;//store current value(s) of this node
+    std::vector<int> observed;
     size_t current_idx;
   public:
     stochastic_node(size_t nparents,const std::vector<T_var1>& v_)
       :node<T_p,T_var1>(nparents,v_.size()),
-      v{v_},current_idx(0)
+      v{v_},observed(v_.size()),current_idx(0)
     {}
 
     stochastic_node(size_t nparents,T_var1 v_)
       :node<T_p,T_var1>(nparents,1),
-      v(1),current_idx(0)
+      v(1),observed(v.size()),current_idx(0)
     {
       v[0]=v_;
     }
@@ -35,6 +37,16 @@ namespace mcmc_utilities
     stochastic_node(const stochastic_node<T_p,T_var1>& )=delete;
     stochastic_node<T_p,T_var1>& operator=(const stochastic_node<T_p,T_var1>&)=delete;
   public:
+    bool is_observed(size_t n)
+    {
+      return observed[n]!=0;
+    }
+
+    void set_observed(size_t n,bool b)
+    {
+      observed[n]=b?1:0;
+    }
+    
     T_p log_posterior_prob()const
     {
       return log_prob()+this->log_likelihood();
@@ -79,8 +91,12 @@ namespace mcmc_utilities
       //constexpr size_t nsamp=10;
       for(size_t i=0;i<this->num_of_dims();++i)
 	{
+	  if(is_observed(i))
+	    {
+	      continue;
+	    }
 	  this->set_current_idx(i);
-	  T_var1 xprev=this->value(i,0);
+	  T_var1 xprev=this->value(i);
 	  std::pair<T_var1,T_var1> xrange(this->var_range());
 	  xprev=xprev<xrange.first?xrange.first:xprev;
 	  xprev=xprev>xrange.second?xrange.second:xprev;
@@ -101,7 +117,7 @@ namespace mcmc_utilities
     }
     
     virtual T_p do_log_prob()const=0;
-    T_var1 do_value(size_t idx,size_t obsid)const override final
+    T_var1 do_value(size_t idx)const override final
     {
       return v[idx];
     }

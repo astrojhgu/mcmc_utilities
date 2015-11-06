@@ -15,9 +15,9 @@ namespace mcmc_utilities
       :deterministic_node<T_p,T_var1>(1,1)
       {}
 
-    T_var1 do_value(size_t idx,size_t obsid)const override
+    T_var1 do_value(size_t idx)const override
     {
-      return this->parent(0,obsid);
+      return this->parent(0);
     }
 
     void do_connect_to_parent(node<T_p,T_var1>* rhs,size_t n,size_t idx) override
@@ -108,9 +108,9 @@ namespace mcmc_utilities
       param_list[n].first->connect_to_parent(rhs,0,idx);
     }
 
-    T_var1 do_value(size_t idx,size_t obsid)const override
+    T_var1 do_value(size_t idx)const override
     {
-      return return_list[idx].first->value(return_list[idx].second,obsid);
+      return return_list[idx].first->value(return_list[idx].second);
     }
   };
 }

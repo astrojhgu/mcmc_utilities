@@ -1,4 +1,4 @@
-targets=test_coal  test_dual_err  test_eff  test_gibbs  test_pf test_eff_graph test_eff_graph2 test_normal test_dugongs
+targets=test_coal  test_eff  test_gibbs  test_pf test_eff_graph
 
 all:$(targets)
 

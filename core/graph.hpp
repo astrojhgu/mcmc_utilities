@@ -9,7 +9,6 @@
 #include "mcmc_exception.hpp"
 #include "stochastic_node.hpp"
 #include "deterministic_node.hpp"
-#include "observed_node.hpp"
 //#include "tag.hpp"
 
 namespace mcmc_utilities
@@ -20,7 +19,6 @@ namespace mcmc_utilities
   private:
     std::list<stochastic_node<T_p,T_var1>* > stochastic_node_list;
     std::list<deterministic_node<T_p,T_var1>* > deterministic_node_list;
-    std::list<observed_node<T_p,T_var1>* > observed_node_list;
     std::map<T_tag,std::shared_ptr<node<T_p,T_var1> > > node_map;
 
   public:
@@ -29,7 +27,6 @@ namespace mcmc_utilities
       node_map.clear();
       stochastic_node_list.clear();
       deterministic_node_list.clear();
-      observed_node_list.clear();
     }
 
     void sample(const base_urand<T_p>& rnd)
@@ -49,7 +46,7 @@ namespace mcmc_utilities
 	{
 	  for(size_t i=0;i<(*p)->num_of_dims();++i)
 	    {
-	      result.push_back((*p)->value(i,0));
+	      result.push_back((*p)->value(i));
 	    }
 	}
       return result;
@@ -76,7 +73,7 @@ namespace mcmc_utilities
 	  {
 	    throw pointer_expired();
 	  }
-	return wp.lock()->value(n,0);
+	return wp.lock()->value(n);
       };
     }
 
@@ -91,7 +88,7 @@ namespace mcmc_utilities
 	{
 	  throw invalid_node_type();
 	}
-      return ps->value(idx,0);
+      return ps->value(idx);
     }
 
     void set_value(const T_tag& tag,size_t idx,
@@ -170,18 +167,13 @@ namespace mcmc_utilities
       
       auto ps=dynamic_cast<stochastic_node<T_p,T_var1>*>(pn.get());
       auto pd=dynamic_cast<deterministic_node<T_p,T_var1>*>(pn.get());
-      auto po=dynamic_cast<observed_node<T_p,T_var1>*>(pn.get());
-      if(ps!=nullptr&&pd==nullptr&&po==nullptr)
+      if(ps!=nullptr&&pd==nullptr)
 	{
 	  stochastic_node_list.push_back(ps);
 	}
-      else if(pd!=nullptr&&ps==nullptr&&po==nullptr)
+      else if(pd!=nullptr&&ps==nullptr)
 	{
 	  deterministic_node_list.push_back(pd);
-	}
-      else if(po!=nullptr&&pd==nullptr&&ps==nullptr)
-	{
-	  observed_node_list.push_back(po);
 	}
       else
 	{

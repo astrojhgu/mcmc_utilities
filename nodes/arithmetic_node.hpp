@@ -21,9 +21,9 @@ namespace mcmc_utilities
       :deterministic_node<T_p,T_var1>(2,1)
     {}
     
-    T_var1 do_value(size_t idx,size_t obsid)const override
+    T_var1 do_value(size_t idx)const override
     {
-      return this->parent(0,obsid)+this->parent(1,obsid);
+      return this->parent(0)+this->parent(1);
     }
   };
 
@@ -93,9 +93,9 @@ namespace mcmc_utilities
       :deterministic_node<T_p,T_var1>(2,1)
     {}
     
-    T_var1 do_value(size_t idx,size_t obsid)const override
+    T_var1 do_value(size_t idx)const override
     {
-      return this->parent(0,obsid)-this->parent(1,obsid);
+      return this->parent(0)-this->parent(1);
     }
   };
 
@@ -166,9 +166,9 @@ namespace mcmc_utilities
       :deterministic_node<T_p,T_var1>(2,1)
     {}
     
-    T_var1 do_value(size_t idx,size_t obsid)const override
+    T_var1 do_value(size_t idx)const override
     {
-      return this->parent(0,obsid)*this->parent(1,obsid);
+      return this->parent(0)*this->parent(1);
     }
   };
   
@@ -238,9 +238,9 @@ namespace mcmc_utilities
       :deterministic_node<T_p,T_var1>(2,1)
     {}
     
-    T_var1 do_value(size_t idx,size_t obsid)const override
+    T_var1 do_value(size_t idx)const override
     {
-      return this->parent(0,obsid)/this->parent(1,obsid);
+      return this->parent(0)/this->parent(1);
     }
   };
 

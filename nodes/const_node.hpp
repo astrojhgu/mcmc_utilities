@@ -19,7 +19,7 @@ namespace mcmc_utilities
     {
     }
     
-    T_var1 do_value(size_t idx,size_t obsid)const override
+    T_var1 do_value(size_t idx)const override
     {
       return v;
     }
