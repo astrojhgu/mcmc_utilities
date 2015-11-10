@@ -25,7 +25,7 @@ namespace mcmc_utilities
 
     std::pair<T_var1,T_var1> do_var_range()const override
     {
-      return std::pair<T_var1,T_var1>(0,this->parent(0));
+      return std::pair<T_var1,T_var1>(0,this->parent(1));
     }
 
     bool is_continuous(size_t idx)const override
@@ -39,6 +39,16 @@ namespace mcmc_utilities
 	  return true;
 	}
     }
+
+    std::vector<T_var1> do_candidate_points()const override
+    {
+      std::vector<T_var1> result((int)(this->parent(1))+1);
+      for(int i=0;i<result.size();++i)
+	{
+	  result[i]=i;
+	}
+      return result;
+    }
   };
 
   template <typename T_p,typename T_var1>
@@ -47,14 +57,12 @@ namespace mcmc_utilities
   {
   public:
     bin_node_factory()
-      :abstract_node_factory<T_p,T_var1>({"p","n"},{"x"},{},{})
+      :abstract_node_factory<T_p,T_var1>({"p","n"},{"x"},{})
     {}
     
   public:
     std::shared_ptr<node<T_p,T_var1> >
-    do_get_node(
-	     const std::vector<T_var1>& scalar_param,
-	     const std::vector<std::vector<T_var1> >& vector_param)const override
+    do_get_node(const std::vector<T_var1>& hparam)const override
     {
       return std::shared_ptr<node<T_p,T_var1> >(new bin_node<T_p,T_var1>());
     }

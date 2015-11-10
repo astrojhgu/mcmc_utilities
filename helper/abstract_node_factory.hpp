@@ -13,52 +13,33 @@ namespace mcmc_utilities
   public:
     const std::vector<std::string> input_names;
     const std::vector<std::string> output_names;
-    const std::vector<std::string> scalar_hparam_names;
-    const std::vector<std::string> vector_hparam_names;
+    const std::vector<std::string> hparam_names;
+    
   public:
     abstract_node_factory(const std::vector<std::string>& iname,
 			  const std::vector<std::string>& oname,
-			  const std::vector<std::string>& sname,
-			  const std::vector<std::string>& vname)
+			  const std::vector<std::string>& hname)
       :input_names(iname),
        output_names(oname),
-       scalar_hparam_names(sname),
-       vector_hparam_names(vname)
+       hparam_names(hname)
     {}
 
     std::shared_ptr<node<T_p,T_var1> >
-    get_node(
-	     const std::vector<T_var1>& scalar_param,
-	     const std::vector<std::vector<T_var1> >& vector_param)const
+    get_node(const std::vector<T_var1>& hparam)const
     {
-      if(scalar_param.size()!=scalar_hparam_names.size())
+      if(hparam.size()!=hparam_names.size())
 	{
-	  throw mcmc_exception("scalar param number mismatch");
+	  throw mcmc_exception("param number mismatch");
 	}
       
-      if(vector_param.size()!=vector_hparam_names.size())
-	{
-	  throw mcmc_exception("vector param number mismatch");
-	}
-      return do_get_node(scalar_param,vector_param);
+      return do_get_node(hparam);
     }
 
-    std::shared_ptr<node<T_p,T_var1> >
-    get_node(const std::vector<T_var1>& scalar_param)const
-    {
-      return get_node(scalar_param,{});
-    }
-
-    std::shared_ptr<node<T_p,T_var1> >
-    get_node(const std::vector<std::vector<T_var1> >& vector_param)const
-    {
-      return get_node({},vector_param);
-    }
-
+    
     std::shared_ptr<node<T_p,T_var1> >
     get_node()const
     {
-      return get_node({},{});
+      return get_node({});
     }
 
   public:
@@ -66,12 +47,15 @@ namespace mcmc_utilities
     {
       return do_get_node_type();
     }
+
+    std::vector<std::string> get_hparam_names()const
+    {
+      return hparam_names;
+    }
     
   private:
     virtual std::shared_ptr<node<T_p,T_var1> >
-    do_get_node(
-		const std::vector<T_var1>& scalar_param,
-		const std::vector<std::vector<T_var1> >& vector_param)const=0;
+    do_get_node(const std::vector<T_var1>& hparam)const=0;
 
     virtual std::string do_get_node_type()const=0;
     

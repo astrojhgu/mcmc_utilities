@@ -22,9 +22,9 @@ namespace mcmc_utilities
     T_p do_log_prob()const override
     {
       const static T_var1 PI=std::atan(1.0)*4;
-      T_var1 x=this->value(0,0);
-      T_var1 mu=this->parent(0,0);
-      T_var1 sigma=this->parent(1,0);
+      T_var1 x=this->value(0);
+      T_var1 mu=this->parent(0);
+      T_var1 sigma=this->parent(1);
       return -(x-mu)*(x-mu)/(2*sigma*sigma)-std::log(sigma*std::sqrt(2*PI));
     }
     
@@ -35,8 +35,8 @@ namespace mcmc_utilities
     
     std::pair<T_var1,T_var1> do_var_range()const override
     {
-      T_var1 mu=this->parent(0,0);
-      T_var1 sigma=std::abs(this->parent(1,0));
+      T_var1 mu=this->parent(0);
+      T_var1 sigma=std::abs(this->parent(1));
 
       return std::make_pair(mu-5*sigma,mu+5*sigma);
       //return make_pair(-10,10);
@@ -72,14 +72,12 @@ namespace mcmc_utilities
   {
   public:
     normal_node_factory()
-      :abstract_node_factory<T_p,T_var1>({"mu","sigma"},{"x"},{},{})
+      :abstract_node_factory<T_p,T_var1>({"mu","sigma"},{"x"},{})
     {}
     
   public:
     std::shared_ptr<node<T_p,T_var1> >
-    do_get_node(
-	     const std::vector<T_var1>& scalar_param,
-	     const std::vector<std::vector<T_var1> >& vector_param)const override
+    do_get_node(const std::vector<T_var1>& hparam)const override
     {
       return std::shared_ptr<node<T_p,T_var1> >(new normal_node<T_p,T_var1>);
     }

@@ -5,6 +5,7 @@
 #include <vector>
 #include <list>
 #include <map>
+#include <algorithm>
 #include <functional>
 #include "mcmc_exception.hpp"
 #include "stochastic_node.hpp"
@@ -20,7 +21,7 @@ namespace mcmc_utilities
     std::list<stochastic_node<T_p,T_var1>* > stochastic_node_list;
     std::list<deterministic_node<T_p,T_var1>* > deterministic_node_list;
     std::map<T_tag,std::shared_ptr<node<T_p,T_var1> > > node_map;
-
+    std::map<node<T_p,T_var1>* ,T_tag> tag_map;
   public:
     void clear()
     {
@@ -133,6 +134,19 @@ namespace mcmc_utilities
       return ps->log_posterior_prob();
     }
 
+    void add_node(node<T_p,T_var1>* pn,
+		  const T_tag& tag)
+    {
+      std::vector<std::pair<T_tag,size_t> > parents;
+      this->add_node(std::shared_ptr<node<T_p,T_var1> >(pn),tag,parents);
+    }
+    
+    void add_node(const std::shared_ptr<node<T_p,T_var1> >& pn,
+		  const T_tag& tag)
+    {
+      std::vector<std::pair<T_tag,size_t> > parents;
+      this->add_node(pn,tag,parents);
+    }
 
     void add_node(node<T_p,T_var1>* pn,
 		  const T_tag& tag,
@@ -144,14 +158,18 @@ namespace mcmc_utilities
     
     
     void add_node(const std::shared_ptr<node<T_p,T_var1> >& pn,
-		  const T_tag& tag,
-		  const std::vector<std::pair<T_tag,size_t> >& parents
+		      const T_tag& tag,
+		      const std::vector<std::pair<T_tag,size_t> >& parents
 		  )
     {
       //std::shared_ptr<node<T_p,T_var1> > ptr(pn);
       if (node_map.count(tag)!=0)
 	{
 	  throw node_name_already_used();
+	}
+      if(tag_map.count(pn.get())!=0)
+	{
+	  throw node_already_added();
 	}
       if(pn->num_of_parents()!=parents.size())
 	{
@@ -180,14 +198,62 @@ namespace mcmc_utilities
 	  throw invalid_node_type();
 	}
       size_t n=0;
-      for(auto& i:parents)
+      for(const auto& i:parents)
 	{
 	  auto n_iter=node_map.find(i.first);
 	  pn->connect_to_parent(n_iter->second.get(),n,i.second);
 	  ++n;
 	}
       node_map[tag]=pn;
+      tag_map[pn.get()]=tag;
     }
+
+
+    void add_node(node<T_p,T_var1>*pn,
+		  const T_tag& tag,
+		  const std::vector<std::pair<std::shared_ptr<node<T_p,T_var1> >,size_t> >& parents)
+    {
+      std::vector<std::pair<node<T_p,T_var1>*,size_t> > parents1;
+      for_each(parents.begin(),parents.end(),[&](const std::pair<std::shared_ptr<node<T_p,T_var1> >,size_t>& x){parents1.push_back({x.first.get(),x.second});});
+      add_node(std::shared_ptr<node<T_p,T_var1> >(pn),tag,parents1);
+      }
+    
+    void add_node(const std::shared_ptr<node<T_p,T_var1> >& pn,
+		  const T_tag& tag,
+		  const std::vector<std::pair<std::shared_ptr<node<T_p,T_var1> >,size_t> >& parents)
+    {
+      std::vector<std::pair<node<T_p,T_var1>*,size_t> > parents1;
+      for_each(parents.begin(),parents.end(),[&](const std::pair<std::shared_ptr<node<T_p,T_var1> >,size_t>& x){parents1.push_back({x.first.get(),x.second});});
+      
+      add_node(pn,tag,parents1);
+      }
+
+    void add_node(node<T_p,T_var1>* pn,
+		  const T_tag& tag,
+		  const std::vector<std::pair<node<T_p,T_var1>*,size_t> >& parents)
+    {
+      add_node(std::shared_ptr<node<T_p,T_var1> >(pn),tag,parents);
+    }
+
+    
+    void add_node(const std::shared_ptr<node<T_p,T_var1> >& pn,
+		  const T_tag& tag,
+		  const std::vector<std::pair<node<T_p,T_var1>*,size_t> >& parents)
+    {
+      std::vector<std::pair<T_tag,size_t> > parent_tags;
+      for(auto& p:parents)
+	{
+	  node<T_p,T_var1>* pp(p.first);
+	  if(tag_map.count(pp)==0)
+	    {
+	      throw parents_not_exist();
+	    }
+	  T_tag tag=tag_map[pp];
+	  parent_tags.push_back({tag,p.second});
+	}
+      this->add_node(pn,tag,parent_tags);
+    }
+    
   };
 }
 

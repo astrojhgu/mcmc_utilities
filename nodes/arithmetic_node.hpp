@@ -33,13 +33,11 @@ namespace mcmc_utilities
   {
   public:
     add_node_factory()
-      :abstract_node_factory<T_p,T_var1>({"op1","op2"},{"result"},{},{})
+      :abstract_node_factory<T_p,T_var1>({"op1","op2"},{"result"},{})
     {}
     
     std::shared_ptr<node<T_p,T_var1> >
-    do_get_node(
-	     const std::vector<T_var1>& scalar_param,
-	     const std::vector<std::vector<T_var1> >& vector_param)const override
+    do_get_node(const std::vector<T_var1>& hparam)const override
     {
       return std::shared_ptr<node<T_p,T_var1> >(new add_node<T_p,T_var1>);
     }
@@ -105,13 +103,11 @@ namespace mcmc_utilities
   {
   public:
     sub_node_factory()
-      :abstract_node_factory<T_p,T_var1>({"op1","op2"},{"result"},{},{})
+      :abstract_node_factory<T_p,T_var1>({"op1","op2"},{"result"},{})
     {}
   public:
     std::shared_ptr<node<T_p,T_var1> >
-    do_get_node(
-	     const std::vector<T_var1>& scalar_param,
-	     const std::vector<std::vector<T_var1> >& vector_param)const override
+    do_get_node(const std::vector<T_var1>& hparam)const override
     {
       return std::shared_ptr<node<T_p,T_var1> >(new sub_node<T_p,T_var1>);
     }
@@ -178,14 +174,12 @@ namespace mcmc_utilities
   {
   public:
     mul_node_factory()
-      :abstract_node_factory<T_p,T_var1>({"op1","op2"},{"result"},{},{})
+      :abstract_node_factory<T_p,T_var1>({"op1","op2"},{"result"},{})
     {}
     
   public:
     std::shared_ptr<node<T_p,T_var1> >
-    do_get_node(
-		const std::vector<T_var1>& scalar_param,
-		const std::vector<std::vector<T_var1> >& vector_param)const override
+    do_get_node(const std::vector<T_var1>& hparam)const override
     {
       return std::shared_ptr<node<T_p,T_var1> >(new mul_node<T_p,T_var1>);
     }
@@ -250,14 +244,12 @@ namespace mcmc_utilities
   {
   public:
     div_node_factory()
-      :abstract_node_factory<T_p,T_var1>({"op1","op2"},{"result"},{},{})
+      :abstract_node_factory<T_p,T_var1>({"op1","op2"},{"result"},{})
     {}
     
   public:
     std::shared_ptr<node<T_p,T_var1> >
-    do_get_node(
-	     const std::vector<T_var1>& scalar_param,
-	     const std::vector<std::vector<T_var1> >& vector_param)const override
+    do_get_node(const std::vector<T_var1>& hparam)const override
     {
       return std::shared_ptr<node<T_p,T_var1> >(new div_node<T_p,T_var1>);
     }

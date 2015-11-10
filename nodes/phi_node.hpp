@@ -57,13 +57,11 @@ namespace mcmc_utilities
   {
   public:
     phi_node_factory()
-      :abstract_node_factory<T_p,T_var1>({"x"},{"y"},{},{})
+      :abstract_node_factory<T_p,T_var1>({"x"},{"y"},{})
     {}
   public:
     std::shared_ptr<node<T_p,T_var1> >
-    do_get_node(
-	     const std::vector<T_var1>& scalar_param,
-	     const std::vector<std::vector<T_var1> >& vector_param)const override
+    do_get_node(const std::vector<T_var1>& hparam)const override
     {
       return std::shared_ptr<node<T_p,T_var1> >(new phi_node<T_p,T_var1>);
     }

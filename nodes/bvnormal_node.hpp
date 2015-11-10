@@ -22,13 +22,13 @@ namespace mcmc_utilities
     T_p do_log_prob()const override
     {
       const static T_var1 PI=std::atan(1.0)*4;
-      T_var1 x1=this->value(0,0);
-      T_var1 x2=this->value(1,0);
-      T_var1 mu1=this->parent(0,0);
-      T_var1 mu2=this->parent(1,0);
-      T_var1 sigma1=this->parent(2,0);
-      T_var1 sigma2=this->parent(3,0);
-      T_var1 rho=this->parent(4,0);
+      T_var1 x1=this->value(0);
+      T_var1 x2=this->value(1);
+      T_var1 mu1=this->parent(0);
+      T_var1 mu2=this->parent(1);
+      T_var1 sigma1=this->parent(2);
+      T_var1 sigma2=this->parent(3);
+      T_var1 rho=this->parent(4);
       //return -(x-mu)*(x-mu)/(2*sigma*sigma)-std::log(sigma*std::sqrt(2*PI));
       T_var1 X1=(x1-mu1)/sigma1;
       T_var1 X2=(x2-mu2)/sigma2;
@@ -43,10 +43,10 @@ namespace mcmc_utilities
     
     std::pair<T_var1,T_var1> do_var_range()const override
     {
-      T_var1 mu1=this->parent(0,0);
-      T_var1 mu2=this->parent(1,0);
-      T_var1 sigma1=this->parent(2,0);
-      T_var1 sigma2=this->parent(3,0);
+      T_var1 mu1=this->parent(0);
+      T_var1 mu2=this->parent(1);
+      T_var1 sigma1=this->parent(2);
+      T_var1 sigma2=this->parent(3);
 
       if(this->get_current_idx()==0)
 	{
@@ -88,14 +88,12 @@ namespace mcmc_utilities
   {
   public:
     bvnormal_node_factory()
-      :abstract_node_factory<T_p,T_var1>({"mu1","mu2","sigma1","sigma2","rho"},{"x1","x2"},{},{})
+      :abstract_node_factory<T_p,T_var1>({"mu1","mu2","sigma1","sigma2","rho"},{"x1","x2"},{})
     {}
     
   public:
     std::shared_ptr<node<T_p,T_var1> >
-    do_get_node(
-	     const std::vector<T_var1>& scalar_param,
-	     const std::vector<std::vector<T_var1> >& vector_param)const override
+    do_get_node(const std::vector<T_var1>& hparam)const override
     {
       return std::shared_ptr<node<T_p,T_var1> >(new bvnormal_node<T_p,T_var1>);
     }

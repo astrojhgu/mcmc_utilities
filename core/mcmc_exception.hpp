@@ -121,6 +121,15 @@ namespace mcmc_utilities
     {}    
   };
 
+  class node_already_added
+    :public mcmc_exception
+  {
+  public:
+    node_already_added()
+      :mcmc_exception("node has already added")
+    {}
+  };
+  
   class parents_not_exist
     :public mcmc_exception
   {

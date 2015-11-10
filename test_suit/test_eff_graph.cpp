@@ -99,25 +99,32 @@ int main()
   graph<double,double,std::string> g;
   data_loader dl("eff.txt");
 
-  g.add_node(new uniform_node<double,double>(.001,1-1e-5),"A",{});
-  g.add_node(new uniform_node<double,double>(.001,1-1e-5),"B",{});
-  g.add_node(new uniform_node<double,double>(.001,100-1e-5),"mu",{});
-  g.add_node(new uniform_node<double,double>(.001,100-1e-5),"sigma",{});
+  auto pA=std::shared_ptr<node<double,double> >(new uniform_node<double,double>(.001,1-1e-5));
+  auto pB=std::shared_ptr<node<double,double> >(new uniform_node<double,double>(.001,1-1e-5));
+  auto pmu=std::shared_ptr<node<double,double> >(new uniform_node<double,double>(.001,100-1e-5));
+  auto psigma=std::shared_ptr<node<double,double> >(new uniform_node<double,double>(.001,100-1e-5));
+  g.add_node(pA,"A");
+  g.add_node(pB,"B");
+  g.add_node(pmu,"mu");
+  g.add_node(psigma,"sigma");
   
   for(int i=0;i<dl.size();++i)
     {
       std::string tag_E("E");
       tag_E+=std::to_string(i);
-      g.add_node(dl.get_energy(i),tag_E,{});
+
+      auto pE=dl.get_energy(i);
+      g.add_node(pE,tag_E);
       
       std::string tag_ninj="ninj";
       tag_ninj+=std::to_string(i);
-      g.add_node(dl.get_ninj(i),tag_ninj,{});
+      g.add_node(dl.get_ninj(i),tag_ninj);
 
       std::string tag_eff="eff";
       tag_eff+=std::to_string(i);
 
-      g.add_node(new eff(),tag_eff,{{"A",0},{"B",0},{tag_E,0},{"mu",0},{"sigma",0}});
+      //g.add_node(new eff(),tag_eff,{{"A",0},{"B",0},{tag_E,0},{"mu",0},{"sigma",0}});
+      g.add_node(new eff(),tag_eff,{{pA,0},{pB,0},{pE,0},{pmu,0},{psigma,0}});
       std::string tag_nrec="nrec";
       tag_nrec+=std::to_string(i);
       g.add_node(dl.get_nrec(i),tag_nrec,{{tag_eff,0},{tag_ninj,0}});
@@ -137,6 +144,4 @@ int main()
       g.sample(rnd1);
       cout<<A()<<" "<<B()<<" "<<mu()<<" "<<sigma()<<endl;
     }
-  
-  
 }

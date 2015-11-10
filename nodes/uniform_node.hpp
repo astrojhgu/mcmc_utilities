@@ -44,16 +44,14 @@ namespace mcmc_utilities
   {
   public:
     uniform_node_factory()
-      :abstract_node_factory<T_p,T_var1>({},{"x"},{"a","b"},{})
+      :abstract_node_factory<T_p,T_var1>({},{"x"},{"a","b"})
     {}
     
   public:
     std::shared_ptr<node<T_p,T_var1> >
-    do_get_node(
-	     const std::vector<T_var1>& scalar_param,
-	     const std::vector<std::vector<T_var1> >& vector_param)const override
+    do_get_node(const std::vector<T_var1>& hparam)const override
     {
-      return std::shared_ptr<node<T_p,T_var1> >(new uniform_node<T_p,T_var1>(scalar_param.at(0),scalar_param.at(1)));
+      return std::shared_ptr<node<T_p,T_var1> >(new uniform_node<T_p,T_var1>(hparam.at(0),hparam.at(1)));
     }
 
     std::string do_get_node_type()const override
