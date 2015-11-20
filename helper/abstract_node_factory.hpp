@@ -60,6 +60,19 @@ namespace mcmc_utilities
     virtual std::string do_get_node_type()const=0;
     
   };
+
+  
+  template <typename T_p,typename T_var1>
+  std::shared_ptr<stochastic_node<T_p,T_var1> > to_stochastic(const std::shared_ptr<node<T_p,T_var1> >& sp)
+  {
+    return std::dynamic_pointer_cast<stochastic_node<T_p,T_var1> >(sp);
+  }
+
+  template <typename T_p,typename T_var1>
+  std::shared_ptr<deterministic_node<T_p,T_var1> > to_deterministic(const std::shared_ptr<node<T_p,T_var1> >& sp)
+  {
+    return std::dynamic_pointer_cast<deterministic_node<T_p,T_var1> >(sp);
+  }
 }
 
 
