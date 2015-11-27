@@ -124,7 +124,8 @@ int main()
       tag_eff+=std::to_string(i);
 
       //g.add_node(new eff(),tag_eff,{{"A",0},{"B",0},{tag_E,0},{"mu",0},{"sigma",0}});
-      g.add_node(new eff(),tag_eff,{{pA,0},{pB,0},{pE,0},{pmu,0},{psigma,0}});
+      std::vector<std::pair<std::shared_ptr<node<double,double> >,size_t> > pp{{pA,0},{pB,0},{pE,0},{pmu,0},{psigma,0}};
+      g.add_node(new eff(),tag_eff,pp);
       std::string tag_nrec="nrec";
       tag_nrec+=std::to_string(i);
       g.add_node(dl.get_nrec(i),tag_nrec,{{tag_eff,0},{tag_ninj,0}});

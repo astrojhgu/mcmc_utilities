@@ -21,7 +21,7 @@ namespace mcmc_utilities
     std::list<stochastic_node<T_p,T_var1>* > stochastic_node_list;
     std::list<deterministic_node<T_p,T_var1>* > deterministic_node_list;
     std::map<T_tag,std::shared_ptr<node<T_p,T_var1> > > node_map;
-    std::map<node<T_p,T_var1>* ,T_tag> tag_map;
+    std::map<std::shared_ptr<node<T_p,T_var1> > ,T_tag, std::owner_less<std::shared_ptr<node<T_p,T_var1> > > > tag_map;
   public:
     void clear()
     {
@@ -167,7 +167,7 @@ namespace mcmc_utilities
 	{
 	  throw node_name_already_used();
 	}
-      if(tag_map.count(pn.get())!=0)
+      if(tag_map.count(pn)!=0)
 	{
 	  throw node_already_added();
 	}
@@ -205,7 +205,7 @@ namespace mcmc_utilities
 	  ++n;
 	}
       node_map[tag]=pn;
-      tag_map[pn.get()]=tag;
+      tag_map[pn]=tag;
     }
 
 
@@ -214,19 +214,27 @@ namespace mcmc_utilities
 		  const std::vector<std::pair<std::shared_ptr<node<T_p,T_var1> >,size_t> >& parents)
     {
       std::vector<std::pair<node<T_p,T_var1>*,size_t> > parents1;
-      for_each(parents.begin(),parents.end(),[&](const std::pair<std::shared_ptr<node<T_p,T_var1> >,size_t>& x){parents1.push_back({x.first.get(),x.second});});
-      add_node(std::shared_ptr<node<T_p,T_var1> >(pn),tag,parents1);
+      add_node(std::shared_ptr<node<T_p,T_var1> >(pn),tag,parents);
       }
     
     void add_node(const std::shared_ptr<node<T_p,T_var1> >& pn,
 		  const T_tag& tag,
 		  const std::vector<std::pair<std::shared_ptr<node<T_p,T_var1> >,size_t> >& parents)
     {
-      std::vector<std::pair<node<T_p,T_var1>*,size_t> > parents1;
-      for_each(parents.begin(),parents.end(),[&](const std::pair<std::shared_ptr<node<T_p,T_var1> >,size_t>& x){parents1.push_back({x.first.get(),x.second});});
-      
-      add_node(pn,tag,parents1);
-      }
+      std::vector<std::pair<T_tag,size_t> > parent_tags;
+      for(auto& p:parents)
+	{
+	  if(tag_map.count(p.first)==0)
+	    {
+	      throw parents_not_exist();
+	    }
+	  T_tag tag=tag_map[p.first];
+	  parent_tags.push_back({tag,p.second});
+	}
+      add_node(pn,tag,parent_tags);
+    }
+
+#if 0
 
     void add_node(node<T_p,T_var1>* pn,
 		  const T_tag& tag,
@@ -253,6 +261,7 @@ namespace mcmc_utilities
 	}
       this->add_node(pn,tag,parent_tags);
     }
+#endif
     
   };
 }
