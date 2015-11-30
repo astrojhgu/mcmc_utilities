@@ -1,12 +1,12 @@
-targets=test_coal  test_eff  test_gibbs  test_pf test_eff_graph zero_trick test_poisson
+targets=test_coal.out  test_eff.out  test_gibbs.out  test_pf.out test_eff_graph.out zero_trick.out test_poisson.out test_composed.out
 
 all:$(targets)
 
 CXX=clang++
-CXXFLAGS=-I ../ -O2 -std=c++11 -g -I ../../arms/
-LDFLAGS=-lSDL2 -lfio -lcfitsio -O3
+CXXFLAGS=-I ../ -O2 -std=c++11 -g -I ../../east/include
+LDFLAGS=-lSDL2 -lfio -lcfitsio -O3 -L ../../east/lib -least
 
-% :	%.o
+%.out :	%.o
 	$(CXX) $< -o $@ $(LDFLAGS)
 
 %.o:	%.cpp

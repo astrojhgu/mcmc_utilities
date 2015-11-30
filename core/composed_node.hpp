@@ -1,6 +1,7 @@
 #ifndef COMPOSED_NODE_HPP
 #define COMPOSED_NODE_HPP
 #include "deterministic_node.hpp"
+#include <memory>
 #include <map>
 
 
@@ -33,9 +34,9 @@ namespace mcmc_utilities
   class composed_node
     :public deterministic_node<T_p,T_var1>
   {
-  private:
+  protected:
     std::map<T_tag,std::shared_ptr<deterministic_node<T_p,T_var1> > >elements;
-    std::vector<std::pair<std::shared_ptr<deterministic_node<T_p,T_var1> >,size_t> > param_list;
+    std::vector<std::shared_ptr<deterministic_node<T_p,T_var1> > > param_list;
     std::vector<std::pair<std::shared_ptr<deterministic_node<T_p,T_var1> >,size_t> > return_list;
   public:
     composed_node(size_t nparents,size_t ndim)
@@ -45,11 +46,13 @@ namespace mcmc_utilities
   public:
     void add_node(deterministic_node<T_p,T_var1>* pn,
 		  const T_tag& tag,
+		  //if the parent tag is not registered, then this node will registed as an input parameter
 		  const std::vector<std::pair<T_tag,size_t> >& parents,
+		  //which outputs whill outputed of this node
 		  const std::vector<size_t> rlist
 		  )
     {
-      add_node(shared_ptr<deterministic_node<T_p,T_var1> >(pn),
+      add_node(std::shared_ptr<deterministic_node<T_p,T_var1> >(pn),
 	       tag,parents,rlist);
     }
     
@@ -77,8 +80,8 @@ namespace mcmc_utilities
 		  throw parent_num_mismatch();
 		}
 	      //param_list.push_back(make_pair(pn,i));
-	      param_list.push_back({std::shared_ptr<deterministic_node<T_p,T_var1> >(new forward_node<T_p,T_var1>),i});
-	      pn->connect_to_parent(param_list.back().first.get(),i,0);
+	      param_list.push_back(std::shared_ptr<deterministic_node<T_p,T_var1> >(new forward_node<T_p,T_var1>));
+	      pn->connect_to_parent(param_list.back().get(),i,0);
 	    }
 	  else
 	    {
@@ -105,7 +108,7 @@ namespace mcmc_utilities
       this->parents.at(n)=std::make_pair(rhs,idx);
       rhs->add_deterministic_child(this);
             
-      param_list[n].first->connect_to_parent(rhs,0,idx);
+      param_list[n]->connect_to_parent(rhs,0,idx);
     }
 
     T_var1 do_value(size_t idx)const override
