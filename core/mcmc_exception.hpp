@@ -165,7 +165,11 @@ namespace mcmc_utilities
   public:
     node_not_found()
       :mcmc_exception("node not found")
-    {}    
+    {}
+
+    node_not_found(const std::string& node_name)
+      :mcmc_exception(node_name+" not found")
+    {}
   };
 
   class invalid_node_type

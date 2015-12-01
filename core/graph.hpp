@@ -7,6 +7,7 @@
 #include <map>
 #include <algorithm>
 #include <functional>
+#include <sstream>
 #include "mcmc_exception.hpp"
 #include "stochastic_node.hpp"
 #include "deterministic_node.hpp"
@@ -58,7 +59,9 @@ namespace mcmc_utilities
       auto iter=node_map.find(tag);
       if(iter==node_map.end())
 	{
-	  throw node_not_found();
+	  std::ostringstream oss;
+	  oss<<tag;
+	  throw node_not_found(oss.str());
 	}
       stochastic_node<T_p,T_var1>* ps=dynamic_cast<stochastic_node<T_p,T_var1>*> (iter->second.get());
       deterministic_node<T_p,T_var1>* pd=dynamic_cast<deterministic_node<T_p,T_var1>*> (iter->second.get());
@@ -82,7 +85,9 @@ namespace mcmc_utilities
     {
       if(node_map.count(tag)==0)
 	{
-	  throw node_not_found();
+	  std::ostringstream oss;
+	  oss<<tag;
+	  throw node_not_found(oss.str());
 	}
       stochastic_node<T_p,T_var1>* ps=dynamic_cast<stochastic_node<T_p,T_var1>* >(node_map[tag].get());
       if(ps==nullptr)
@@ -97,7 +102,9 @@ namespace mcmc_utilities
     {
       if(node_map.count(tag)==0)
 	{
-	  throw node_not_found();
+	  std::ostringstream oss;
+	  oss<<tag;
+	  throw node_not_found(oss.str());
 	}
       
       stochastic_node<T_p,T_var1>* ps=dynamic_cast<stochastic_node<T_p,T_var1>* >(node_map[tag].get());
@@ -113,7 +120,9 @@ namespace mcmc_utilities
       auto i=node_map.find(tag);
       if(i==node_map.end())
 	{
-	  throw node_not_found();
+	  std::ostringstream oss;
+	  oss<<tag;
+	  throw node_not_found(oss.str());
 	}
       i->second->log_likelihood();
     }
@@ -123,7 +132,9 @@ namespace mcmc_utilities
       auto i=node_map.find(tag);
       if(i==node_map.end())
 	{
-	  throw node_not_found();
+	  std::ostringstream oss;
+	  oss<<tag;
+	  throw node_not_found(oss.str());
 	}
 
       auto ps=dynamic_cast<stochastic_node<T_p,T_var1>*>(i->second.get());

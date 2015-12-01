@@ -14,26 +14,6 @@
 using namespace std;
 using namespace mcmc_utilities;
 
-class eff
-  :public deterministic_node<double,double>
-{
-public:
-  eff()
-    :deterministic_node<double,double>(5)
-  {}
-
-  double do_value(size_t idx)const override
-  {
-    double A=this->parent(0);
-    double B=this->parent(1);
-    double E=this->parent(2);
-    double mu=this->parent(3);
-    double sigma=this->parent(4);
-    return A+(B-A)*phi((E-mu)/sigma);
-    //return this->parents[0]
-  }
-};
-
 
 class data_loader
 {
@@ -126,7 +106,7 @@ int main()
 
       //g.add_node(new eff(),tag_eff,{{"A",0},{"B",0},{tag_E,0},{"mu",0},{"sigma",0}});
       std::vector<std::pair<std::shared_ptr<node<double,double> >,size_t> > pp{{pA,0},{pB,0},{pE,0},{pmu,0},{psigma,0}};
-      g.add_node(new str_node<double,double>("A+(B-A)*phi((E-mu)/sigma*1)",{"A","B","E","mu","sigma"}),tag_eff,pp);
+      g.add_node(new str_node<double,double>("A+(B-A)*phi((E-mu)/sigma)",{"A","B","E","mu","sigma"}),tag_eff,pp);
       std::string tag_nrec="nrec";
       tag_nrec+=std::to_string(i);
       g.add_node(dl.get_nrec(i),tag_nrec,{{tag_eff,0},{tag_ninj,0}});
