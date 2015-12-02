@@ -9,6 +9,7 @@
 #include "core/composed_node.hpp"
 #include "phi_node.hpp"
 #include "const_node.hpp"
+#include "sqrt_node.hpp"
 #include "arithmetic_node.hpp"
 #include "phi_node.hpp"
 #include <atomic>
@@ -41,6 +42,9 @@ namespace mcmc_utilities
       node_factories["pow"]=std::shared_ptr<abstract_node_factory<T_p,T_var> >(new pow_node_factory<T_p,T_var>());
       node_factories["con"]=std::shared_ptr<abstract_node_factory<T_p,T_var> >(new const_node_factory<T_p,T_var>());
       node_factories["phi"]=std::shared_ptr<abstract_node_factory<T_p,T_var> >(new phi_node_factory<T_p,T_var>());
+      node_factories["sqrt"]=std::shared_ptr<abstract_node_factory<T_p,T_var> >(new sqrt_node_factory<T_p,T_var>());
+      node_factories["logit"]=std::shared_ptr<abstract_node_factory<T_p,T_var> >(new logit_node_factory<T_p,T_var>());
+      node_factories["ilogit"]=std::shared_ptr<abstract_node_factory<T_p,T_var> >(new ilogit_node_factory<T_p,T_var>());
       
       initialized=true;
     }

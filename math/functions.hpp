@@ -12,6 +12,12 @@ namespace mcmc_utilities
     return (1+erf(x/SQRT_2))/2;
   }
 
+  template <typename T>
+  T lbeta(T x,T y)
+  {
+    return lgamma(x)+lgamma(y)-lgamma(x+y);
+  }
+
   template <typename T_p,typename T_var>
   T_p log_factorial(const T_var& n)
   {
