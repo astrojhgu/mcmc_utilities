@@ -39,14 +39,14 @@ public:
 int main()
 {
   auto p_poisson=new poisson_node<double>;
-  auto pth=std::shared_ptr<node<double> >(new const_node<double>(5));
-
+  auto p_lambda=std::shared_ptr<node<double> >(new const_node<double>(100));
+  
   graph<double,std::string> g;
 
-  g.add_node(pth,"theta");
-  g.add_node(p_poisson,"l",{{pth,0}});
-
-  auto m=g.get_monitor("l",0);
+  g.add_node(p_lambda,"lambda");
+  g.add_node(p_poisson,"poisson",{{p_lambda,0}});
+  g.set_value("poisson",0,20.);
+  auto m=g.get_monitor("poisson",0);
 
   for(int i=0;i<10000;++i)
     {

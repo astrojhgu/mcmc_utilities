@@ -77,7 +77,7 @@ namespace mcmc_utilities
 
     void set_value(size_t idx,const T& v_)
     {
-      v[idx]=v_;
+      v[idx]=this->regulate(v_);
     }
 
   public:
@@ -110,9 +110,7 @@ namespace mcmc_utilities
 	    }
 	  else
 	    {
-	      //xprev=discrete_sample(*this,urand);
-	      slice_sampler<T> ss(*this,2,10);
-	      xprev=ss.sample(xprev,urand);
+	      xprev=discrete_sample(*this,xprev,urand);
 	    }   
 	  
 	  this->set_value(i,xprev);

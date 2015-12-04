@@ -41,14 +41,22 @@ namespace mcmc_utilities
 	}
     }
 
+    T do_regulate(const T& x)const override
+    {
+      return std::floor(x);
+    }
+
     std::vector<T> do_candidate_points()const override
     {
+      /*
       std::vector<T> result((int)(this->parent(0))*10+1);
       for(int i=0;i<result.size();++i)
 	{
 	  result[i]=i;
 	}
       return result;
+      */
+      return std::vector<T>();
     }
   };
 
