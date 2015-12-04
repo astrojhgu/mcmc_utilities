@@ -123,7 +123,6 @@ namespace mcmc_utilities
 		  }
 		else
 		  {
-		    //setValue(L);
 		    xcur=L;
 		    left_ok = pd.eval_log(xcur) < z;
 		  }
@@ -144,7 +143,6 @@ namespace mcmc_utilities
 		  }
 		else
 		  {
-		    //setValue(R);
 		    xcur=R;
 		    right_ok = pd.eval_log(xcur) < z;
 		  }
