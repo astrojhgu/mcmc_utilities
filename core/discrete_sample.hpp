@@ -11,14 +11,14 @@ namespace mcmc_utilities
 {
 
   template <typename T,typename T_urand>
-  T discrete_sample(const probability_density_1d<T>& pd,T& xprev,const T_urand& urand)
+  T discrete_sample(const probability_density_1d<T>& pd,T& xprev,size_t niter,const T_urand& urand)
   {
     std::vector<T> cp(pd.candidate_points());
     
     if(cp.empty())
       {
 	//throw no_candidate_point();
-	slice_sampler<T> ss(pd,2,10);
+	slice_sampler<T> ss(pd,2,10,niter);
 	xprev=ss.sample(xprev,urand);
 	return xprev;
       }

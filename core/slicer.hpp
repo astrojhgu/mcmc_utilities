@@ -24,14 +24,15 @@ namespace mcmc_utilities
     bool adapt;
     T width;
     size_t nmax;
+    size_t nmin;
     size_t niter;
     T sumdiff;
     const size_t min_adapt;
     const probability_density_1d<T>& pd;
     
   public:
-    slice_sampler(const probability_density_1d<T>& _pd, const T& _width,size_t _nmax)
-      :adapt(true),width(_width),nmax(_nmax),niter(0),sumdiff(0),min_adapt(50),pd(_pd)
+    slice_sampler(const probability_density_1d<T>& _pd, const T& _width,size_t _nmax,size_t _nmin)
+      :adapt(true),width(_width),nmax(_nmax),nmin(_nmin),niter(0),sumdiff(0),min_adapt(50),pd(_pd)
     {
     }
     
@@ -87,6 +88,15 @@ namespace mcmc_utilities
     
   public:
     T sample(T& xcur,const base_urand<T>& rng)
+    {
+      for(int i=0;i<nmin;++i)
+	{
+	  sample1(xcur,rng);
+	}
+      return xcur;
+    }
+    
+    T sample1(T& xcur,const base_urand<T>& rng)
     {
       T lower = 0;
       T upper = 0;

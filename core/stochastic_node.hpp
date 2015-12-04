@@ -102,10 +102,11 @@ namespace mcmc_utilities
 	  std::pair<T,T> xrange(this->var_range());
 	  //xprev=xprev<xrange.first?xrange.first:xprev;
 	  //xprev=xprev>xrange.second?xrange.second:xprev;
-
+	  
 	  if(xprev<xrange.first||xprev>xrange.second)
 	    {
 	      this->initialize(i);
+	      xprev=this->value(i);
 	    }
 	  
 	  //arms_simple(*this,xprev,xsamp,dometrop(),rnd);
@@ -116,7 +117,7 @@ namespace mcmc_utilities
 	    }
 	  else
 	    {
-	      xprev=discrete_sample(*this,xprev,urand);
+	      xprev=discrete_sample(*this,xprev,10,urand);
 	    }
 	  
 	  this->set_value(i,xprev);
