@@ -36,7 +36,7 @@ namespace mcmc_utilities
     }
     
   private:
-    T exponential(const base_urand<T>& rnd)
+    T exponential(const base_urand<T>& rnd)const
     {
       T result=0;
       do
@@ -47,11 +47,9 @@ namespace mcmc_utilities
       return result;
     }
     
-    bool accept(T xold, T xnew, T z, T L, T R,
-		T lower, T upper)
+    bool accept(const T& xold,const T& xnew,const T& z,T L, T R,
+		const T& lower, const T& upper)const
     {
-      //Acceptance step for doubling update method
-      
       bool d = false;
       while ((R - L) > 1.1 * width)
 	{
@@ -162,8 +160,6 @@ namespace mcmc_utilities
 	  }
       }
       
-      // Keep sampling from the interval until acceptance (the loop is
-      // guaranteed to terminate).
       T Lbar = L, Rbar = R;
       T xnew;
       for(;;)
@@ -175,12 +171,11 @@ namespace mcmc_utilities
 	      T g = pd.eval_log(xnew);
 	      if (g >= z && accept(xold, xnew, z, L, R, lower, upper))
 		{
-		  //setValue(xnew);
 		  xcur=xnew;
 		  break;
 		}
 	    }
-	  // shrink the interval
+
 	  if (xnew <= xold)
 	    {
 	      Lbar = xnew;
