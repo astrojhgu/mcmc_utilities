@@ -54,6 +54,12 @@ namespace mcmc_utilities
 	}
       return result;
     }
+
+    void do_initialize(size_t n) override
+    {
+      this->set_value(0,(this->parent(0))*(this->parent(1)));
+    }
+
   };
 
   template <typename T>

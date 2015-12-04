@@ -41,6 +41,11 @@ namespace mcmc_utilities
       return std::make_pair(mu-5*sigma,mu+5*sigma);
       //return make_pair(-10,10);
     }
+
+    void do_initialize(size_t n)override
+    {
+      this->set_value(0,this->parent(0));
+    }
   };
   
   

@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <functional>
 #include <sstream>
-#include "mcmc_exception.hpp"
+#include "error_handler.hpp"
 #include "stochastic_node.hpp"
 #include "deterministic_node.hpp"
 //#include "tag.hpp"
@@ -36,6 +36,14 @@ namespace mcmc_utilities
       for(auto& p:stochastic_node_list)
 	{
 	  p->sample(rnd);
+	}
+    }
+
+    void initialize()
+    {
+      for(auto& p:stochastic_node_list)
+	{
+	  p->initialize();
 	}
     }
 

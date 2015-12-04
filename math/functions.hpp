@@ -1,7 +1,7 @@
 #ifndef FUNCTIONS_HPP
 #define FUNCTIONS_HPP
 #include <cmath>
-#include "../core/mcmc_exception.hpp"
+#include "../core/error_handler.hpp"
 namespace mcmc_utilities
 {
   

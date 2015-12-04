@@ -121,6 +121,7 @@ int main()
   g.set_value("B",0,.999506);
   g.set_value("mu",0,13);
   g.set_value("sigma",0,17);
+  g.initialize();
   for(int i=0;i<30000;++i)
     {
       g.sample(rnd1);

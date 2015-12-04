@@ -57,6 +57,11 @@ namespace mcmc_utilities
 	  return std::make_pair(mu2-5*sigma2,mu2+5*sigma2);
 	}
     }
+
+    void do_initialize(size_t n) override
+    {
+      this->set_value(n,this->parent(n));
+    }
   };
   
   

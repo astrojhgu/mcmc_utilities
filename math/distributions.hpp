@@ -2,7 +2,7 @@
 #define DISTRIBUTIONS_HPP
 #include <cmath>
 #include <cassert>
-#include "../core/mcmc_exception.hpp"
+#include "../core/error_handler.hpp"
 #include "functions.hpp"
 namespace mcmc_utilities
 {

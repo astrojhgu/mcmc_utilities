@@ -1,7 +1,7 @@
 #ifndef MYSLICER_HPP
 #define MYSLICER_HPP
 #include "distribution.hpp"
-#include "mcmc_exception.hpp"
+#include "error_handler.hpp"
 #include "base_urand.hpp"
 #include <algorithm>
 //#define DEBUG
@@ -88,6 +88,19 @@ namespace mcmc_utilities
   public:
     T sample(T& xcur,const base_urand<T>& rng)
     {
+      T lower = 0;
+      T upper = 0;
+      
+      auto xrange=pd.var_range();
+      lower=xrange.first;
+      upper=xrange.second;
+
+      if(xcur<xrange.first||xcur>xrange.second)
+      {
+	throw var_out_of_range();
+      }
+
+      
       T g0 = pd.eval_log(xcur);
       if (std::isnan(g0)||std::isinf(g0))
 	{
@@ -102,12 +115,6 @@ namespace mcmc_utilities
       T L = xold - rng() * width; 
       T R = L + width;
       
-      T lower = 0;
-      T upper = 0;
-      
-      auto px=pd.var_range();
-      lower=px.first;
-      upper=px.second;
       
       // Doubling 
       bool left_ok = false, right_ok = false;

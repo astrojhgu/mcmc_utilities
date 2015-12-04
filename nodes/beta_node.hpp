@@ -37,6 +37,11 @@ namespace mcmc_utilities
     {
       return std::make_pair(std::numeric_limits<T>::epsilon(),T(1-std::numeric_limits<T>::epsilon()));
     }
+
+    void do_initialize(size_t n) override
+    {
+      this->set_value(0,.5);
+    }
   };
   
   

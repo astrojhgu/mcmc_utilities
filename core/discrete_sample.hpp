@@ -1,7 +1,7 @@
 #ifndef DISCRETE_SAMPLE
 #define DISCRETE_SAMPLE
 #include "distribution.hpp"
-#include "mcmc_exception.hpp"
+#include "error_handler.hpp"
 #include <vector>
 #include <cmath>
 #include "slicer.hpp"

@@ -36,6 +36,11 @@ namespace mcmc_utilities
       return std::make_pair(a,b);
       //return make_pair(-10,10);
     }
+
+    void do_initialize(size_t n)override
+    {
+      this->set_value(0,(a+b)/2);
+    }
   };
 
   template <typename T>

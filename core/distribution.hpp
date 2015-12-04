@@ -3,7 +3,7 @@
 #include <cmath>
 #include <limits>
 #include "mcmc_traits.hpp"
-#include "mcmc_exception.hpp"
+#include "error_handler.hpp"
 //#include "find_peak.hpp"
 #include <vector>
 #include <utility>

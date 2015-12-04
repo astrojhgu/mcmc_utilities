@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 #include <map>
-#include "mcmc_exception.hpp"
+#include "error_handler.hpp"
 #include "arms.hpp"
 #include "slicer.hpp"
 #include "base_urand.hpp"
@@ -77,6 +77,7 @@ namespace mcmc_utilities
 
     void set_value(size_t idx,const T& v_)
     {
+      this->set_initialized(idx,true);
       v[idx]=this->regulate(v_);
     }
 
@@ -99,11 +100,16 @@ namespace mcmc_utilities
 	  this->set_current_idx(i);
 	  T xprev=this->value(i);
 	  std::pair<T,T> xrange(this->var_range());
-	  xprev=xprev<xrange.first?xrange.first:xprev;
-	  xprev=xprev>xrange.second?xrange.second:xprev;
+	  //xprev=xprev<xrange.first?xrange.first:xprev;
+	  //xprev=xprev>xrange.second?xrange.second:xprev;
+
+	  if(xprev<xrange.first||xprev>xrange.second)
+	    {
+	      this->initialize(i);
+	    }
 	  
 	  //arms_simple(*this,xprev,xsamp,dometrop(),rnd);
-
+	  
 	  if(is_continuous(i))
 	    {
 	      xprev=arms(*this,xprev,10,urand);
@@ -111,7 +117,7 @@ namespace mcmc_utilities
 	  else
 	    {
 	      xprev=discrete_sample(*this,xprev,urand);
-	    }   
+	    }
 	  
 	  this->set_value(i,xprev);
 	}

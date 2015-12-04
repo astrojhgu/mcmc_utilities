@@ -1,4 +1,4 @@
-#include "mcmc_exception.hpp"
+#include "error_handler.hpp"
 #include "stochastic_node.hpp"
 
 #ifndef NODE_HPP
@@ -24,11 +24,12 @@ namespace mcmc_utilities
     std::list<stochastic_node<T>* > stochastic_children;
     std::list<deterministic_node<T>* > deterministic_children;
     std::vector<std::pair<node<T>*,size_t> > parents;
-    size_t ndim_;
+    size_t ndims;
+    std::vector<int> initialized;
     
   public:
     node(size_t nparents,size_t ndim1)
-      :parents(nparents),ndim_(ndim1)
+      :parents(nparents),ndims(ndim1),initialized(ndim1)
     {}
     
     node()=delete;
@@ -38,6 +39,46 @@ namespace mcmc_utilities
     virtual ~node(){}
     
   public:
+    bool is_initialized(size_t n)const
+    {
+      return initialized[n]!=0;
+    }
+
+    void set_initialized(size_t n,bool i)
+    {
+      initialized[n]=i;
+    }
+
+    void initialize()
+    {
+      for(size_t i=0;i<ndims;++i)
+	{
+	  if(!is_initialized(i))
+	    {
+	      initialize(i);
+	    }
+	}
+    }
+
+    void initialize(size_t n)
+    {
+      if(n<ndims)
+	{
+	  for(auto& p:parents)
+	    {
+	      for(int i=0;i<p.first->num_of_dims();++i)
+		{
+		  if(!p.first->is_initialized(i))
+		    {
+		      p.first->initialize(i);
+		    }
+		}
+	    }
+	  do_initialize(n);
+	  initialized[n]=1;
+	}
+    }
+
     size_t num_of_parents()const
     {
       return parents.size();
@@ -50,7 +91,7 @@ namespace mcmc_utilities
 
     size_t num_of_dims()const
     {
-      return ndim_;
+      return ndims;
     }
     
     T value(size_t idx)const
@@ -115,6 +156,9 @@ namespace mcmc_utilities
     {
       return x;
     }
+
+    virtual void do_initialize(size_t n)
+    {}
   };
 }
 
