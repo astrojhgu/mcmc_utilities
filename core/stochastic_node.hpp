@@ -5,6 +5,7 @@
 #include <map>
 #include "mcmc_exception.hpp"
 #include "arms.hpp"
+#include "slicer.hpp"
 #include "base_urand.hpp"
 #include "discrete_sample.hpp"
 #include "node.hpp"
@@ -109,7 +110,9 @@ namespace mcmc_utilities
 	    }
 	  else
 	    {
-	      xprev=discrete_sample(*this,urand);
+	      //xprev=discrete_sample(*this,urand);
+	      slice_sampler<T_p> ss(*this,2,10);
+	      xprev=ss.sample(xprev,urand);
 	    }   
 	  
 	  this->set_value(i,xprev);
