@@ -12,6 +12,11 @@
 #include "sqrt_node.hpp"
 #include "log_node.hpp"
 #include "log10_node.hpp"
+#include "logit_node.hpp"
+#include "ilogit_node.hpp"
+#include "sin_node.hpp"
+#include "cos_node.hpp"
+#include "tan_node.hpp"
 #include "arithmetic_node.hpp"
 #include "phi_node.hpp"
 #include <atomic>
