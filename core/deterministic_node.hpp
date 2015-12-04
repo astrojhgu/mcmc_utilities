@@ -4,25 +4,25 @@
 
 namespace mcmc_utilities
 {
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class deterministic_node
-    :public node<T_p,T_var1>
+    :public node<T>
   {
   public:
     deterministic_node(size_t nparents,size_t ndim)
-      :node<T_p,T_var1>(nparents,ndim)
+      :node<T>(nparents,ndim)
     {}
 
     deterministic_node(size_t nparents)
-      :node<T_p,T_var1>(nparents,1)
+      :node<T>(nparents,1)
     {}
     
     deterministic_node()=delete;
-    deterministic_node(const deterministic_node<T_p,T_var1>& )=delete;
-    deterministic_node<T_p,T_var1>& operator=(const deterministic_node<T_p,T_var1>&)=delete;
+    deterministic_node(const deterministic_node<T>& )=delete;
+    deterministic_node<T>& operator=(const deterministic_node<T>&)=delete;
 
   private:
-    void do_connect_to_parent(node<T_p,T_var1>*  rhs,size_t n,size_t idx) override
+    void do_connect_to_parent(node<T>*  rhs,size_t n,size_t idx) override
     {
       this->parents.at(n)=std::make_pair(rhs,idx);
       rhs->add_deterministic_child(this);

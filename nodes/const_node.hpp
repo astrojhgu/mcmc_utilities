@@ -7,63 +7,63 @@
 
 namespace mcmc_utilities
 {
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class const_node
-    :public deterministic_node<T_p,T_var1>
+    :public deterministic_node<T>
   {
   private:
-    T_var1 v;
+    T v;
   public:
-    const_node(T_var1 v1)
-      :deterministic_node<T_p,T_var1>(0,1),v(v1)
+    const_node(T v1)
+      :deterministic_node<T>(0,1),v(v1)
     {
     }
     
-    T_var1 do_value(size_t idx)const override
+    T do_value(size_t idx)const override
     {
       return v;
     }
   };
 
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class const_vnode
-    :public vnode<T_p,T_var1>
+    :public vnode<T>
   {
   public:
-    T_var1 value;
+    T value;
   public:
-    const_vnode(std::string n,T_var1 v)
-      :vnode<T_p,T_var1>("const",n),value(v)
+    const_vnode(std::string n,T v)
+      :vnode<T>("const",n),value(v)
     {
       this->binded=true;
     }
     
   public:
-    std::shared_ptr<node<T_p,T_var1> > get_node()const override
+    std::shared_ptr<node<T> > get_node()const override
     {
-      return std::shared_ptr<node<T_p,T_var1> >(new const_node<T_p,T_var1>(value));
+      return std::shared_ptr<node<T> >(new const_node<T>(value));
     }
 
-    std::shared_ptr<vnode<T_p,T_var1> > clone()const override
+    std::shared_ptr<vnode<T> > clone()const override
     {
-      return std::shared_ptr<vnode<T_p,T_var1> >(new const_vnode<T_p,T_var1>(*this));
+      return std::shared_ptr<vnode<T> >(new const_vnode<T>(*this));
     }
   };
 
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class const_node_factory
-    :public abstract_node_factory<T_p,T_var1>
+    :public abstract_node_factory<T>
   {
   public:
     const_node_factory()
-      :abstract_node_factory<T_p,T_var1>({},{"v"},{"value"})
+      :abstract_node_factory<T>({},{"v"},{"value"})
     {}
     
   public:
-    std::shared_ptr<node<T_p,T_var1> >
-    do_get_node(const std::vector<T_var1>& hparam)const override
+    std::shared_ptr<node<T> >
+    do_get_node(const std::vector<T>& hparam)const override
     {
-      return std::shared_ptr<node<T_p,T_var1> >(new const_node<T_p,T_var1>(hparam[0]));
+      return std::shared_ptr<node<T> >(new const_node<T>(hparam[0]));
     }
 
     std::string do_get_node_type()const override
@@ -72,7 +72,7 @@ namespace mcmc_utilities
     }
   };
   
-  using vconst=const_vnode<double,double>;
+  using vconst=const_vnode<double>;
 };
 
 #endif

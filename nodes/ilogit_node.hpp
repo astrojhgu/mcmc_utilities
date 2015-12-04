@@ -12,58 +12,58 @@
 
 namespace mcmc_utilities
 {
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class ilogit_node
-    :public deterministic_node<T_p,T_var1>
+    :public deterministic_node<T>
   {
   public:
     ilogit_node()
-      :deterministic_node<T_p,T_var1>(1,1)
+      :deterministic_node<T>(1,1)
     {}
 
-    T_var1 do_value(size_t idx)const override
+    T do_value(size_t idx)const override
     {
       return ilogit(this->parent(0));
     }
   };
 
 
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class ilogit_vnode
-    :public vnode<T_p,T_var1>
+    :public vnode<T>
   {
   public:
     ilogit_vnode(std::string n,
-	      const std::pair<const vnode<T_p,T_var1>&,size_t>& p)
-      :vnode<T_p,T_var1>("ilogit",n,{p})
+	      const std::pair<const vnode<T>&,size_t>& p)
+      :vnode<T>("ilogit",n,{p})
     {
       this->binded=true;
     }
 
-    std::shared_ptr<node<T_p,T_var1> > get_node()const override
+    std::shared_ptr<node<T> > get_node()const override
     {
-      return std::shared_ptr<node<T_p,T_var1> >(new ilogit_node<T_p,T_var1>);
+      return std::shared_ptr<node<T> >(new ilogit_node<T>);
     }
 
-    std::shared_ptr<vnode<T_p,T_var1> > clone()const override
+    std::shared_ptr<vnode<T> > clone()const override
     {
-      return std::shared_ptr<vnode<T_p,T_var1> >(new ilogit_vnode<T_p,T_var1>(*this));
+      return std::shared_ptr<vnode<T> >(new ilogit_vnode<T>(*this));
     }
   };
 
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class ilogit_node_factory
-    :public abstract_node_factory<T_p,T_var1>
+    :public abstract_node_factory<T>
   {
   public:
     ilogit_node_factory()
-      :abstract_node_factory<T_p,T_var1>({"x"},{"y"},{})
+      :abstract_node_factory<T>({"x"},{"y"},{})
     {}
   public:
-    std::shared_ptr<node<T_p,T_var1> >
-    do_get_node(const std::vector<T_var1>& hparam)const override
+    std::shared_ptr<node<T> >
+    do_get_node(const std::vector<T>& hparam)const override
     {
-      return std::shared_ptr<node<T_p,T_var1> >(new ilogit_node<T_p,T_var1>);
+      return std::shared_ptr<node<T> >(new ilogit_node<T>);
     }
 
     std::string do_get_node_type()const override
@@ -72,10 +72,10 @@ namespace mcmc_utilities
     }
   };
 
-  template <typename T_p,typename T_var1>
-  ilogit_vnode<T_p,T_var1> vilogit(const vnode<T_p,T_var1>& n1)
+  template <typename T>
+  ilogit_vnode<T> vilogit(const vnode<T>& n1)
   {
-    auto result= ilogit_vnode<T_p,T_var1>(std::string("ilogit")+node_count<ilogit_vnode<T_p,T_var1> >(),{n1,(size_t)0});
+    auto result= ilogit_vnode<T>(std::string("ilogit")+node_count<ilogit_vnode<T> >(),{n1,(size_t)0});
     result.named=false;
     return result;
   }

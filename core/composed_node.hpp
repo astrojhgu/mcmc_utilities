@@ -7,21 +7,21 @@
 
 namespace mcmc_utilities
 {
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class forward_node
-    :public deterministic_node<T_p,T_var1>
+    :public deterministic_node<T>
   {
   public:
     forward_node()
-      :deterministic_node<T_p,T_var1>(1,1)
+      :deterministic_node<T>(1,1)
       {}
 
-    T_var1 do_value(size_t idx)const override
+    T do_value(size_t idx)const override
     {
       return this->parent(0);
     }
 
-    void do_connect_to_parent(node<T_p,T_var1>* rhs,size_t n,size_t idx) override
+    void do_connect_to_parent(node<T>* rhs,size_t n,size_t idx) override
     {
       this->parents.at(n)=std::make_pair(rhs,idx);
     }
@@ -30,21 +30,21 @@ namespace mcmc_utilities
 
   
   
-  template <typename T_p,typename T_var1,typename T_tag=std::string>
+  template <typename T,typename T_tag=std::string>
   class composed_node
-    :public deterministic_node<T_p,T_var1>
+    :public deterministic_node<T>
   {
   protected:
-    std::map<T_tag,std::shared_ptr<deterministic_node<T_p,T_var1> > >elements;
-    std::vector<std::shared_ptr<deterministic_node<T_p,T_var1> > > param_list;
-    std::vector<std::pair<std::shared_ptr<deterministic_node<T_p,T_var1> >,size_t> > return_list;
+    std::map<T_tag,std::shared_ptr<deterministic_node<T> > >elements;
+    std::vector<std::shared_ptr<deterministic_node<T> > > param_list;
+    std::vector<std::pair<std::shared_ptr<deterministic_node<T> >,size_t> > return_list;
   public:
     composed_node(size_t nparents,size_t ndim)
-      :deterministic_node<T_p,T_var1>(nparents,ndim)
+      :deterministic_node<T>(nparents,ndim)
     {}
     
   public:
-    void add_node(deterministic_node<T_p,T_var1>* pn,
+    void add_node(deterministic_node<T>* pn,
 		  const T_tag& tag,
 		  //if the parent tag is not registered, then this node will registed as an input parameter
 		  const std::vector<std::pair<T_tag,size_t> >& parents,
@@ -52,11 +52,11 @@ namespace mcmc_utilities
 		  const std::vector<size_t> rlist
 		  )
     {
-      add_node(std::shared_ptr<deterministic_node<T_p,T_var1> >(pn),
+      add_node(std::shared_ptr<deterministic_node<T> >(pn),
 	       tag,parents,rlist);
     }
     
-    void add_node(const std::shared_ptr<deterministic_node<T_p,T_var1> >& pn,
+    void add_node(const std::shared_ptr<deterministic_node<T> >& pn,
 		  const T_tag& tag,
 		  const std::vector<std::pair<T_tag,size_t> >& parents,
 		  const std::vector<size_t> rlist
@@ -80,7 +80,7 @@ namespace mcmc_utilities
 		  throw parent_num_mismatch();
 		}
 	      //param_list.push_back(make_pair(pn,i));
-	      param_list.push_back(std::shared_ptr<deterministic_node<T_p,T_var1> >(new forward_node<T_p,T_var1>));
+	      param_list.push_back(std::shared_ptr<deterministic_node<T> >(new forward_node<T>));
 	      pn->connect_to_parent(param_list.back().get(),i,0);
 	    }
 	  else
@@ -103,7 +103,7 @@ namespace mcmc_utilities
 	}
     }
 
-    void do_connect_to_parent(node<T_p,T_var1>* rhs,size_t n,size_t idx) override
+    void do_connect_to_parent(node<T>* rhs,size_t n,size_t idx) override
     {
       this->parents.at(n)=std::make_pair(rhs,idx);
       rhs->add_deterministic_child(this);
@@ -111,7 +111,7 @@ namespace mcmc_utilities
       param_list[n]->connect_to_parent(rhs,0,idx);
     }
 
-    T_var1 do_value(size_t idx)const override
+    T do_value(size_t idx)const override
     {
       return return_list[idx].first->value(return_list[idx].second);
     }

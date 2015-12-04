@@ -11,54 +11,54 @@
 
 namespace mcmc_utilities
 {
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class binary_node
-    :public deterministic_node<T_p,T_var1>
+    :public deterministic_node<T>
   {
   private:
-    std::function<T_var1 (const T_var1&)> func;
+    std::function<T (const T&)> func;
   public:
-    binary_node(const std::function<T_var1 (const T_var1&,const T_var1&)>& f)
-      :deterministic_node<T_p,T_var1>(1,1),func(f)
+    binary_node(const std::function<T (const T&,const T&)>& f)
+      :deterministic_node<T>(1,1),func(f)
     {}
 
-    T_var1 do_value(size_t idx)const override
+    T do_value(size_t idx)const override
     {
       return func(this->parent(0));
     }
   };
 
 
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class binary_vnode
-    :public vnode<T_p,T_var1>
+    :public vnode<T>
   {
   private:
-    std::function<T_var1 (const T_var1&,const T_var1&)> func;
+    std::function<T (const T&,const T&)> func;
   public:
     binary_vnode(std::string n,
-		 const std::pair<const vnode<T_p,T_var1>&,size_t>& p,
-		 const std::function<T_var1 (const T_var1&,const T_var1&)>& f)
-      :vnode<T_p,T_var1>("binary",n,{p}),func(f)
+		 const std::pair<const vnode<T>&,size_t>& p,
+		 const std::function<T (const T&,const T&)>& f)
+      :vnode<T>("binary",n,{p}),func(f)
     {
       this->binded=true;
     }
 
-    std::shared_ptr<node<T_p,T_var1> > get_node()const override
+    std::shared_ptr<node<T> > get_node()const override
     {
-      return std::shared_ptr<node<T_p,T_var1> >(new binary_node<T_p,T_var1>(func));
+      return std::shared_ptr<node<T> >(new binary_node<T>(func));
     }
 
-    std::shared_ptr<vnode<T_p,T_var1> > clone()const override
+    std::shared_ptr<vnode<T> > clone()const override
     {
-      return std::shared_ptr<vnode<T_p,T_var1> >(new binary_vnode<T_p,T_var1>(*this));
+      return std::shared_ptr<vnode<T> >(new binary_vnode<T>(*this));
     }
   };
 
-  template <typename T_p,typename T_var1>
-  binary_vnode<T_p,T_var1> vbinary(const vnode<T_p,T_var1>& n1,const std::function<T_var1 (const T_var1&,const T_var1&)>& func)
+  template <typename T>
+  binary_vnode<T> vbinary(const vnode<T>& n1,const std::function<T (const T&,const T&)>& func)
   {
-    auto result= binary_vnode<T_p,T_var1>(std::string("binary")+node_count<binary_vnode<T_p,T_var1> >(),{n1,(size_t)0},func);
+    auto result= binary_vnode<T>(std::string("binary")+node_count<binary_vnode<T> >(),{n1,(size_t)0},func);
     result.named=false;
     return result;
   }

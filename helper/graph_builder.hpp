@@ -11,19 +11,19 @@ namespace mcmc_utilities
 {
   
   
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class graph_builder
   {
   public:
-    std::map<std::string,std::shared_ptr<vnode<T_p,T_var1> > > vnode_map;
+    std::map<std::string,std::shared_ptr<vnode<T> > > vnode_map;
     
   public:
-    std::string add_node(const vnode<T_p,T_var1>& vn)
+    std::string add_node(const vnode<T>& vn)
     {
       return add_node(vn.name,vn);
     }
     
-    std::string add_node(std::string name,const vnode<T_p,T_var1>& vn)
+    std::string add_node(std::string name,const vnode<T>& vn)
     {
       auto p=vnode_map.find(name);
       if(p!=vnode_map.end())
@@ -71,7 +71,7 @@ namespace mcmc_utilities
       return true;
     }
 
-    void build(graph<T_p,T_var1,std::string>& g)
+    void build(graph<T,std::string>& g)
     {
       for (auto& i: vnode_map)
 	{
@@ -86,7 +86,7 @@ namespace mcmc_utilities
 	}
     }
 
-    void add(graph<T_p,T_var1,std::string>& g,std::shared_ptr<vnode<T_p,T_var1> >& pn)
+    void add(graph<T,std::string>& g,std::shared_ptr<vnode<T> >& pn)
     {
       std::vector<std::pair<std::string,size_t> > parents;
       for(auto& i:pn->parents)
@@ -105,10 +105,10 @@ namespace mcmc_utilities
   };
   
   
-  template <typename T_p,typename T_var1>
-  std::set<std::shared_ptr<vnode<T_p,T_var1> > > enumerate_all_named_parents(const graph_builder<T_p,T_var1>& gb,const std::shared_ptr<vnode<T_p,T_var1> >& pn)
+  template <typename T>
+  std::set<std::shared_ptr<vnode<T> > > enumerate_all_named_parents(const graph_builder<T>& gb,const std::shared_ptr<vnode<T> >& pn)
   {
-    std::set<std::shared_ptr<vnode<T_p,T_var1> > > result;
+    std::set<std::shared_ptr<vnode<T> > > result;
     for(auto & i : pn->parents)
       {
 	if(i.first->named==true)
@@ -169,8 +169,8 @@ namespace mcmc_utilities
     return result;
   }
   
-  template <typename T_p,typename T_var1>
-  void graph2dot1(const graph_builder<T_p,T_var1>& gb,std::ostream& os)
+  template <typename T>
+  void graph2dot1(const graph_builder<T>& gb,std::ostream& os)
   {
     os<<"digraph{"<<std::endl;
     os<<"node [shape=record];"<<std::endl;
@@ -198,8 +198,8 @@ namespace mcmc_utilities
     os<<"}"<<std::endl;
   }
   
-  template <typename T_p,typename T_var1>
-  void graph2dot2(const graph_builder<T_p,T_var1>& gb,std::ostream& os)
+  template <typename T>
+  void graph2dot2(const graph_builder<T>& gb,std::ostream& os)
   {
     os<<"digraph{"<<std::endl;
     

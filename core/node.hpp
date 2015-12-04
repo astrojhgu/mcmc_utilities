@@ -11,19 +11,19 @@
 
 namespace mcmc_utilities
 {
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class stochastic_node;
 
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class deterministic_node;
   
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class node
   {
   protected:
-    std::list<stochastic_node<T_p,T_var1>* > stochastic_children;
-    std::list<deterministic_node<T_p,T_var1 >* > deterministic_children;
-    std::vector<std::pair<node<T_p,T_var1>*,size_t> > parents;
+    std::list<stochastic_node<T>* > stochastic_children;
+    std::list<deterministic_node<T>* > deterministic_children;
+    std::vector<std::pair<node<T>*,size_t> > parents;
     size_t ndim_;
     
   public:
@@ -32,8 +32,8 @@ namespace mcmc_utilities
     {}
     
     node()=delete;
-    node(const node<T_p,T_var1>& rhs)=delete;
-    node<T_p,T_var1>& operator=(const node<T_p,T_var1>& rhs)=delete;
+    node(const node<T>& rhs)=delete;
+    node<T>& operator=(const node<T>& rhs)=delete;
     
     virtual ~node(){}
     
@@ -43,7 +43,7 @@ namespace mcmc_utilities
       return parents.size();
     }
 
-    const std::pair<node<T_p,T_var1>*,size_t>& get_parent(size_t i)const
+    const std::pair<node<T>*,size_t>& get_parent(size_t i)const
     {
       return parents[i];
     }
@@ -53,14 +53,14 @@ namespace mcmc_utilities
       return ndim_;
     }
     
-    T_var1 value(size_t idx)const
+    T value(size_t idx)const
     {
       return do_value(idx);
     }
 
-    virtual T_p log_likelihood()const final
+    virtual T log_likelihood()const final
     {
-      T_p result=0;
+      T result=0;
       for(auto& p : stochastic_children)
 	{
 	  result+=p->log_prob();
@@ -72,7 +72,7 @@ namespace mcmc_utilities
       return result;
     }
 
-    void connect_to_parent(node<T_p,T_var1>* prhs,size_t n,size_t idx)
+    void connect_to_parent(node<T>* prhs,size_t n,size_t idx)
     {
       if(idx>=prhs->num_of_dims())
 	{
@@ -85,26 +85,26 @@ namespace mcmc_utilities
       do_connect_to_parent(prhs,n,idx);
     }
 
-    void add_stochastic_child(stochastic_node<T_p,T_var1>* prhs)
+    void add_stochastic_child(stochastic_node<T>* prhs)
     {
       stochastic_children.push_back(prhs);
     }
 
-    void add_deterministic_child(deterministic_node<T_p,T_var1>* prhs)
+    void add_deterministic_child(deterministic_node<T>* prhs)
     {
       deterministic_children.push_back(prhs);
     }
 
-    T_var1 parent(size_t pid)const
+    T parent(size_t pid)const
     //pid:parent id
     //obsid:the id in a set of observed values
     {
       return parents[pid].first->value(parents[pid].second);
     }
   private:
-    virtual T_var1 do_value(size_t idx)const=0;
+    virtual T do_value(size_t idx)const=0;
     
-    virtual void do_connect_to_parent(node<T_p,T_var1>* prhs,size_t n,size_t idx)=0;
+    virtual void do_connect_to_parent(node<T>* prhs,size_t n,size_t idx)=0;
   };
 }
 

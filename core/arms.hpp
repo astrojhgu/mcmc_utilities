@@ -18,7 +18,7 @@
 namespace mcmc_utilities
 {
   template <typename T>
-  T eval_log(const probability_density_1d<T,T>& pd,T x,T scale)
+  T eval_log(const probability_density_1d<T>& pd,T x,T scale)
   {
     return pd.eval_log(x)-scale;
   }
@@ -356,7 +356,7 @@ namespace mcmc_utilities
   
   
   template <typename T>
-  void init(const probability_density_1d<T,T>& pd,std::list<section<T> >& section_list,T& scale)
+  void init(const probability_density_1d<T>& pd,std::list<section<T> >& section_list,T& scale)
   {
     std::vector<T> init_x1(pd.init_points());
     
@@ -462,7 +462,7 @@ namespace mcmc_utilities
   }
 
   template <typename T>
-  void insert_point(const probability_density_1d<T,T>& pd,std::list<section<T> >& section_list,const T& x,T scale)
+  void insert_point(const probability_density_1d<T>& pd,std::list<section<T> >& section_list,const T& x,T scale)
   {
 
 #if 0
@@ -624,7 +624,7 @@ namespace mcmc_utilities
   }
 
   template <typename T,typename T_urand>
-  T arms(const probability_density_1d<T,T>& pd,T xcur,size_t n,const T_urand& rnd)
+  T arms(const probability_density_1d<T>& pd,T xcur,size_t n,const T_urand& rnd)
   {
     std::list<section<T> > ls;
     

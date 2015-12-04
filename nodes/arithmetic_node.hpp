@@ -12,34 +12,34 @@
 namespace mcmc_utilities
 {
   /////add////
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class add_node
-    :public deterministic_node<T_p,T_var1>
+    :public deterministic_node<T>
   {
   public:
     add_node()
-      :deterministic_node<T_p,T_var1>(2,1)
+      :deterministic_node<T>(2,1)
     {}
     
-    T_var1 do_value(size_t idx)const override
+    T do_value(size_t idx)const override
     {
       return this->parent(0)+this->parent(1);
     }
   };
 
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class add_node_factory
-    :public abstract_node_factory<T_p,T_var1>
+    :public abstract_node_factory<T>
   {
   public:
     add_node_factory()
-      :abstract_node_factory<T_p,T_var1>({"op1","op2"},{"result"},{})
+      :abstract_node_factory<T>({"op1","op2"},{"result"},{})
     {}
     
-    std::shared_ptr<node<T_p,T_var1> >
-    do_get_node(const std::vector<T_var1>& hparam)const override
+    std::shared_ptr<node<T> >
+    do_get_node(const std::vector<T>& hparam)const override
     {
-      return std::shared_ptr<node<T_p,T_var1> >(new add_node<T_p,T_var1>);
+      return std::shared_ptr<node<T> >(new add_node<T>);
     }
 
     std::string do_get_node_type()const override
@@ -50,66 +50,66 @@ namespace mcmc_utilities
   };
   
   
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class add_vnode
-    :public vnode<T_p, T_var1>
+    :public vnode<T>
   {
   public:
-    add_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T_p,T_var1>&,size_t> >& p)
-      :vnode<T_p,T_var1>("add",n,p)
+    add_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T>&,size_t> >& p)
+      :vnode<T>("add",n,p)
     {
       this->binded=true;
     }
     
-    std::shared_ptr<node<T_p,T_var1> > get_node()const override
+    std::shared_ptr<node<T> > get_node()const override
     {
-      return std::shared_ptr<node<T_p,T_var1> >(new add_node<T_p,T_var1>);
+      return std::shared_ptr<node<T> >(new add_node<T>);
     }
 
-    std::shared_ptr<vnode<T_p,T_var1> > clone()const override
+    std::shared_ptr<vnode<T> > clone()const override
     {
-      return std::shared_ptr<vnode<T_p,T_var1> >(new add_vnode<T_p,T_var1>(*this));
+      return std::shared_ptr<vnode<T> >(new add_vnode<T>(*this));
     }
   };
   
-  template <typename T_p,typename T_var1>
-  add_vnode<T_p,T_var1> operator+(const vnode<T_p,T_var1>& n1,
-		 const vnode<T_p,T_var1>& n2)
+  template <typename T>
+  add_vnode<T> operator+(const vnode<T>& n1,
+		 const vnode<T>& n2)
   {
-    auto result= add_vnode<T_p,T_var1>(std::string("add")+node_count<add_vnode<T_p,T_var1> >(),{{n1,0},{n2,0}});
+    auto result= add_vnode<T>(std::string("add")+node_count<add_vnode<T> >(),{{n1,0},{n2,0}});
     result.named=false;
     return result;
   }
   
   /////sub////
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class sub_node
-    :public deterministic_node<T_p,T_var1>
+    :public deterministic_node<T>
   {
   public:
     sub_node()
-      :deterministic_node<T_p,T_var1>(2,1)
+      :deterministic_node<T>(2,1)
     {}
     
-    T_var1 do_value(size_t idx)const override
+    T do_value(size_t idx)const override
     {
       return this->parent(0)-this->parent(1);
     }
   };
 
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class sub_node_factory
-    :public abstract_node_factory<T_p,T_var1>
+    :public abstract_node_factory<T>
   {
   public:
     sub_node_factory()
-      :abstract_node_factory<T_p,T_var1>({"op1","op2"},{"result"},{})
+      :abstract_node_factory<T>({"op1","op2"},{"result"},{})
     {}
   public:
-    std::shared_ptr<node<T_p,T_var1> >
-    do_get_node(const std::vector<T_var1>& hparam)const override
+    std::shared_ptr<node<T> >
+    do_get_node(const std::vector<T>& hparam)const override
     {
-      return std::shared_ptr<node<T_p,T_var1> >(new sub_node<T_p,T_var1>);
+      return std::shared_ptr<node<T> >(new sub_node<T>);
     }
 
     std::string do_get_node_type()const override
@@ -120,66 +120,66 @@ namespace mcmc_utilities
   };
   
   
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class sub_vnode
-    :public vnode<T_p, T_var1>
+    :public vnode<T>
   {
   public:
-    sub_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T_p,T_var1>&,size_t> >& p)
-      :vnode<T_p,T_var1>("sub",n,p)
+    sub_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T>&,size_t> >& p)
+      :vnode<T>("sub",n,p)
     {
       this->binded=true;
     }
     
-    std::shared_ptr<node<T_p,T_var1> > get_node()const override
+    std::shared_ptr<node<T> > get_node()const override
     {
-      return std::shared_ptr<node<T_p,T_var1> >(new sub_node<T_p,T_var1>);
+      return std::shared_ptr<node<T> >(new sub_node<T>);
     }
 
-    std::shared_ptr<vnode<T_p,T_var1> > clone()const override
+    std::shared_ptr<vnode<T> > clone()const override
     {
-      return std::shared_ptr<vnode<T_p,T_var1> >(new sub_vnode<T_p,T_var1>(*this));
+      return std::shared_ptr<vnode<T> >(new sub_vnode<T>(*this));
     }
   };
   
-  template <typename T_p,typename T_var1>
-  sub_vnode<T_p,T_var1> operator-(const vnode<T_p,T_var1>& n1,
-		 const vnode<T_p,T_var1>& n2)
+  template <typename T>
+  sub_vnode<T> operator-(const vnode<T>& n1,
+		 const vnode<T>& n2)
   {
-    auto result = sub_vnode<T_p,T_var1>(std::string("sub")+node_count<sub_vnode<T_p,T_var1> >(),{{n1,0},{n2,0}});
+    auto result = sub_vnode<T>(std::string("sub")+node_count<sub_vnode<T> >(),{{n1,0},{n2,0}});
     result.named=false;
     return result;
   }
 
   /////neg////
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class neg_node
-    :public deterministic_node<T_p,T_var1>
+    :public deterministic_node<T>
   {
   public:
     neg_node()
-      :deterministic_node<T_p,T_var1>(1,1)
+      :deterministic_node<T>(1,1)
     {}
     
-    T_var1 do_value(size_t idx)const override
+    T do_value(size_t idx)const override
     {
       return -this->parent(0);
     }
   };
 
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class neg_node_factory
-    :public abstract_node_factory<T_p,T_var1>
+    :public abstract_node_factory<T>
   {
   public:
     neg_node_factory()
-      :abstract_node_factory<T_p,T_var1>({"op1"},{"result"},{})
+      :abstract_node_factory<T>({"op1"},{"result"},{})
     {}
   public:
-    std::shared_ptr<node<T_p,T_var1> >
-    do_get_node(const std::vector<T_var1>& hparam)const override
+    std::shared_ptr<node<T> >
+    do_get_node(const std::vector<T>& hparam)const override
     {
-      return std::shared_ptr<node<T_p,T_var1> >(new neg_node<T_p,T_var1>);
+      return std::shared_ptr<node<T> >(new neg_node<T>);
     }
 
     std::string do_get_node_type()const override
@@ -190,57 +190,57 @@ namespace mcmc_utilities
   };
   
   
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class neg_vnode
-    :public vnode<T_p, T_var1>
+    :public vnode<T>
   {
   public:
-    neg_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T_p,T_var1>&,size_t> >& p)
-      :vnode<T_p,T_var1>("neg",n,p)
+    neg_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T>&,size_t> >& p)
+      :vnode<T>("neg",n,p)
     {
       this->binded=true;
     }
     
-    std::shared_ptr<node<T_p,T_var1> > get_node()const override
+    std::shared_ptr<node<T> > get_node()const override
     {
-      return std::shared_ptr<node<T_p,T_var1> >(new neg_node<T_p,T_var1>);
+      return std::shared_ptr<node<T> >(new neg_node<T>);
     }
 
-    std::shared_ptr<vnode<T_p,T_var1> > clone()const override
+    std::shared_ptr<vnode<T> > clone()const override
     {
-      return std::shared_ptr<vnode<T_p,T_var1> >(new neg_vnode<T_p,T_var1>(*this));
+      return std::shared_ptr<vnode<T> >(new neg_vnode<T>(*this));
     }
   };
 
     /////pos////
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class pos_node
-    :public deterministic_node<T_p,T_var1>
+    :public deterministic_node<T>
   {
   public:
     pos_node()
-      :deterministic_node<T_p,T_var1>(1,1)
+      :deterministic_node<T>(1,1)
     {}
     
-    T_var1 do_value(size_t idx)const override
+    T do_value(size_t idx)const override
     {
       return this->parent(0);
     }
   };
 
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class pos_node_factory
-    :public abstract_node_factory<T_p,T_var1>
+    :public abstract_node_factory<T>
   {
   public:
     pos_node_factory()
-      :abstract_node_factory<T_p,T_var1>({"op1"},{"result"},{})
+      :abstract_node_factory<T>({"op1"},{"result"},{})
     {}
   public:
-    std::shared_ptr<node<T_p,T_var1> >
-    do_get_node(const std::vector<T_var1>& hparam)const override
+    std::shared_ptr<node<T> >
+    do_get_node(const std::vector<T>& hparam)const override
     {
-      return std::shared_ptr<node<T_p,T_var1> >(new pos_node<T_p,T_var1>);
+      return std::shared_ptr<node<T> >(new pos_node<T>);
     }
 
     std::string do_get_node_type()const override
@@ -251,59 +251,59 @@ namespace mcmc_utilities
   };
   
   
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class pos_vnode
-    :public vnode<T_p, T_var1>
+    :public vnode<T>
   {
   public:
-    pos_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T_p,T_var1>&,size_t> >& p)
-      :vnode<T_p,T_var1>("pos",n,p)
+    pos_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T>&,size_t> >& p)
+      :vnode<T>("pos",n,p)
     {
       this->binded=true;
     }
     
-    std::shared_ptr<node<T_p,T_var1> > get_node()const override
+    std::shared_ptr<node<T> > get_node()const override
     {
-      return std::shared_ptr<node<T_p,T_var1> >(new pos_node<T_p,T_var1>);
+      return std::shared_ptr<node<T> >(new pos_node<T>);
     }
 
-    std::shared_ptr<vnode<T_p,T_var1> > clone()const override
+    std::shared_ptr<vnode<T> > clone()const override
     {
-      return std::shared_ptr<vnode<T_p,T_var1> >(new pos_vnode<T_p,T_var1>(*this));
+      return std::shared_ptr<vnode<T> >(new pos_vnode<T>(*this));
     }
   };
 
 
   /////mul////
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class mul_node
-    :public deterministic_node<T_p,T_var1>
+    :public deterministic_node<T>
   {
   public:
     mul_node()
-      :deterministic_node<T_p,T_var1>(2,1)
+      :deterministic_node<T>(2,1)
     {}
     
-    T_var1 do_value(size_t idx)const override
+    T do_value(size_t idx)const override
     {
       return this->parent(0)*this->parent(1);
     }
   };
   
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class mul_node_factory
-    :public abstract_node_factory<T_p,T_var1>
+    :public abstract_node_factory<T>
   {
   public:
     mul_node_factory()
-      :abstract_node_factory<T_p,T_var1>({"op1","op2"},{"result"},{})
+      :abstract_node_factory<T>({"op1","op2"},{"result"},{})
     {}
     
   public:
-    std::shared_ptr<node<T_p,T_var1> >
-    do_get_node(const std::vector<T_var1>& hparam)const override
+    std::shared_ptr<node<T> >
+    do_get_node(const std::vector<T>& hparam)const override
     {
-      return std::shared_ptr<node<T_p,T_var1> >(new mul_node<T_p,T_var1>);
+      return std::shared_ptr<node<T> >(new mul_node<T>);
     }
 
     std::string do_get_node_type()const override
@@ -313,67 +313,67 @@ namespace mcmc_utilities
 
   };
   
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class mul_vnode
-    :public vnode<T_p, T_var1>
+    :public vnode<T>
   {
   public:
-    mul_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T_p,T_var1>&,size_t> >& p)
-      :vnode<T_p,T_var1>("mul",n,p)
+    mul_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T>&,size_t> >& p)
+      :vnode<T>("mul",n,p)
     {
       this->binded=true;
     }
     
-    std::shared_ptr<node<T_p,T_var1> > get_node()const override
+    std::shared_ptr<node<T> > get_node()const override
     {
-      return std::shared_ptr<node<T_p,T_var1> >(new mul_node<T_p,T_var1>);
+      return std::shared_ptr<node<T> >(new mul_node<T>);
     }
 
-    std::shared_ptr<vnode<T_p,T_var1> > clone()const override
+    std::shared_ptr<vnode<T> > clone()const override
     {
-      return std::shared_ptr<vnode<T_p,T_var1> >(new mul_vnode<T_p,T_var1>(*this));
+      return std::shared_ptr<vnode<T> >(new mul_vnode<T>(*this));
     }
   };
   
-  template <typename T_p,typename T_var1>
-  mul_vnode<T_p,T_var1> operator*(const vnode<T_p,T_var1>& n1,
-		 const vnode<T_p,T_var1>& n2)
+  template <typename T>
+  mul_vnode<T> operator*(const vnode<T>& n1,
+		 const vnode<T>& n2)
   {
-    auto result= mul_vnode<T_p,T_var1>(std::string("mul")+node_count<mul_vnode<T_p,T_var1> >(),{{n1,0},{n2,0}});
+    auto result= mul_vnode<T>(std::string("mul")+node_count<mul_vnode<T> >(),{{n1,0},{n2,0}});
     result.named=false;
     return result;
   }
   
   /////div////
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class div_node
-    :public deterministic_node<T_p,T_var1>
+    :public deterministic_node<T>
   {
   public:
     div_node()
-      :deterministic_node<T_p,T_var1>(2,1)
+      :deterministic_node<T>(2,1)
     {}
     
-    T_var1 do_value(size_t idx)const override
+    T do_value(size_t idx)const override
     {
       return this->parent(0)/this->parent(1);
     }
   };
 
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class div_node_factory
-    :public abstract_node_factory<T_p,T_var1>
+    :public abstract_node_factory<T>
   {
   public:
     div_node_factory()
-      :abstract_node_factory<T_p,T_var1>({"op1","op2"},{"result"},{})
+      :abstract_node_factory<T>({"op1","op2"},{"result"},{})
     {}
     
   public:
-    std::shared_ptr<node<T_p,T_var1> >
-    do_get_node(const std::vector<T_var1>& hparam)const override
+    std::shared_ptr<node<T> >
+    do_get_node(const std::vector<T>& hparam)const override
     {
-      return std::shared_ptr<node<T_p,T_var1> >(new div_node<T_p,T_var1>);
+      return std::shared_ptr<node<T> >(new div_node<T>);
     }
 
     std::string do_get_node_type()const override
@@ -384,67 +384,67 @@ namespace mcmc_utilities
   };
   
   
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class div_vnode
-    :public vnode<T_p, T_var1>
+    :public vnode<T>
   {
   public:
-    div_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T_p,T_var1>&,size_t> >& p)
-      :vnode<T_p,T_var1>("div",n,p)
+    div_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T>&,size_t> >& p)
+      :vnode<T>("div",n,p)
     {
       this->binded=true;
     }
     
-    std::shared_ptr<node<T_p,T_var1> > get_node()const override
+    std::shared_ptr<node<T> > get_node()const override
     {
-      return std::shared_ptr<node<T_p,T_var1> >(new div_node<T_p,T_var1>);
+      return std::shared_ptr<node<T> >(new div_node<T>);
     }
 
-    std::shared_ptr<vnode<T_p,T_var1> > clone()const override
+    std::shared_ptr<vnode<T> > clone()const override
     {
-      return std::shared_ptr<vnode<T_p,T_var1> >(new div_vnode<T_p,T_var1>(*this));
+      return std::shared_ptr<vnode<T> >(new div_vnode<T>(*this));
     }
   };
   
-  template <typename T_p,typename T_var1>
-  div_vnode<T_p,T_var1> operator/(const vnode<T_p,T_var1>& n1,
-		 const vnode<T_p,T_var1>& n2)
+  template <typename T>
+  div_vnode<T> operator/(const vnode<T>& n1,
+		 const vnode<T>& n2)
   {
-    auto result= div_vnode<T_p,T_var1>(std::string("div")+node_count<div_vnode<T_p,T_var1> >(),{{n1,0},{n2,0}});
+    auto result= div_vnode<T>(std::string("div")+node_count<div_vnode<T> >(),{{n1,0},{n2,0}});
     result.named=false;
     return result;
   }
   
   /////pow////
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class pow_node
-    :public deterministic_node<T_p,T_var1>
+    :public deterministic_node<T>
   {
   public:
     pow_node()
-      :deterministic_node<T_p,T_var1>(2,1)
+      :deterministic_node<T>(2,1)
     {}
     
-    T_var1 do_value(size_t idx)const override
+    T do_value(size_t idx)const override
     {
       return std::pow(this->parent(0),this->parent(1));
     }
   };
 
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class pow_node_factory
-    :public abstract_node_factory<T_p,T_var1>
+    :public abstract_node_factory<T>
   {
   public:
     pow_node_factory()
-      :abstract_node_factory<T_p,T_var1>({"op1","op2"},{"result"},{})
+      :abstract_node_factory<T>({"op1","op2"},{"result"},{})
     {}
     
   public:
-    std::shared_ptr<node<T_p,T_var1> >
-    do_get_node(const std::vector<T_var1>& hparam)const override
+    std::shared_ptr<node<T> >
+    do_get_node(const std::vector<T>& hparam)const override
     {
-      return std::shared_ptr<node<T_p,T_var1> >(new pow_node<T_p,T_var1>);
+      return std::shared_ptr<node<T> >(new pow_node<T>);
     }
 
     std::string do_get_node_type()const override
@@ -455,33 +455,33 @@ namespace mcmc_utilities
   };
   
   
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class pow_vnode
-    :public vnode<T_p, T_var1>
+    :public vnode<T>
   {
   public:
-    pow_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T_p,T_var1>&,size_t> >& p)
-      :vnode<T_p,T_var1>("pow",n,p)
+    pow_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T>&,size_t> >& p)
+      :vnode<T>("pow",n,p)
     {
       this->binded=true;
     }
     
-    std::shared_ptr<node<T_p,T_var1> > get_node()const override
+    std::shared_ptr<node<T> > get_node()const override
     {
-      return std::shared_ptr<node<T_p,T_var1> >(new pow_node<T_p,T_var1>);
+      return std::shared_ptr<node<T> >(new pow_node<T>);
     }
 
-    std::shared_ptr<vnode<T_p,T_var1> > clone()const override
+    std::shared_ptr<vnode<T> > clone()const override
     {
-      return std::shared_ptr<vnode<T_p,T_var1> >(new pow_vnode<T_p,T_var1>(*this));
+      return std::shared_ptr<vnode<T> >(new pow_vnode<T>(*this));
     }
   };
   
-  template <typename T_p,typename T_var1>
-  pow_vnode<T_p,T_var1> operator/(const vnode<T_p,T_var1>& n1,
-		 const vnode<T_p,T_var1>& n2)
+  template <typename T>
+  pow_vnode<T> operator/(const vnode<T>& n1,
+		 const vnode<T>& n2)
   {
-    auto result= pow_vnode<T_p,T_var1>(std::string("pow")+node_count<pow_vnode<T_p,T_var1> >(),{{n1,0},{n2,0}});
+    auto result= pow_vnode<T>(std::string("pow")+node_count<pow_vnode<T> >(),{{n1,0},{n2,0}});
     result.named=false;
     return result;
   }

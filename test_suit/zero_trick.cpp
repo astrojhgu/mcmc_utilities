@@ -20,11 +20,11 @@ private:
 
 
 class cauthy
-  :public deterministic_node<double,double>
+  :public deterministic_node<double>
 {
 public:
   cauthy()
-    :deterministic_node<double,double>(2,1)
+    :deterministic_node<double>(2,1)
   {
   }
 
@@ -38,15 +38,15 @@ public:
 
 int main()
 {
-  auto pY=std::shared_ptr<node<double,double> >(new uniform_node<double,double>(-1000,1000));
-  auto p_poisson=new poisson_node<double,double>;
-  auto pl=std::shared_ptr<node<double,double> >(p_poisson);
-  auto pth=std::shared_ptr<node<double,double> >(new const_node<double,double>(150));
-  auto pc=std::shared_ptr<node<double,double> >(new cauthy);
+  auto pY=std::shared_ptr<node<double> >(new uniform_node<double>(-1000,1000));
+  auto p_poisson=new poisson_node<double>;
+  auto pl=std::shared_ptr<node<double> >(p_poisson);
+  auto pth=std::shared_ptr<node<double> >(new const_node<double>(150));
+  auto pc=std::shared_ptr<node<double> >(new cauthy);
 
   p_poisson->set_observed(0,true);
   p_poisson->set_value(0,0);
-  graph<double,double,std::string> g;
+  graph<double,std::string> g;
   g.add_node(pY,"Y");
   g.add_node(pth,"theta");
   g.add_node(pc,"cauthy",{{pY,0},{pth,0}});

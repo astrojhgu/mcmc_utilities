@@ -10,7 +10,7 @@
 
 namespace mcmc_utilities
 {
-  template <typename T_p,typename T_var>
+  template <typename T>
   class probability_density_1d;
 
   //template<typename T_p,typename T_var>
@@ -61,46 +61,46 @@ namespace mcmc_utilities
     
   };
   
-  template <typename T_p,typename T_var>
+  template <typename T>
   class probability_density_1d
   {
   public:
-    T_p eval_log(const T_var& x)const
+    T eval_log(const T& x)const
     {
-      T_p result=do_eval_log(x);
+      T result=do_eval_log(x);
       return result;
     }
 
     virtual ~probability_density_1d()
     {}
     
-    std::pair<T_var,T_var> var_range()const
+    std::pair<T,T> var_range()const
     {
       return do_var_range();
     }
 
-    std::vector<T_var> init_points()const
+    std::vector<T> init_points()const
     {
       return do_init_points();
     }
 
-    std::vector<T_var> candidate_points()const
+    std::vector<T> candidate_points()const
     {
       return do_candidate_points();
     }
     
   private:
-    virtual T_p do_eval_log(const T_var& x)const=0;
-    virtual std::pair<T_var,T_var> do_var_range()const=0;
-    virtual std::vector<T_var> do_init_points()const
+    virtual T do_eval_log(const T& x)const=0;
+    virtual std::pair<T,T> do_var_range()const=0;
+    virtual std::vector<T> do_init_points()const
     {
-      std::vector<T_var> result(3);
+      std::vector<T> result(3);
       for(size_t n=0;n<result.size();++n)
 	{
 	  //if(n!=1)
 	    {
-	      std::pair<T_var,T_var> xrange(var_range());
-	      T_var xl=xrange.first,xr=xrange.second;
+	      std::pair<T,T> xrange(var_range());
+	      T xl=xrange.first,xr=xrange.second;
 	      
 	      result[n]= xl+(xr-xl)/(result.size()+1)*(n+1);
 	    }
@@ -113,9 +113,9 @@ namespace mcmc_utilities
     };
 
     //possible values when this distribution is discrete
-    virtual std::vector<T_var> do_candidate_points()const
+    virtual std::vector<T> do_candidate_points()const
     {
-      return std::vector<T_var>();
+      return std::vector<T>();
     }
   };
 }

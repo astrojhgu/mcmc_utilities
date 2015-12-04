@@ -14,7 +14,7 @@ namespace mcmc_utilities
     size_t idx=0;
     typedef typename element_type_trait<T_var>::element_type T_var1;
     class conditional_probability_density
-      :public probability_density_1d<T_p,typename element_type_trait<T_var>::element_type>
+      :public probability_density_1d<typename element_type_trait<T_var>::element_type>
     {
     public:
       size_t* p_idx;
@@ -90,7 +90,7 @@ namespace mcmc_utilities
       }
     typedef typename element_type_trait<T_var>::element_type T_var1;
     class conditional_probability_density
-      :public probability_density_1d<T_p,typename element_type_trait<T_var>::element_type>
+      :public probability_density_1d<typename element_type_trait<T_var>::element_type>
     {
     public:
       size_t* p_idx;

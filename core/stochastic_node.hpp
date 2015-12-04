@@ -12,22 +12,22 @@
 
 namespace mcmc_utilities
 {
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class stochastic_node
-    :public node<T_p,T_var1>,public probability_density_1d<T_p,T_var1>
+    :public node<T>,public probability_density_1d<T>
   {
   private:
-    std::vector<T_var1> v;//store current value(s) of this node
+    std::vector<T> v;//store current value(s) of this node
     std::vector<int> observed;
     size_t current_idx;
   public:
-    stochastic_node(size_t nparents,const std::vector<T_var1>& v_)
-      :node<T_p,T_var1>(nparents,v_.size()),
+    stochastic_node(size_t nparents,const std::vector<T>& v_)
+      :node<T>(nparents,v_.size()),
       v{v_},observed(v_.size()),current_idx(0)
     {}
 
-    stochastic_node(size_t nparents,T_var1 v_)
-      :node<T_p,T_var1>(nparents,1),
+    stochastic_node(size_t nparents,T v_)
+      :node<T>(nparents,1),
       v(1),observed(v.size()),current_idx(0)
     {
       v[0]=v_;
@@ -35,8 +35,8 @@ namespace mcmc_utilities
     
 
     stochastic_node()=delete;
-    stochastic_node(const stochastic_node<T_p,T_var1>& )=delete;
-    stochastic_node<T_p,T_var1>& operator=(const stochastic_node<T_p,T_var1>&)=delete;
+    stochastic_node(const stochastic_node<T>& )=delete;
+    stochastic_node<T>& operator=(const stochastic_node<T>&)=delete;
   public:
     bool is_observed(size_t n)
     {
@@ -48,12 +48,12 @@ namespace mcmc_utilities
       observed[n]=b?1:0;
     }
     
-    T_p log_posterior_prob()const
+    T log_posterior_prob()const
     {
       return log_prob()+this->log_likelihood();
     }
 
-    T_p do_eval_log(const T_var1& x)const override
+    T do_eval_log(const T& x)const override
     {
       
       const_cast<stochastic_node*>(this)->v[current_idx]=x;
@@ -70,24 +70,24 @@ namespace mcmc_utilities
       return current_idx;
     }
     
-    T_p log_prob()const
+    T log_prob()const
     {
       return do_log_prob();
     }
 
-    void set_value(size_t idx,const T_var1& v_)
+    void set_value(size_t idx,const T& v_)
     {
       v[idx]=v_;
     }
 
   public:
-    void sample(const base_urand<T_p>& urand)
+    void sample(const base_urand<T>& urand)
     {
       do_sample(urand);
     }
 
   private:
-    virtual void do_sample(const base_urand<T_p>& urand)
+    virtual void do_sample(const base_urand<T>& urand)
     {
       //constexpr size_t nsamp=10;
       for(size_t i=0;i<this->num_of_dims();++i)
@@ -97,8 +97,8 @@ namespace mcmc_utilities
 	      continue;
 	    }
 	  this->set_current_idx(i);
-	  T_var1 xprev=this->value(i);
-	  std::pair<T_var1,T_var1> xrange(this->var_range());
+	  T xprev=this->value(i);
+	  std::pair<T,T> xrange(this->var_range());
 	  xprev=xprev<xrange.first?xrange.first:xprev;
 	  xprev=xprev>xrange.second?xrange.second:xprev;
 	  
@@ -111,7 +111,7 @@ namespace mcmc_utilities
 	  else
 	    {
 	      //xprev=discrete_sample(*this,urand);
-	      slice_sampler<T_p> ss(*this,2,10);
+	      slice_sampler<T> ss(*this,2,10);
 	      xprev=ss.sample(xprev,urand);
 	    }   
 	  
@@ -119,14 +119,14 @@ namespace mcmc_utilities
 	}
     }
     
-    virtual T_p do_log_prob()const=0;
-    T_var1 do_value(size_t idx)const override final
+    virtual T do_log_prob()const=0;
+    T do_value(size_t idx)const override final
     {
       return v[idx];
     }
 
     
-    void do_connect_to_parent(node<T_p,T_var1>*  rhs,size_t n,size_t idx) override
+    void do_connect_to_parent(node<T>*  rhs,size_t n,size_t idx) override
     {
       this->parents.at(n)=std::make_pair(rhs,idx);
       rhs->add_stochastic_child(this);

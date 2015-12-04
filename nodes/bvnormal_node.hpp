@@ -8,31 +8,31 @@
 
 namespace mcmc_utilities
 {
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class bvnormal_node
-    :public stochastic_node<T_p,T_var1>
+    :public stochastic_node<T>
   {
   private:
   public:
     bvnormal_node()
-      :stochastic_node<T_p,T_var1>(5,{0,0})
+      :stochastic_node<T>(5,{0,0})
     {}
     
   private:
-    T_p do_log_prob()const override
+    T do_log_prob()const override
     {
-      const static T_var1 PI=std::atan(1.0)*4;
-      T_var1 x1=this->value(0);
-      T_var1 x2=this->value(1);
-      T_var1 mu1=this->parent(0);
-      T_var1 mu2=this->parent(1);
-      T_var1 sigma1=this->parent(2);
-      T_var1 sigma2=this->parent(3);
-      T_var1 rho=this->parent(4);
+      const static T PI=std::atan(1.0)*4;
+      T x1=this->value(0);
+      T x2=this->value(1);
+      T mu1=this->parent(0);
+      T mu2=this->parent(1);
+      T sigma1=this->parent(2);
+      T sigma2=this->parent(3);
+      T rho=this->parent(4);
       //return -(x-mu)*(x-mu)/(2*sigma*sigma)-std::log(sigma*std::sqrt(2*PI));
-      T_var1 X1=(x1-mu1)/sigma1;
-      T_var1 X2=(x2-mu2)/sigma2;
-      T_var1 z=(X1*X1+X2*X2-2*rho*X1*X2)/(2*(1-rho*rho));
+      T X1=(x1-mu1)/sigma1;
+      T X2=(x2-mu2)/sigma2;
+      T z=(X1*X1+X2*X2-2*rho*X1*X2)/(2*(1-rho*rho));
       return -z-std::log(sigma1*sigma2*std::sqrt(1-rho*rho));
     }
     
@@ -41,12 +41,12 @@ namespace mcmc_utilities
       return true;
     }
     
-    std::pair<T_var1,T_var1> do_var_range()const override
+    std::pair<T,T> do_var_range()const override
     {
-      T_var1 mu1=this->parent(0);
-      T_var1 mu2=this->parent(1);
-      T_var1 sigma1=this->parent(2);
-      T_var1 sigma2=this->parent(3);
+      T mu1=this->parent(0);
+      T mu2=this->parent(1);
+      T sigma1=this->parent(2);
+      T sigma2=this->parent(3);
 
       if(this->get_current_idx()==0)
 	{
@@ -60,42 +60,42 @@ namespace mcmc_utilities
   };
   
   
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class bvnormal_vnode
-    :public vnode<T_p,T_var1>
+    :public vnode<T>
   {
   public:
-    bvnormal_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T_p,T_var1>&,size_t> >& p)
-      :vnode<T_p,T_var1>("bvnormal",n,p)
+    bvnormal_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T>&,size_t> >& p)
+      :vnode<T>("bvnormal",n,p)
     {
       this->binded=true;
     }
     
-    std::shared_ptr<node<T_p,T_var1> > get_node()const override
+    std::shared_ptr<node<T> > get_node()const override
     {
-      return std::shared_ptr<node<T_p,T_var1> >(new bvnormal_node<T_p,T_var1>);
+      return std::shared_ptr<node<T> >(new bvnormal_node<T>);
     }
 
-    std::shared_ptr<vnode<T_p,T_var1> > clone()const override
+    std::shared_ptr<vnode<T> > clone()const override
     {
-      return std::shared_ptr<vnode<T_p,T_var1> >(new bvnormal_vnode<T_p,T_var1>(*this));
+      return std::shared_ptr<vnode<T> >(new bvnormal_vnode<T>(*this));
     }
   };
 
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class bvnormal_node_factory
-    :public abstract_node_factory<T_p,T_var1>
+    :public abstract_node_factory<T>
   {
   public:
     bvnormal_node_factory()
-      :abstract_node_factory<T_p,T_var1>({"mu1","mu2","sigma1","sigma2","rho"},{"x1","x2"},{})
+      :abstract_node_factory<T>({"mu1","mu2","sigma1","sigma2","rho"},{"x1","x2"},{})
     {}
     
   public:
-    std::shared_ptr<node<T_p,T_var1> >
-    do_get_node(const std::vector<T_var1>& hparam)const override
+    std::shared_ptr<node<T> >
+    do_get_node(const std::vector<T>& hparam)const override
     {
-      return std::shared_ptr<node<T_p,T_var1> >(new bvnormal_node<T_p,T_var1>);
+      return std::shared_ptr<node<T> >(new bvnormal_node<T>);
     }
 
     std::string do_get_node_type()const override
@@ -105,7 +105,7 @@ namespace mcmc_utilities
 
   };
   
-  using vbvnormal=bvnormal_vnode<double,double>;
+  using vbvnormal=bvnormal_vnode<double>;
 };
 
 #endif

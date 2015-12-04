@@ -12,58 +12,58 @@
 
 namespace mcmc_utilities
 {
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class phi_node
-    :public deterministic_node<T_p,T_var1>
+    :public deterministic_node<T>
   {
   public:
     phi_node()
-      :deterministic_node<T_p,T_var1>(1,1)
+      :deterministic_node<T>(1,1)
     {}
 
-    T_var1 do_value(size_t idx)const override
+    T do_value(size_t idx)const override
     {
       return phi(this->parent(0));
     }
   };
 
 
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class phi_vnode
-    :public vnode<T_p,T_var1>
+    :public vnode<T>
   {
   public:
     phi_vnode(std::string n,
-	      const std::pair<const vnode<T_p,T_var1>&,size_t>& p)
-      :vnode<T_p,T_var1>("phi",n,{p})
+	      const std::pair<const vnode<T>&,size_t>& p)
+      :vnode<T>("phi",n,{p})
     {
       this->binded=true;
     }
 
-    std::shared_ptr<node<T_p,T_var1> > get_node()const override
+    std::shared_ptr<node<T> > get_node()const override
     {
-      return std::shared_ptr<node<T_p,T_var1> >(new phi_node<T_p,T_var1>);
+      return std::shared_ptr<node<T> >(new phi_node<T>);
     }
 
-    std::shared_ptr<vnode<T_p,T_var1> > clone()const override
+    std::shared_ptr<vnode<T> > clone()const override
     {
-      return std::shared_ptr<vnode<T_p,T_var1> >(new phi_vnode<T_p,T_var1>(*this));
+      return std::shared_ptr<vnode<T> >(new phi_vnode<T>(*this));
     }
   };
 
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class phi_node_factory
-    :public abstract_node_factory<T_p,T_var1>
+    :public abstract_node_factory<T>
   {
   public:
     phi_node_factory()
-      :abstract_node_factory<T_p,T_var1>({"x"},{"y"},{})
+      :abstract_node_factory<T>({"x"},{"y"},{})
     {}
   public:
-    std::shared_ptr<node<T_p,T_var1> >
-    do_get_node(const std::vector<T_var1>& hparam)const override
+    std::shared_ptr<node<T> >
+    do_get_node(const std::vector<T>& hparam)const override
     {
-      return std::shared_ptr<node<T_p,T_var1> >(new phi_node<T_p,T_var1>);
+      return std::shared_ptr<node<T> >(new phi_node<T>);
     }
 
     std::string do_get_node_type()const override
@@ -72,10 +72,10 @@ namespace mcmc_utilities
     }
   };
 
-  template <typename T_p,typename T_var1>
-  phi_vnode<T_p,T_var1> vphi(const vnode<T_p,T_var1>& n1)
+  template <typename T>
+  phi_vnode<T> vphi(const vnode<T>& n1)
   {
-    auto result= phi_vnode<T_p,T_var1>(std::string("phi")+node_count<phi_vnode<T_p,T_var1> >(),{n1,(size_t)0});
+    auto result= phi_vnode<T>(std::string("phi")+node_count<phi_vnode<T> >(),{n1,(size_t)0});
     result.named=false;
     return result;
   }

@@ -27,10 +27,10 @@ namespace mcmc_utilities
     size_t niter;
     T sumdiff;
     const size_t min_adapt;
-    const probability_density_1d<T,T>& pd;
+    const probability_density_1d<T>& pd;
     
   public:
-    slice_sampler(const probability_density_1d<T,T>& _pd, const T& _width,size_t _nmax)
+    slice_sampler(const probability_density_1d<T>& _pd, const T& _width,size_t _nmax)
       :adapt(true),width(_width),nmax(_nmax),niter(0),sumdiff(0),min_adapt(50),pd(_pd)
     {
     }

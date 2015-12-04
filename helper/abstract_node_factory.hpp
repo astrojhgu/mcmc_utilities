@@ -7,7 +7,7 @@
 
 namespace mcmc_utilities
 {
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class abstract_node_factory
   {
   public:
@@ -24,8 +24,8 @@ namespace mcmc_utilities
        hparam_names(hname)
     {}
 
-    std::shared_ptr<node<T_p,T_var1> >
-    get_node(const std::vector<T_var1>& hparam)const
+    std::shared_ptr<node<T> >
+    get_node(const std::vector<T>& hparam)const
     {
       if(hparam.size()!=hparam_names.size())
 	{
@@ -36,7 +36,7 @@ namespace mcmc_utilities
     }
 
     
-    std::shared_ptr<node<T_p,T_var1> >
+    std::shared_ptr<node<T> >
     get_node()const
     {
       return get_node({});
@@ -54,24 +54,24 @@ namespace mcmc_utilities
     }
     
   private:
-    virtual std::shared_ptr<node<T_p,T_var1> >
-    do_get_node(const std::vector<T_var1>& hparam)const=0;
+    virtual std::shared_ptr<node<T> >
+    do_get_node(const std::vector<T>& hparam)const=0;
 
     virtual std::string do_get_node_type()const=0;
     
   };
 
   
-  template <typename T_p,typename T_var1>
-  std::shared_ptr<stochastic_node<T_p,T_var1> > to_stochastic(const std::shared_ptr<node<T_p,T_var1> >& sp)
+  template <typename T>
+  std::shared_ptr<stochastic_node<T> > to_stochastic(const std::shared_ptr<node<T> >& sp)
   {
-    return std::dynamic_pointer_cast<stochastic_node<T_p,T_var1> >(sp);
+    return std::dynamic_pointer_cast<stochastic_node<T> >(sp);
   }
 
-  template <typename T_p,typename T_var1>
-  std::shared_ptr<deterministic_node<T_p,T_var1> > to_deterministic(const std::shared_ptr<node<T_p,T_var1> >& sp)
+  template <typename T>
+  std::shared_ptr<deterministic_node<T> > to_deterministic(const std::shared_ptr<node<T> >& sp)
   {
-    return std::dynamic_pointer_cast<deterministic_node<T_p,T_var1> >(sp);
+    return std::dynamic_pointer_cast<deterministic_node<T> >(sp);
   }
 }
 

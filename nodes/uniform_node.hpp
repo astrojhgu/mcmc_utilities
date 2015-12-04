@@ -8,20 +8,20 @@
 
 namespace mcmc_utilities
 {
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class uniform_node
-    :public stochastic_node<T_p,T_var1>
+    :public stochastic_node<T>
   {
   private:
-    T_var1 a;
-    T_var1 b;
+    T a;
+    T b;
   public:
-    uniform_node(T_var1 _a,T_var1 _b)
-      :stochastic_node<T_p,T_var1>(0,(_a+_b)/2),a(_a),b(_b)
+    uniform_node(T _a,T _b)
+      :stochastic_node<T>(0,(_a+_b)/2),a(_a),b(_b)
     {}
     
   private:
-    T_p do_log_prob()const override
+    T do_log_prob()const override
     {
       return 0;
     }
@@ -31,27 +31,27 @@ namespace mcmc_utilities
       return true;
     }
     
-    std::pair<T_var1,T_var1> do_var_range()const override
+    std::pair<T,T> do_var_range()const override
     {
       return std::make_pair(a,b);
       //return make_pair(-10,10);
     }
   };
 
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class uniform_node_factory
-    :public abstract_node_factory<T_p,T_var1>
+    :public abstract_node_factory<T>
   {
   public:
     uniform_node_factory()
-      :abstract_node_factory<T_p,T_var1>({},{"x"},{"a","b"})
+      :abstract_node_factory<T>({},{"x"},{"a","b"})
     {}
     
   public:
-    std::shared_ptr<node<T_p,T_var1> >
-    do_get_node(const std::vector<T_var1>& hparam)const override
+    std::shared_ptr<node<T> >
+    do_get_node(const std::vector<T>& hparam)const override
     {
-      return std::shared_ptr<node<T_p,T_var1> >(new uniform_node<T_p,T_var1>(hparam.at(0),hparam.at(1)));
+      return std::shared_ptr<node<T> >(new uniform_node<T>(hparam.at(0),hparam.at(1)));
     }
 
     std::string do_get_node_type()const override
@@ -60,31 +60,31 @@ namespace mcmc_utilities
     }
   };
   
-  template <typename T_p,typename T_var1>
+  template <typename T>
   class uniform_vnode
-    :public vnode<T_p,T_var1>
+    :public vnode<T>
   {
-    T_var1 a;
-    T_var1 b;
+    T a;
+    T b;
   public:
-    uniform_vnode(std::string n,T_var1 _a,T_var1 _b)
-      :vnode<T_p,T_var1>("uniform",n),a(_a),b(_b)
+    uniform_vnode(std::string n,T _a,T _b)
+      :vnode<T>("uniform",n),a(_a),b(_b)
     {
       this->binded=true;
     }
     
-    std::shared_ptr<node<T_p,T_var1> > get_node()const override
+    std::shared_ptr<node<T> > get_node()const override
     {
-      return std::shared_ptr<node<T_p,T_var1> >(new uniform_node<T_p,T_var1>(a,b));
+      return std::shared_ptr<node<T> >(new uniform_node<T>(a,b));
     }
     
-    std::shared_ptr<vnode<T_p,T_var1> > clone()const override
+    std::shared_ptr<vnode<T> > clone()const override
     {
-      return std::shared_ptr<vnode<T_p,T_var1> >(new uniform_vnode<T_p,T_var1>(*this));
+      return std::shared_ptr<vnode<T> >(new uniform_vnode<T>(*this));
     }
   };
 
-  using vuniform=uniform_vnode<double,double>;
+  using vuniform=uniform_vnode<double>;
 };
 
 #endif

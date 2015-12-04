@@ -3,16 +3,16 @@
 
 namespace mcmc_utilities
 {
-  template <typename T_p>
+  template <typename T>
   class base_urand
   {
   public:
-    T_p operator()()const
+    T operator()()const
     {
       return do_rand();
     }
   private:
-    virtual T_p do_rand()const=0;
+    virtual T do_rand()const=0;
       
   };
   

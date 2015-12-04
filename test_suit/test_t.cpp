@@ -37,26 +37,26 @@ public:
       }
   }
 
-  shared_ptr<node<double,double> > get_energy(int i)const
+  shared_ptr<node<double> > get_energy(int i)const
   {
-    auto p=new const_node<double,double>(vec_e[i]);
+    auto p=new const_node<double>(vec_e[i]);
     //p->set_observed(0,true);
-    return std::shared_ptr<node<double,double> >(p);
+    return std::shared_ptr<node<double> >(p);
   }
 
-  shared_ptr<node<double,double> > get_ninj(int i)const
+  shared_ptr<node<double> > get_ninj(int i)const
   {
-    auto p=new const_node<double,double>(vec_ninj[i]);
+    auto p=new const_node<double>(vec_ninj[i]);
     //p->set_observed(0,true);
-    return std::shared_ptr<node<double,double> >(p);
+    return std::shared_ptr<node<double> >(p);
   }
 
-  shared_ptr<node<double,double> > get_nrec(int i)const
+  shared_ptr<node<double> > get_nrec(int i)const
   {
-    auto p=new bin_node<double,double>();
+    auto p=new bin_node<double>();
     p->set_value(0,vec_nrec[i]);
     p->set_observed(0,true);
-    return shared_ptr<node<double,double> >(p);
+    return shared_ptr<node<double> >(p);
   }
 
   size_t size()const
@@ -78,14 +78,14 @@ private:
 
 int main()
 {
-  graph<double,double,std::string> g;
+  graph<double,std::string> g;
   data_loader dl("eff.txt");
 
-  auto pMu=std::shared_ptr<node<double,double> >(new const_node<double,double>(0));
-  auto pSigma=std::shared_ptr<node<double,double> >(new const_node<double,double>(1));
-  auto pk=std::shared_ptr<node<double,double> >(new const_node<double,double>(1));
-  auto pT1=std::shared_ptr<node<double,double> >(new t_node<double,double>());
-  auto pT2=std::shared_ptr<node<double,double> >(new t_node<double,double>());
+  auto pMu=std::shared_ptr<node<double> >(new const_node<double>(0));
+  auto pSigma=std::shared_ptr<node<double> >(new const_node<double>(1));
+  auto pk=std::shared_ptr<node<double> >(new const_node<double>(1));
+  auto pT1=std::shared_ptr<node<double> >(new t_node<double>());
+  auto pT2=std::shared_ptr<node<double> >(new t_node<double>());
   g.add_node(pMu,"mu");
   g.add_node(pSigma,"sigma");
   g.add_node(pk,"k");
