@@ -2,6 +2,7 @@
 #include <nodes/poisson_node.hpp>
 #include <nodes/uniform_node.hpp>
 #include <nodes/const_node.hpp>
+#include <nodes/str_node.hpp>
 #include <iostream>
 #include <core/urand.hpp>
 
@@ -19,30 +20,14 @@ private:
 }rnd1;
 
 
-class cauthy
-  :public deterministic_node<double>
-{
-public:
-  cauthy()
-    :deterministic_node<double>(2,1)
-  {
-  }
-
-  double do_value(size_t idx)const override
-  {
-    double y=this->parent(0);
-    double theta=this->parent(1);
-    return std::log((1+(y-theta)*(y-theta))+1);
-  }
-};
-
 int main()
 {
   auto pY=std::shared_ptr<node<double> >(new uniform_node<double>(-1000,1000));
   auto p_poisson=new poisson_node<double>;
   auto pl=std::shared_ptr<node<double> >(p_poisson);
   auto pth=std::shared_ptr<node<double> >(new const_node<double>(150));
-  auto pc=std::shared_ptr<node<double> >(new cauthy);
+  
+  auto pc=std::shared_ptr<node<double> >(new str_node<double>("log(1+(y-theta)^2+1)",{"y","theta"}));
 
   p_poisson->set_observed(0,true);
   p_poisson->set_value(0,0);
@@ -51,10 +36,10 @@ int main()
   g.add_node(pth,"theta");
   g.add_node(pc,"cauthy",{{pY,0},{pth,0}});
   g.add_node(pl,"l",{{pc,0}});
-
+  g.initialize();
   auto m=g.get_monitor("Y",0);
 
-  for(int i=0;i<10000;++i)
+  for(int i=0;i<100000;++i)
     {
       g.sample(rnd1);
       cout<<m()<<endl;
