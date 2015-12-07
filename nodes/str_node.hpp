@@ -40,26 +40,37 @@ namespace mcmc_utilities
 
       auto& node_factories=str_node::node_factories;
 
-      node_factories["add"]=std::shared_ptr<abstract_node_factory<T> >(new add_node_factory<T>());
-      node_factories["sub"]=std::shared_ptr<abstract_node_factory<T> >(new sub_node_factory<T>());
-      node_factories["neg"]=std::shared_ptr<abstract_node_factory<T> >(new neg_node_factory<T>());
-      node_factories["pos"]=std::shared_ptr<abstract_node_factory<T> >(new pos_node_factory<T>());
-      node_factories["mul"]=std::shared_ptr<abstract_node_factory<T> >(new mul_node_factory<T>());
-      node_factories["div"]=std::shared_ptr<abstract_node_factory<T> >(new div_node_factory<T>());
-      node_factories["pow"]=std::shared_ptr<abstract_node_factory<T> >(new pow_node_factory<T>());
-      node_factories["con"]=std::shared_ptr<abstract_node_factory<T> >(new const_node_factory<T>());
-      node_factories["phi"]=std::shared_ptr<abstract_node_factory<T> >(new phi_node_factory<T>());
-      node_factories["sqrt"]=std::shared_ptr<abstract_node_factory<T> >(new sqrt_node_factory<T>());
-      node_factories["log"]=std::shared_ptr<abstract_node_factory<T> >(new log_node_factory<T>());
-      node_factories["log10"]=std::shared_ptr<abstract_node_factory<T> >(new log10_node_factory<T>());
-      node_factories["sin"]=std::shared_ptr<abstract_node_factory<T> >(new sin_node_factory<T>());
-      node_factories["cos"]=std::shared_ptr<abstract_node_factory<T> >(new cos_node_factory<T>());
-      node_factories["tan"]=std::shared_ptr<abstract_node_factory<T> >(new tan_node_factory<T>());
-      node_factories["logit"]=std::shared_ptr<abstract_node_factory<T> >(new logit_node_factory<T>());
-      node_factories["ilogit"]=std::shared_ptr<abstract_node_factory<T> >(new ilogit_node_factory<T>());
+      register_function({"add"},std::shared_ptr<abstract_node_factory<T> >(new add_node_factory<T>()));
+      register_function({"sub"},std::shared_ptr<abstract_node_factory<T> >(new sub_node_factory<T>()));
+      register_function({"neg"},std::shared_ptr<abstract_node_factory<T> >(new neg_node_factory<T>()));
+      register_function({"pos"},std::shared_ptr<abstract_node_factory<T> >(new pos_node_factory<T>()));
+      register_function({"mul"},std::shared_ptr<abstract_node_factory<T> >(new mul_node_factory<T>()));
+      register_function({"div"},std::shared_ptr<abstract_node_factory<T> >(new div_node_factory<T>()));
+      register_function({"pow"},std::shared_ptr<abstract_node_factory<T> >(new pow_node_factory<T>()));
+      register_function({"con"},std::shared_ptr<abstract_node_factory<T> >(new const_node_factory<T>()));
+      register_function({"phi"},std::shared_ptr<abstract_node_factory<T> >(new phi_node_factory<T>()));
+      register_function({"sqrt"},std::shared_ptr<abstract_node_factory<T> >(new sqrt_node_factory<T>()));
+      register_function({"log"},std::shared_ptr<abstract_node_factory<T> >(new log_node_factory<T>()));
+      register_function({"log10"},std::shared_ptr<abstract_node_factory<T> >(new log10_node_factory<T>()));
+      register_function({"sin"},std::shared_ptr<abstract_node_factory<T> >(new sin_node_factory<T>()));
+      register_function({"cos"},std::shared_ptr<abstract_node_factory<T> >(new cos_node_factory<T>()));
+      register_function({"tan"},std::shared_ptr<abstract_node_factory<T> >(new tan_node_factory<T>()));
+      register_function({"logit"},std::shared_ptr<abstract_node_factory<T> >(new logit_node_factory<T>()));
+      register_function({"ilogit"},std::shared_ptr<abstract_node_factory<T> >(new ilogit_node_factory<T>()));
       
       initialized=true;
     }
+
+    static void register_function(const std::string& name,const std::shared_ptr<abstract_node_factory<T> >& ptr)
+    {
+      node_factories[name]=ptr;
+    }
+
+    static void unregister_function(const std::string& name)
+    {
+      node_factories.erase(name);
+    }
+    
   private:
     void count_input(const east::expression_node& en,
 		std::set<std::string>& tags)
