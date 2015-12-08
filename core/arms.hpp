@@ -631,22 +631,6 @@ namespace mcmc_utilities
     T scale=0;
 
     init(pd,ls,scale);
-#if 0
-    
-    for(auto i=ls.begin();i!=ls.end();++i)
-      {
-	std::cout<<i->x_l<<" "<<std::exp(i->y_l)<<std::endl;
-	std::cout<<i->x_i<<" "<<std::exp(i->y_i)<<std::endl;
-	std::cout<<i->x_u<<" "<<std::exp(i->y_u)<<std::endl;
-      }
-
-    std::cout<<"no no no"<<std::endl;
-
-    for(double x=.01;x<100;x+=.01)
-      {
-	std::cout<<x<<" "<<std::exp(eval_log(pd,x,scale))<<std::endl;
-      }
-#endif
     
     T xm=-1;
     //bool xmchanged=false;
@@ -716,7 +700,7 @@ namespace mcmc_utilities
 	  }
 	u=rnd();
 	
-	if(std::log(u)>std::min(0.,eval_log(pd,xa,scale)-eval_log(pd,xcur,scale)+std::min(eval_log(pd,xcur,scale),eval(xcur,ls))-std::min(eval_log(pd,xa,scale),eval(xa,ls))))
+	if(std::log(u)>std::min(static_cast<T>(0),eval_log(pd,xa,scale)-eval_log(pd,xcur,scale)+std::min(eval_log(pd,xcur,scale),eval(xcur,ls))-std::min(eval_log(pd,xa,scale),eval(xa,ls))))
 	  {
 	    xm=xcur;
 	    ++i;
