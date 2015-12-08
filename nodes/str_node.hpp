@@ -19,6 +19,7 @@
 #include "tan_node.hpp"
 #include "arithmetic_node.hpp"
 #include "phi_node.hpp"
+#include "cosmology_nodes.hpp"
 #include <atomic>
 
 namespace mcmc_utilities
@@ -57,7 +58,8 @@ namespace mcmc_utilities
       register_function({"tan"},std::shared_ptr<abstract_node_factory<T> >(new tan_node_factory<T>()));
       register_function({"logit"},std::shared_ptr<abstract_node_factory<T> >(new logit_node_factory<T>()));
       register_function({"ilogit"},std::shared_ptr<abstract_node_factory<T> >(new ilogit_node_factory<T>()));
-      
+      register_function({"D_L"},std::shared_ptr<abstract_node_factory<T> >(new luminosity_distance_node_factory<T>()));
+      register_function({"D_A"},std::shared_ptr<abstract_node_factory<T> >(new asize_distance_node_factory<T>()));
       initialized=true;
     }
 
@@ -108,13 +110,25 @@ namespace mcmc_utilities
       else
 	{
 	  std::shared_ptr<deterministic_node<T> > p;
+	  typename std::map<std::string,std::shared_ptr<abstract_node_factory<T> > >::iterator iter;
 	  if(en.get_kind()!="ftn")
 	    {
-	      p=std::dynamic_pointer_cast<deterministic_node<T> >(node_factories[en.get_kind()]->get_node());
+	      iter=node_factories.find(en.get_kind());
+	      //p=std::dynamic_pointer_cast<deterministic_node<T> >(node_factories[en.get_kind()]->get_node());
 	    }
 	  else
 	    {
-	      p=std::dynamic_pointer_cast<deterministic_node<T> >(node_factories[en.get_symbol()]->get_node());
+	      iter=node_factories.find(en.get_symbol());
+	      //p=std::dynamic_pointer_cast<deterministic_node<T> >(node_factories[en.get_symbol()]->get_node());
+	    }
+	  if(iter==node_factories.end())
+	    {
+	      throw mcmc_exception("node not registered");
+	    }
+	  p=std::dynamic_pointer_cast<deterministic_node<T> >(iter->second->get_node());
+	  if(p==nullptr)
+	    {
+	      throw mcmc_exception("maybe not a deterministic node");
 	    }
 	  for(int i=0;i<en.get_num_of_parents();++i)
 	    {
