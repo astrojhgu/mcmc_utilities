@@ -20,7 +20,7 @@ namespace mcmc_utilities
   {
   public:
     luminosity_distance_node()
-      :deterministic_node<T>(5,1)
+      :deterministic_node<T>(7,1)
     {}
 
     T do_value(size_t idx)const override
@@ -32,9 +32,11 @@ namespace mcmc_utilities
       T Omega_m=this->parent(2);
       T Omega_l=this->parent(3);
       T Omega_k=this->parent(4);
+      T Omega_rad=this->parent(5);
+      T w=this->parent(6);
       using u=coscalc::unit<coscalc::unit_system::SI>;
       coscalc::cosmic_param cp(2.99792458E8*u::m/u::s,H0*u::km/u::s/u::Mpc,
-		      Omega_m,Omega_l,Omega_k);
+			       Omega_m,Omega_l,Omega_k,Omega_rad,w);
       coscalc::cosmic_calculator cc(cp);
       return cc.calc_dl(z);
     }
@@ -70,7 +72,7 @@ namespace mcmc_utilities
   {
   public:
     luminosity_distance_node_factory()
-      :abstract_node_factory<T>({"z","H0","Omega_m","Omega_l","Omega_k"},{"D_L"},{})
+      :abstract_node_factory<T>({"z","H0","Omega_m","Omega_l","Omega_k","Omega_rad","w"},{"D_L"},{})
     {}
   public:
     std::shared_ptr<node<T> >
@@ -92,7 +94,7 @@ namespace mcmc_utilities
   {
   public:
     asize_distance_node()
-      :deterministic_node<T>(5,1)
+      :deterministic_node<T>(7,1)
     {}
 
     T do_value(size_t idx)const override
@@ -104,9 +106,12 @@ namespace mcmc_utilities
       T Omega_m=this->parent(2);
       T Omega_l=this->parent(3);
       T Omega_k=this->parent(4);
+      T Omega_rad=this->parent(5);
+      T w=this->parent(6);
+
       using u=coscalc::unit<coscalc::unit_system::SI>;
       coscalc::cosmic_param cp(2.99792458E8*u::m/u::s,H0*u::km/u::s/u::Mpc,
-		      Omega_m,Omega_l,Omega_k);
+			       Omega_m,Omega_l,Omega_k,Omega_rad,w);
       coscalc::cosmic_calculator cc(cp);
       return cc.calc_da(z);
     }
@@ -142,7 +147,7 @@ namespace mcmc_utilities
   {
   public:
     asize_distance_node_factory()
-      :abstract_node_factory<T>({"z","H0","Omega_m","Omega_l","Omega_k"},{"D_L"},{})
+      :abstract_node_factory<T>({"z","H0","Omega_m","Omega_l","Omega_k","Omega_rad","w"},{"D_L"},{})
     {}
   public:
     std::shared_ptr<node<T> >
