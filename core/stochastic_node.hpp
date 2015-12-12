@@ -113,7 +113,9 @@ namespace mcmc_utilities
 	  
 	  if(is_continuous(i))
 	    {
-	      xprev=arms(*this,xprev,10,urand);
+	      //xprev=arms(*this,xprev,10,urand);
+	      slice_sampler<T> ss(*this,2,10,10);
+	      xprev=ss.sample_step(xprev,urand);
 	    }
 	  else
 	    {

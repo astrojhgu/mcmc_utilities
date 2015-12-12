@@ -18,15 +18,58 @@ namespace mcmc_utilities
   class luminosity_distance_node
     :public deterministic_node<T>
   {
+  private:
+    struct parent_value_cache_t
+    {
+    public:
+      T values[7];
+      T& z;
+      T& H0;
+      T& Omega_m;
+      T& Omega_l;
+      T& Omega_k;
+      T& Omega_rad;
+      T& w;
+      
+      parent_value_cache_t()
+	:z(values[0]),H0(values[1]),Omega_m(values[2]),
+	 Omega_l(values[3]),Omega_k(values[4]),Omega_rad(values[5]),w(values[6])
+      {}
+    }parent_value_cache;
+    T value_cache;
   public:
     luminosity_distance_node()
-      :deterministic_node<T>(7,1)
+      :deterministic_node<T>(7,1),parent_value_cache{},value_cache{}
     {}
 
     T do_value(size_t idx)const override
     {
-      //return std::log(this->parent(0));
-      //cosmic_param cp(2.
+#if 0
+      bool changed=false;
+      for(int i=0;i<6;++i)
+	{
+	  T x=this->parent(i);
+	  if(parent_value_cache.values[i]!=x)
+	    {
+	      const_cast<parent_value_cache_t&>(parent_value_cache).values[i]=x;
+	      changed=true;
+	    }
+	}
+
+      if(!changed)
+	{
+	  return value_cache;
+	}
+      
+      
+      T z=parent_value_cache.z;
+      T H0=parent_value_cache.H0;
+      T Omega_m=parent_value_cache.Omega_m;
+      T Omega_l=parent_value_cache.Omega_l;
+      T Omega_k=parent_value_cache.Omega_k;
+      T Omega_rad=parent_value_cache.Omega_rad;
+      T w=parent_value_cache.w;
+#else
       T z=this->parent(0);
       T H0=this->parent(1);
       T Omega_m=this->parent(2);
@@ -34,10 +77,15 @@ namespace mcmc_utilities
       T Omega_k=this->parent(4);
       T Omega_rad=this->parent(5);
       T w=this->parent(6);
+#endif
+      
+      
       using u=coscalc::unit<coscalc::unit_system::SI>;
       coscalc::cosmic_param cp(2.99792458E8*u::m/u::s,H0*u::km/u::s/u::Mpc,
 			       Omega_m,Omega_l,Omega_k,Omega_rad,w);
       coscalc::cosmic_calculator cc(cp);
+      //const_cast<T&>(value_cache)=cc.calc_dl(z);
+      //return value_cache;
       return cc.calc_dl(z);
     }
   };
@@ -92,28 +140,66 @@ namespace mcmc_utilities
   class asize_distance_node
     :public deterministic_node<T>
   {
+  private:
+    struct parent_value_cache_t
+    {
+    public:
+      T values[7];
+      T& z;
+      T& H0;
+      T& Omega_m;
+      T& Omega_l;
+      T& Omega_k;
+      T& Omega_rad;
+      T& w;
+      
+      parent_value_cache_t()
+	:z(values[0]),H0(values[1]),Omega_m(values[2]),
+	 Omega_l(values[3]),Omega_k(values[4]),Omega_rad(values[5]),w(values[6])
+      {}
+    }parent_value_cache;
+    T value_cache;
+
   public:
     asize_distance_node()
-      :deterministic_node<T>(7,1)
+      :deterministic_node<T>(7,1),parent_value_cache{},value_cache{}
     {}
 
     T do_value(size_t idx)const override
     {
-      //return std::log(this->parent(0));
-      //cosmic_param cp(2.
-      T z=this->parent(0);
-      T H0=this->parent(1);
-      T Omega_m=this->parent(2);
-      T Omega_l=this->parent(3);
-      T Omega_k=this->parent(4);
-      T Omega_rad=this->parent(5);
-      T w=this->parent(6);
+      bool changed=false;
+      for(int i=0;i<6;++i)
+	{
+	  T x=this->parent(i);
+	  if(parent_value_cache.values[i]!=x)
+	    {
+	      const_cast<parent_value_cache_t&>(parent_value_cache).values[i]=x;
+	      changed=true;
+	    }
+	}
 
+      if(!changed)
+	{
+	  return value_cache;
+	}
+      
+      
+      T z=parent_value_cache.z;
+      T H0=parent_value_cache.H0;
+      T Omega_m=parent_value_cache.Omega_m;
+      T Omega_l=parent_value_cache.Omega_l;
+      T Omega_k=parent_value_cache.Omega_k;
+      T Omega_rad=parent_value_cache.Omega_rad;
+      T w=parent_value_cache.w;
+
+      
+      
       using u=coscalc::unit<coscalc::unit_system::SI>;
       coscalc::cosmic_param cp(2.99792458E8*u::m/u::s,H0*u::km/u::s/u::Mpc,
 			       Omega_m,Omega_l,Omega_k,Omega_rad,w);
       coscalc::cosmic_calculator cc(cp);
-      return cc.calc_da(z);
+      const_cast<T&>(value_cache)=cc.calc_da(z);
+      return value_cache;
     }
   };
 

@@ -19,7 +19,7 @@ namespace mcmc_utilities
       {
 	//throw no_candidate_point();
 	slice_sampler<T> ss(pd,2,10,niter);
-	xprev=ss.sample(xprev,urand);
+	xprev=ss.sample_double(xprev,urand);
 	return xprev;
       }
     else

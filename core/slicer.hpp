@@ -4,6 +4,7 @@
 #include "error_handler.hpp"
 #include "base_urand.hpp"
 #include <algorithm>
+#include <limits>
 //#define DEBUG
 #ifdef DEBUG
 #include <fstream>
@@ -52,7 +53,7 @@ namespace mcmc_utilities
 		const T& lower, const T& upper)const
     {
       bool d = false;
-      while ((R - L) > 1.1 * width)
+      while ((R - L) > static_cast<T>(1.1) * width)
 	{
 	  T M = (L + R)/2;
 	  if ((xold < M && xnew >= M) || (xold >= M && xnew < M))
@@ -87,16 +88,16 @@ namespace mcmc_utilities
     }
     
   public:
-    T sample(T& xcur,const base_urand<T>& rng)
+    T sample_double(T& xcur,const base_urand<T>& rng)
     {
       for(int i=0;i<nmin;++i)
 	{
-	  sample1(xcur,rng);
+	  sample1_double(xcur,rng);
 	}
       return xcur;
     }
     
-    T sample1(T& xcur,const base_urand<T>& rng)
+    T sample1_double(T& xcur,const base_urand<T>& rng)
     {
       T lower = 0;
       T upper = 0;
@@ -129,7 +130,7 @@ namespace mcmc_utilities
       // Doubling 
       bool left_ok = false, right_ok = false;
       for (size_t i = 0; i < nmax; ++i) {
-	if (rng() < 0.5)
+	if (rng() < static_cast<T>(0.5))
 	  {
 	    if (L >= lower)
 	      {
@@ -213,6 +214,123 @@ namespace mcmc_utilities
       
       return xcur;
     }
+
+    T sample_step(T& xcur,const base_urand<T>& rng)
+    {
+      for(int i=0;i<nmin;++i)
+	{
+	  sample1_step(xcur,rng);
+	}
+      return xcur;
+    }
+
+    T sample1_step(T& xcur,const base_urand<T>& rng)
+    {
+      T lower = 0;
+      T upper = 0;
+      auto xrange=pd.var_range();
+      lower=xrange.first;
+      upper=xrange.second;
+      if(xcur<xrange.first||xcur>xrange.second)
+	{
+	  throw var_out_of_range();
+	}
+
+      T g0 = pd.eval_log(xcur);
+      if (std::isinf(g0))
+	{
+	  throw nan_or_inf();
+	}
+
+      // Generate auxiliary variable
+      T z = g0 - exponential(rng);
+      
+      // Generate random interval of width "_width" about current value
+      T xold = xcur;
+      T L = xold - rng() * width; 
+      T R = L + width;
+      
+      int j = static_cast<int>(rng() * nmax);
+      int k = nmax - 1 - j;
+      
+      
+      if (L < lower)
+	{
+	  L = lower;
+	}
+      else
+	{
+	  //setValue(L);
+	  xcur=L;
+	  while (j-- > 0 && pd.eval_log(xcur) > z)
+	    {
+	      L -= width;
+	      if (L < lower)
+		{
+		  L = lower;
+		  break;
+		}
+	      //setValue(L);
+	      xcur=L;
+	    }
+	}
+
+      if (R > upper)
+	{
+	  R = upper;
+	}
+      else
+	{
+	  //setValue(R);
+	  xcur=R;
+	  while (k-- > 0 && pd.eval_log(xcur) > z)
+	    {
+	      R += width;
+	      if (R > upper)
+		{
+		  R = upper;
+		  break;
+		}
+	      xcur = R;
+	    }
+	}
+
+      T xnew;
+      for(;;)
+	{
+	  xnew =  L + rng() * (R - L);
+	  xcur=xnew;
+	  T g = pd.eval_log(xcur);
+	  if (g >= z - std::numeric_limits<T>::epsilon())
+	    {
+	      break;
+	    }
+	  else
+	    {
+	      if (xnew < xold)
+		{
+		  L = xnew;
+		}
+	      else
+		{
+		  R = xnew;
+		}
+	    }
+	}
+      
+      if (adapt)
+	{
+	  sumdiff += niter * std::abs(xnew - xold);
+	  ++niter;
+	  if ( niter > min_adapt)
+	    {
+	      width = 2 * sumdiff / niter / (niter - 1);  
+	    }
+	}
+      
+      return xcur;
+    }
+
   };
 }
 
