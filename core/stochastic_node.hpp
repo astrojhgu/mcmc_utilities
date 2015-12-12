@@ -113,9 +113,14 @@ namespace mcmc_utilities
 	  
 	  if(is_continuous(i))
 	    {
-	      //xprev=arms(*this,xprev,10,urand);
+#if defined(USE_ARMS)
+	      xprev=arms(*this,xprev,10,urand);
+#elif defined(USE_SLICER)
 	      slice_sampler<T> ss(*this,2,10,10);
 	      xprev=ss.sample_step(xprev,urand);
+#else
+#error must define either USE_ARMS or USE_SLICER
+#endif
 	    }
 	  else
 	    {
