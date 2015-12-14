@@ -9,6 +9,11 @@ namespace mcmc_utilities
   class urand
     :public base_urand<T>
   {
+  public:
+    urand()
+    {
+      srand(time(0));
+    }
   private:
     T do_rand()const override
     {

@@ -4,6 +4,7 @@
 #include "base_urand.hpp"
 #include "arms.hpp"
 #include "discrete_sample.hpp"
+#include "continuous_sample.hpp"
 #include <vector>
 
 namespace mcmc_utilities
@@ -75,7 +76,8 @@ namespace mcmc_utilities
 	xprev=get_element(init_var,idx);
 		
 	//T_var1 x=sampler.sample(cpd,xprev);
-	T_var1 x=arms(cpd,xprev,10,rnd);
+	//T_var1 x=arms(cpd,xprev,10,rnd);
+	T_var1 x=continuous_sample(cpd,xprev,10,rnd);
 	set_element(init_var,idx,x);
       }
   }

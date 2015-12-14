@@ -8,6 +8,7 @@
 #include "slicer.hpp"
 #include "base_urand.hpp"
 #include "discrete_sample.hpp"
+#include "continuous_sample.hpp"
 #include "node.hpp"
 
 namespace mcmc_utilities
@@ -24,7 +25,8 @@ namespace mcmc_utilities
     stochastic_node(size_t nparents,const std::vector<T>& v_)
       :node<T>(nparents,v_.size()),
       v{v_},observed(v_.size()),current_idx(0)
-    {}
+    {
+    }
 
     stochastic_node(size_t nparents,T v_)
       :node<T>(nparents,1),
@@ -113,14 +115,7 @@ namespace mcmc_utilities
 	  
 	  if(is_continuous(i))
 	    {
-#if defined(USE_ARMS)
-	      xprev=arms(*this,xprev,10,urand);
-#elif defined(USE_SLICER)
-	      slice_sampler<T> ss(*this,2,10,10);
-	      xprev=ss.sample_step(xprev,urand);
-#else
-#error must define either USE_ARMS or USE_SLICER
-#endif
+	      xprev=continuous_sample(*this,xprev,10,urand);
 	    }
 	  else
 	    {

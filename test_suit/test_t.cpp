@@ -75,7 +75,6 @@ private:
   }
 }rnd1;
 
-
 int main()
 {
   graph<double,std::string> g;
@@ -97,7 +96,7 @@ int main()
   auto T2=g.get_monitor("T2",0);
   g.set_value("T1",0,0.);
   g.set_value("T2",0,0.);
-  for(int i=0;i<30000;++i)
+  for(int i=0;i<300000;++i)
     {
       g.sample(rnd1);
       rnd1();

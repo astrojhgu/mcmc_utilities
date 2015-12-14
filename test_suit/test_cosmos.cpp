@@ -152,7 +152,14 @@ int main()
   for(int i=0;i<10000;++i)
     {
       g.sample(rnd);
-      cout<<m_omega_m()<<" "<<m_w()<<endl;
+      if(i<100)
+	{
+	  cerr<<m_omega_m()<<" "<<m_w()<<endl;
+	}
+      else
+	{
+	  cout<<m_omega_m()<<" "<<m_w()<<endl;
+	}
       //cout<<m_mag()<<endl;
       //cout<<(m_mag()-m_Mm())<<" "<<m_distmod()<<" "<<m_z()<<" "<<m_omega_m()<<" "<<m_w()<<" "<<m_H0()<<endl;
     }

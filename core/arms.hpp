@@ -624,7 +624,7 @@ namespace mcmc_utilities
   }
 
   template <typename T,typename T_urand>
-  T arms(const probability_density_1d<T>& pd,T xcur,size_t n,const T_urand& rnd)
+  T arms(const probability_density_1d<T>& pd,T xcur,size_t n,const T_urand& rnd,size_t& xmchange_count)
   {
     std::list<section<T> > ls;
     
@@ -634,7 +634,7 @@ namespace mcmc_utilities
     
     T xm=-1;
     //bool xmchanged=false;
-    size_t xmchange_count=0;
+    //size_t xmchange_count=0;
     auto xrange=pd.var_range();
     //assert(xcur>=xrange.first&&xcur<=xrange.second);
     if(xcur<xrange.first||xcur>xrange.second)
