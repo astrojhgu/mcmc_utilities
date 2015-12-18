@@ -138,6 +138,7 @@ namespace mcmc_utilities
 	{
 	  weight_cdf[i]=weight_cdf[i-1]+particle_list[i].weight;
 	}
+      
 #pragma omp parallel for
       for(size_t i=0;i<particle_list.size();++i)
 	{
@@ -158,6 +159,7 @@ namespace mcmc_utilities
 	  updated_state[i]=particle_list[n];
 	  updated_state[i].weight=1;
 	}
+      
       prev_t=t;
       particle_list.swap(updated_state);
       
