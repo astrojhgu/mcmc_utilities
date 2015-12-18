@@ -50,7 +50,8 @@ int main()
   std::shared_ptr<node<double> > pH0(new normal_node<double>());
   std::shared_ptr<node<double> > pOmega_l(new str_node<double>("1-x",{"x"}));
   std::shared_ptr<node<double> > pOmega_m(new uniform_node<double>(0,1));
-  std::shared_ptr<node<double> > pw(new uniform_node<double>(-4,0));
+  //std::shared_ptr<node<double> > pw(new uniform_node<double>(-4,0));
+  std::shared_ptr<node<double> > pw(new uniform_node<double>(-1.05,-0.95));
 
   g.add_node(pMm,"Mm");
   g.add_node(palpha,"alpha");
@@ -154,11 +155,11 @@ int main()
       g.sample(rnd);
       if(i<100)
 	{
-	  cerr<<m_omega_m()<<" "<<m_w()<<endl;
+	  cerr<<m_omega_m()<<" "<<m_w()<<" "<<m_Mm()<<endl;
 	}
       else
 	{
-	  cout<<m_omega_m()<<" "<<m_w()<<endl;
+	  cout<<m_omega_m()<<" "<<m_w()<<" "<<m_Mm()<<" "<<m_z()<<" "<<m_H0()<<" "<<m_distmod()<<endl;
 	}
       //cout<<m_mag()<<endl;
       //cout<<(m_mag()-m_Mm())<<" "<<m_distmod()<<" "<<m_z()<<" "<<m_omega_m()<<" "<<m_w()<<" "<<m_H0()<<endl;

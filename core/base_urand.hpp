@@ -11,6 +11,17 @@ namespace mcmc_utilities
     {
       return do_rand();
     }
+
+  public:
+    T max()const
+    {
+      return static_cast<T>(1);
+    }
+
+    T min()const
+    {
+      return static_cast<T>(0);
+    }
   private:
     virtual T do_rand()const=0;
       

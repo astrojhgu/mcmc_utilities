@@ -15,6 +15,10 @@ namespace mcmc_utilities
     particle()
     {}
 
+    particle(const T_state& s,const T_p& w)
+      :state(s),weight(w)
+    {}
+
     particle(const particle& rhs)
       :state(rhs.state),weight(rhs.weight)
     {}
@@ -137,7 +141,7 @@ namespace mcmc_utilities
 #pragma omp parallel for
       for(size_t i=0;i<particle_list.size();++i)
 	{
-	  T_p p=random()/(T_p)RAND_MAX*weight_cdf.back();
+	  T_p p=rnd()*weight_cdf.back();
 
 	  size_t n=0;
 	  bool changed=false;
@@ -159,7 +163,7 @@ namespace mcmc_utilities
       
     }
   private:
-    virtual T_p do_evol_log_prob(const T_state& x,const T_t& t,const T_state& particle_list,const T_t& prev_t)const=0;
+    virtual T_p do_evol_log_prob(const T_state& x,const T_t& t,const T_state& prev_stat,const T_t& prev_t)const=0;
     virtual T_p do_obs_log_prob(const T_obs& y,const T_state& x,const T_t& t)const=0;
     virtual std::pair<T_state1,T_state1> do_state_var_range(const T_t& t,const T_state& prev_state,const T_t& prev_t,size_t ndim)const=0;
     

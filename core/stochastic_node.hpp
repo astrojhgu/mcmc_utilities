@@ -115,7 +115,7 @@ namespace mcmc_utilities
 	  
 	  if(is_continuous(i))
 	    {
-	      xprev=continuous_sample(*this,xprev,10,urand);
+	      xprev=continuous_sample(*this,xprev,1,urand);
 	    }
 	  else
 	    {
