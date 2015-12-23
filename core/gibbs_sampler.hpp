@@ -6,6 +6,7 @@
 #include "discrete_sample.hpp"
 #include "continuous_sample.hpp"
 #include <vector>
+#include <memory>
 
 namespace mcmc_utilities
 {
@@ -67,9 +68,9 @@ namespace mcmc_utilities
 	return ppd->candidate_points(*p_init_var,*p_idx);
       }
     }cpd;
-    cpd.p_idx=&idx;
-    cpd.p_init_var=&init_var;
-    cpd.ppd=&pd;
+    cpd.p_idx=std::addressof(idx);
+    cpd.p_init_var=std::addressof(init_var);
+    cpd.ppd=std::addressof(pd);
     T_var1 xprev=0.;
     for(idx=0;idx<get_size(init_var);++idx)
       {
@@ -145,9 +146,9 @@ namespace mcmc_utilities
       }
       
     }cpd;
-    cpd.p_idx=&idx;
-    cpd.p_init_var=&init_var;
-    cpd.ppd=&pd;
+    cpd.p_idx=std::addressof(idx);
+    cpd.p_init_var=std::addressof(init_var);
+    cpd.ppd=std::addressof(pd);
     T_var1 xprev=0.;
 
 

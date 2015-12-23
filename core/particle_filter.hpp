@@ -132,10 +132,10 @@ namespace mcmc_utilities
 	{
 	  cprob prob;
 	  prob.ptr_pf_model=this;
-	  prob.ptr_obs_vec=&y;
-	  prob.ptr_particle=&(particle_list[i].state);
-	  prob.ptr_prev_t=&prev_t;
-	  prob.ptr_t=&t;
+	  prob.ptr_obs_vec=std::addressof(y);
+	  prob.ptr_particle=std::addressof(particle_list[i].state);
+	  prob.ptr_prev_t=std::addressof(prev_t);
+	  prob.ptr_t=std::addressof(t);
 	  T_state new_pred(particle_list[i].state);
 	  //ofstream ofs("log.txt");
 
