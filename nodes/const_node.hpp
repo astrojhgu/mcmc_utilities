@@ -19,7 +19,7 @@ namespace mcmc_utilities
     {
     }
     
-    T do_value(size_t idx)const override
+    T do_calc(size_t idx,const std::vector<T>&)const override
     {
       return v;
     }

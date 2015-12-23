@@ -21,9 +21,9 @@ namespace mcmc_utilities
       :deterministic_node<T>(1,1)
     {}
 
-    T do_value(size_t idx)const override
+    T do_calc(size_t idx,const std::vector<T>& parent)const override
     {
-      return logit(this->parent(0));
+      return logit(parent[0]);
     }
   };
 

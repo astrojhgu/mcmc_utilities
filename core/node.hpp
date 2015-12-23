@@ -106,6 +106,7 @@ namespace mcmc_utilities
 
     virtual T log_likelihood()const final
     {
+      //#ifdef RECURSIVE
       T result=0;
       for(auto& p : stochastic_children)
 	{
@@ -116,6 +117,10 @@ namespace mcmc_utilities
 	  result+=p->log_likelihood();
 	}
       return result;
+      //#else
+      //T result=0;
+      /////////todo///////
+      //#endif
     }
 
     void connect_to_parent(node<T>* prhs,size_t n,size_t idx)

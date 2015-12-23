@@ -16,9 +16,9 @@ namespace mcmc_utilities
       :deterministic_node<T>(1,1)
       {}
 
-    T do_value(size_t idx)const override
+    T do_calc(size_t idx,const std::vector<T>& parent)const override
     {
-      return this->parent(0);
+      return parent[0];
     }
 
     void do_connect_to_parent(node<T>* rhs,size_t n,size_t idx) override
@@ -114,6 +114,11 @@ namespace mcmc_utilities
     T do_value(size_t idx)const override
     {
       return return_list[idx].first->value(return_list[idx].second);
+    }
+
+    T do_calc(size_t idx,const std::vector<T>& parent)const override
+    {
+      throw mcmc_exception("should never be called");
     }
   };
 }

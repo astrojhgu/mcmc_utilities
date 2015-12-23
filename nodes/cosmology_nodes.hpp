@@ -42,13 +42,13 @@ namespace mcmc_utilities
       :deterministic_node<T>(7,1),parent_value_cache{},value_cache{}
     {}
 
-    T do_value(size_t idx)const override
+    T do_calc(size_t idx,const std::vector<T>& parent)const override
     {
 #if 0
       bool changed=false;
       for(int i=0;i<6;++i)
 	{
-	  T x=this->parent(i);
+	  T x=parent[i];
 	  if(parent_value_cache.values[i]!=x)
 	    {
 	      const_cast<parent_value_cache_t&>(parent_value_cache).values[i]=x;
@@ -70,13 +70,13 @@ namespace mcmc_utilities
       T Omega_rad=parent_value_cache.Omega_rad;
       T w=parent_value_cache.w;
 #else
-      T z=this->parent(0);
-      T H0=this->parent(1);
-      T Omega_m=this->parent(2);
-      T Omega_l=this->parent(3);
-      T Omega_k=this->parent(4);
-      T Omega_rad=this->parent(5);
-      T w=this->parent(6);
+      T z=parent[0];
+      T H0=parent[1];
+      T Omega_m=parent[2];
+      T Omega_l=parent[3];
+      T Omega_k=parent[4];
+      T Omega_rad=parent[5];
+      T w=parent[6];
 #endif
       
       
@@ -165,12 +165,12 @@ namespace mcmc_utilities
       :deterministic_node<T>(7,1),parent_value_cache{},value_cache{}
     {}
 
-    T do_value(size_t idx)const override
+    T do_calc(size_t idx,const std::vector<T>& parent)const override
     {
       bool changed=false;
       for(int i=0;i<6;++i)
 	{
-	  T x=this->parent(i);
+	  T x=parent[i];
 	  if(parent_value_cache.values[i]!=x)
 	    {
 	      const_cast<parent_value_cache_t&>(parent_value_cache).values[i]=x;
