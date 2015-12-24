@@ -34,7 +34,7 @@ namespace mcmc_utilities
 
     T do_value(size_t idx)const override
     {
-#ifdef RECURSIVE
+#ifndef USE_NON_RECURSIVE
       std::vector<T> p(this->parents.size());
       for(int i=0;i<p.size();++i)
 	{
@@ -62,7 +62,7 @@ namespace mcmc_utilities
 		}
 
 	      operand_stack.push(
-				      node_stack.top().first->calc(node_stack.top().second,
+				      node_stack.top().first->do_calc(node_stack.top().second,
 								   p)
 				      );
 	      node_stack.pop();

@@ -3,7 +3,7 @@
 
 #ifndef NODE_HPP
 #define NODE_HPP
-
+#include <stack>
 #include <memory>
 #include <vector>
 #include <list>
@@ -106,7 +106,7 @@ namespace mcmc_utilities
 
     virtual T log_likelihood()const final
     {
-      //#ifdef RECURSIVE
+#ifndef USE_NON_RECURSIVE
       T result=0;
       for(auto& p : stochastic_children)
 	{
@@ -117,10 +117,44 @@ namespace mcmc_utilities
 	  result+=p->log_likelihood();
 	}
       return result;
-      //#else
-      //T result=0;
-      /////////todo///////
-      //#endif
+#else
+      T result=0;
+      for(auto& p : stochastic_children)
+	{
+	  result+=p->log_prob();
+	}
+
+      std::stack<const deterministic_node<T>*> node_stack;
+      std::stack<typename std::list<deterministic_node<T>* >::const_iterator> current_node_stack;
+
+      for(auto& p:deterministic_children)
+	{
+	  node_stack.push(p);
+	  current_node_stack.push(node_stack.top()->deterministic_children.begin());
+	  for(;;)
+	    {
+	      if(current_node_stack.top()==node_stack.top()->deterministic_children.end())
+		{
+		  for(auto& p : node_stack.top()->stochastic_children)
+		    {
+		      result+=p->log_prob();
+		    }
+		  node_stack.pop();
+		  current_node_stack.pop();
+		  if(node_stack.empty())
+		    {
+		      break;
+		    }
+		}
+	      else
+		{
+		  node_stack.push(*current_node_stack.top());
+		  current_node_stack.push(node_stack.top()->deterministic_children.begin());
+		}
+	    }
+	}
+      return result;
+#endif
     }
 
     void connect_to_parent(node<T>* prhs,size_t n,size_t idx)
