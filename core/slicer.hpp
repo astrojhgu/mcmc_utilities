@@ -90,7 +90,7 @@ namespace mcmc_utilities
   public:
     T sample_double(T& xcur,const base_urand<T>& rng)
     {
-      for(int i=0;i<nmin;++i)
+      for(size_t i=0;i<nmin;++i)
 	{
 	  sample1_double(xcur,rng);
 	}
@@ -217,7 +217,7 @@ namespace mcmc_utilities
 
     T sample_step(T& xcur,const base_urand<T>& rng)
     {
-      for(int i=0;i<nmin;++i)
+      for(size_t i=0;i<nmin;++i)
 	{
 	  sample1_step(xcur,rng);
 	}
@@ -250,8 +250,8 @@ namespace mcmc_utilities
       T L = xold - rng() * width; 
       T R = L + width;
       
-      int j = static_cast<int>(rng() * nmax);
-      int k = nmax - 1 - j;
+      size_t j = static_cast<size_t>(rng() * nmax);
+      size_t k = nmax - 1 - j;
       
       
       if (L < lower)

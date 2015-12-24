@@ -48,7 +48,7 @@ namespace mcmc_utilities
 	    T_var1 xl=xrange.first;
 	    T_var1 xr=xrange.second;
 
-	    for(int n1=0;n1<3;++n1)
+	    for(size_t n1=0;n1<3;++n1)
 	      {
 		//if(n1!=1)
 		  {
@@ -125,7 +125,7 @@ namespace mcmc_utilities
 	    T_var1 xl=xrange.first;
 	    T_var1 xr=xrange.second;
 
-	    for(int n1=0;n1<3;++n1)
+	    for(size_t n1=0;n1<3;++n1)
 	      {
 		//if(n1!=1)
 		  {

@@ -36,7 +36,7 @@ namespace mcmc_utilities
     {
 #ifndef USE_NON_RECURSIVE
       std::vector<T> p(this->parents.size());
-      for(int i=0;i<p.size();++i)
+      for(size_t i=0;i<p.size();++i)
 	{
 	  p[i]=this->parent(i);
 	}
@@ -50,7 +50,7 @@ namespace mcmc_utilities
       leaf_num_stack.push(0);
       for(;;)
 	{
-	  int nparents=node_stack.top().first->parents.size();
+	  size_t nparents=node_stack.top().first->parents.size();
 	  if(leaf_num_stack.top()==nparents)
 	    {
 	      std::vector<T> p(node_stack.top().first->parents.size());

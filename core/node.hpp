@@ -66,7 +66,7 @@ namespace mcmc_utilities
 	{
 	  for(auto& p:parents)
 	    {
-	      for(int i=0;i<p.first->num_of_dims();++i)
+	      for(size_t i=0;i<p.first->num_of_dims();++i)
 		{
 		  if(!p.first->is_initialized(i))
 		    {
