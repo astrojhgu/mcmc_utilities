@@ -3,8 +3,8 @@ targets=test_coal.out  test_eff.out  test_gibbs.out  test_pf.out test_eff_graph.
 all:$(targets)
 
 CXX=clang++
-CXXFLAGS=-I ../ -std=c++11 -g -I ../../east/include -I ../../coscalcpp/include/ -DUSE_NON_RECURSIVE
-LDFLAGS=-L ../../east/lib -least -L ../../coscalcpp/lib/ -lcoscalcpp 
+CXXFLAGS=-I ../ -std=c++11 -g -I ../../east/include -I ../../coscalcpp/include/ -O3
+LDFLAGS=-L ../../east/lib -least -L ../../coscalcpp/lib/ -lcoscalcpp -O3
 
 %.out :	%.o
 	$(CXX) $< -o $@ $(LDFLAGS)  -static

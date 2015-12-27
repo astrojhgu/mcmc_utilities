@@ -120,20 +120,20 @@ int main()
   graph<double,std::string> g2;
   g2.copy_from(g);
   
-  auto A=g.get_monitor("A",0);
-  auto B=g.get_monitor("B",0);
-  auto mu=g.get_monitor("mu",0);
-  auto sigma=g.get_monitor("sigma",0);
-  g.set_value("A",0,.01);
-  g.set_value("B",0,.999506);
-  g.set_value("mu",0,13);
-  g.set_value("sigma",0,17);
-  g.initialize();
+  auto A=g2.get_monitor("A",0);
+  auto B=g2.get_monitor("B",0);
+  auto mu=g2.get_monitor("mu",0);
+  auto sigma=g2.get_monitor("sigma",0);
+  g2.set_value("A",0,.01);
+  g2.set_value("B",0,.999506);
+  g2.set_value("mu",0,13);
+  g2.set_value("sigma",0,17);
+  g2.initialize();
 
   
   for(int i=0;i<30000;++i)
     {
-      g.sample(rnd1);
+      g2.sample(rnd1);
       cout<<A()<<" "<<B()<<" "<<mu()<<" "<<sigma()<<endl;
     }
 }

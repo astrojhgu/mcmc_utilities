@@ -49,7 +49,7 @@ namespace mcmc_utilities
 
     std::shared_ptr<node<T> > do_clone()const override
     {
-      auto p=new bvnormal_node;
+      auto p=new normal_node;
       for(size_t i=0;i<this->num_of_dims();++i)
 	{
 	  p->set_observed(i,this->is_observed(i));
