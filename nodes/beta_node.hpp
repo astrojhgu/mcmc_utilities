@@ -42,6 +42,17 @@ namespace mcmc_utilities
     {
       this->set_value(0,.5);
     }
+
+    std::shared_ptr<node<T> > do_clone()const override
+    {
+      auto p=new beta_node(alpha,beta);
+      for(size_t i=0;i<this->num_of_dims();++i)
+	{
+	  p->set_observed(i,this->is_observed(i));
+	  p->set_value(i,this->value(i));
+	}
+      return std::shared_ptr<node<T> >(p);
+    }
   };
   
   

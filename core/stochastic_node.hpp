@@ -40,7 +40,7 @@ namespace mcmc_utilities
     stochastic_node(const stochastic_node<T>& )=delete;
     stochastic_node<T>& operator=(const stochastic_node<T>&)=delete;
   public:
-    bool is_observed(size_t n)
+    bool is_observed(size_t n)const
     {
       return observed[n]!=0;
     }

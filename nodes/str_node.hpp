@@ -72,7 +72,9 @@ namespace mcmc_utilities
     {
       node_factories.erase(name);
     }
-    
+  private:
+    std::string expression;
+    std::vector<std::string> input_names;
   private:
     void count_input(const east::expression_node& en,
 		std::set<std::string>& tags)
@@ -142,9 +144,10 @@ namespace mcmc_utilities
     }
 		  
   public:
-    str_node(const std::string& expression,
-		    const std::vector<std::string>& input_names)
-      :composed_node<T,std::string>(input_names.size(),1)
+    str_node(const std::string& expression1,
+	     const std::vector<std::string>& input_names1)
+      :composed_node<T,std::string>(input_names1.size(),1),
+      expression(expression1),input_names(input_names1)
     {
       str_node::init_node_factories();
       east::parser parser;
@@ -172,6 +175,11 @@ namespace mcmc_utilities
       int n=1;
       auto pn=add_node(*enode,n);
       this->return_list.push_back({pn,0});
+    }
+
+    std::shared_ptr<node<T> > do_clone()const override
+    {
+      return std::shared_ptr<node<T> >(new str_node<T>(expression,input_names));
     }
   };
 

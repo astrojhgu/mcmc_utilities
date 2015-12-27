@@ -26,6 +26,13 @@ namespace mcmc_utilities
     {
       return func(this->parent[0]);
     }
+
+    std::shared_ptr<node<T> > do_clone()const override
+    {
+      auto p=new binary_node(alpha,beta);
+      return std::shared_ptr<node<T> >(p);
+    }
+    
   };
 
 

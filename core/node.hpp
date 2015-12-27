@@ -20,7 +20,8 @@ namespace mcmc_utilities
   template <typename T>
   class node
   {
-  protected:
+    //protected:
+  public:
     std::list<stochastic_node<T>* > stochastic_children;
     std::list<deterministic_node<T>* > deterministic_children;
     std::vector<std::pair<node<T>*,size_t> > parents;
@@ -37,6 +38,11 @@ namespace mcmc_utilities
     node<T>& operator=(const node<T>& rhs)=delete;
     
     virtual ~node(){}
+
+    std::shared_ptr<node<T> > clone()const
+    {
+      return do_clone();
+    }
     
   public:
     bool is_initialized(size_t n)const
@@ -96,7 +102,7 @@ namespace mcmc_utilities
     
     T value(size_t idx)const
     {
-      return do_value(idx);
+      return this->do_value(idx);
     }
 
     T regulate(const T& x)const
@@ -126,7 +132,7 @@ namespace mcmc_utilities
 
       std::stack<const deterministic_node<T>*> node_stack;
       std::stack<typename std::list<deterministic_node<T>* >::const_iterator> current_node_stack;
-
+      
       for(auto& p:deterministic_children)
 	{
 	  node_stack.push(p);
@@ -148,7 +154,7 @@ namespace mcmc_utilities
 		}
 	      else
 		{
-		  node_stack.push(*current_node_stack.top());
+		  node_stack.push(*(current_node_stack.top()++));
 		  current_node_stack.push(node_stack.top()->deterministic_children.begin());
 		}
 	    }
@@ -198,6 +204,8 @@ namespace mcmc_utilities
 
     virtual void do_initialize(size_t n)
     {}
+
+    virtual std::shared_ptr<node<T> > do_clone()const=0;
   };
 }
 

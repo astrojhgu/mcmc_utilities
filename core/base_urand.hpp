@@ -7,6 +7,8 @@ namespace mcmc_utilities
   class base_urand
   {
   public:
+    virtual ~base_urand(){}
+  public:
     T operator()()const
     {
       return do_rand();

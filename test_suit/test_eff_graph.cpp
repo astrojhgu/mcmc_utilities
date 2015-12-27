@@ -10,7 +10,7 @@
 #include <cassert>
 #include <fstream>
 #include <iostream>
-
+#include <typeinfo>
 using namespace std;
 using namespace mcmc_utilities;
 
@@ -106,13 +106,20 @@ int main()
 
       //g.add_node(new eff(),tag_eff,{{"A",0},{"B",0},{tag_E,0},{"mu",0},{"sigma",0}});
       std::vector<std::pair<std::shared_ptr<node<double> >,size_t> > pp{{pA,0},{pB,0},{pE,0},{pmu,0},{psigma,0}};
-      g.add_node(new str_node<double>("A+(B-A)*phi((E-mu)/sigma)",{"A","B","E","mu","sigma"}),tag_eff,pp);
+      auto p_eff=new str_node<double>("A+(B-A)*phi((E-mu)/sigma)",{"A","B","E","mu","sigma"});
+      g.add_node(p_eff,tag_eff,pp);
+
+      
       std::string tag_nrec="nrec";
       tag_nrec+=std::to_string(i);
       g.add_node(dl.get_nrec(i),tag_nrec,{{tag_eff,0},{tag_ninj,0}});
     }
-  
 
+  std::cerr<<"*********"<<std::endl;
+  
+  graph<double,std::string> g2;
+  g2.copy_from(g);
+  
   auto A=g.get_monitor("A",0);
   auto B=g.get_monitor("B",0);
   auto mu=g.get_monitor("mu",0);
@@ -122,6 +129,8 @@ int main()
   g.set_value("mu",0,13);
   g.set_value("sigma",0,17);
   g.initialize();
+
+  
   for(int i=0;i<30000;++i)
     {
       g.sample(rnd1);

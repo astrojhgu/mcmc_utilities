@@ -25,6 +25,13 @@ namespace mcmc_utilities
     {
       return std::sin(parent[0]);
     }
+
+    std::shared_ptr<node<T> > do_clone()const override
+    {
+      auto p=new sin_node;
+      return std::shared_ptr<node<T> >(p);
+    }
+
   };
 
 

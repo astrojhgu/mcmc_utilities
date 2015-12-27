@@ -26,6 +26,12 @@ namespace mcmc_utilities
     {
       return func(parent[0]);
     }
+
+    std::shared_ptr<node<T> > do_clone()const override
+    {
+      return std::shared_ptr<node<T> >(new unary_node(func));
+    }
+
   };
 
 

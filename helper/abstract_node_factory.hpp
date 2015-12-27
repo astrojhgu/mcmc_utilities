@@ -24,6 +24,8 @@ namespace mcmc_utilities
        hparam_names(hname)
     {}
 
+    virtual ~abstract_node_factory(){}
+
     std::shared_ptr<node<T> >
     get_node(const std::vector<T>& hparam)const
     {

@@ -5,6 +5,7 @@
 #include <vector>
 #include <list>
 #include <map>
+#include <stack>
 #include <algorithm>
 #include <functional>
 #include <sstream>
@@ -24,6 +25,58 @@ namespace mcmc_utilities
     std::map<T_tag,std::shared_ptr<node<T> > > node_map;
     std::map<std::shared_ptr<node<T> > ,T_tag, std::owner_less<std::shared_ptr<node<T> > > > tag_map;
   public:
+    void copy_from(const graph& rhs)
+    {
+      std::map<node<T>*,T_tag> tag_map1;
+      for(auto i=rhs.tag_map.begin();i!=rhs.tag_map.end();++i)
+	{
+	  tag_map1[i->first.get()]=i->second;
+	}
+
+      std::stack<std::shared_ptr<node<T> > > node_stack;
+      std::stack<size_t> parent_id_stack;
+      
+      for(auto i=rhs.node_map.begin();i!=rhs.node_map.end();++i)
+	{
+	  if(this->node_map.count(i->first)!=0)
+	    {
+	      continue;
+	    }
+	  node_stack.push(i->second);
+	  parent_id_stack.push(0);
+	  for(;;)
+	    {
+	      if(parent_id_stack.top()==node_stack.top()->num_of_parents())
+		{
+		  std::vector<std::pair<T_tag,size_t> > parents(node_stack.top()->num_of_parents());
+		  
+		  if(node_map.count(rhs.tag_map.find(node_stack.top())->second)==0)
+		    {
+		      for(size_t i=0;i!=parents.size();++i)
+			{
+			  parents[i]=std::pair<T_tag,size_t>(tag_map1[node_stack.top()->get_parent(i).first],
+							     node_stack.top()->get_parent(i).second);
+			}
+		      add_node(node_stack.top()->clone(),rhs.tag_map.find(node_stack.top())->second,parents);
+		    }
+		  node_stack.pop();
+		  parent_id_stack.pop();
+		  if(node_stack.empty())
+		    {
+		      break;
+		    }
+		}
+	      else
+		{
+		  std::shared_ptr<node<T> > p(rhs.node_map.find(tag_map1[node_stack.top()->get_parent(parent_id_stack.top()).first])->second);
+		  node_stack.push(p);
+		  ++parent_id_stack.top();
+		  parent_id_stack.push(0);
+		}
+	    }
+	}
+    }
+    
     void clear()
     {
       node_map.clear();
@@ -132,7 +185,7 @@ namespace mcmc_utilities
 	  oss<<tag;
 	  throw node_not_found(oss.str());
 	}
-      i->second->log_likelihood();
+      return i->second->log_likelihood();
     }
 
     T log_posterior_prob(const T_tag& tag)const
@@ -177,10 +230,19 @@ namespace mcmc_utilities
     
     
     void add_node(const std::shared_ptr<node<T> >& pn,
-		      const T_tag& tag,
-		      const std::vector<std::pair<T_tag,size_t> >& parents
+		  const T_tag& tag,
+		  const std::vector<std::pair<T_tag,size_t> >& parents
 		  )
     {
+#if 0
+      std::cerr<<"added "<<tag;
+      std::cerr<<" with parents:";
+      for(auto& i:parents)
+	{
+	  std::cerr<<"("<<i.first<<":"<<i.second<<") ";
+	}
+      std::cerr<<std::endl;
+#endif 
       //std::shared_ptr<node<T_p,T_var1> > ptr(pn);
       if (node_map.count(tag)!=0)
 	{

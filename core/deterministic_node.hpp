@@ -61,10 +61,7 @@ namespace mcmc_utilities
 		  operand_stack.pop();
 		}
 
-	      operand_stack.push(
-				      node_stack.top().first->do_calc(node_stack.top().second,
-								   p)
-				      );
+	      operand_stack.push(node_stack.top().first->do_calc(node_stack.top().second, p));
 	      node_stack.pop();
 	      leaf_num_stack.pop();
 
@@ -79,9 +76,9 @@ namespace mcmc_utilities
 	      auto ptr_leaf=node_stack.top().first->parents.at(leaf_num_stack.top()).first;
 	      size_t n=node_stack.top().first->parents[leaf_num_stack.top()].second;
 	      auto ptr_det_leaf=dynamic_cast<const deterministic_node<T>*>(ptr_leaf);
+	      ++leaf_num_stack.top();
 	      if(ptr_det_leaf!=nullptr)
 		{
-		  ++leaf_num_stack.top();
 		  node_stack.push(std::pair<const deterministic_node<T>*,size_t>(ptr_det_leaf,n));
 		  leaf_num_stack.push(0);
 		  continue;
@@ -89,7 +86,6 @@ namespace mcmc_utilities
 	      else
 		{
 		  operand_stack.push(ptr_leaf->value(n));
-		  ++leaf_num_stack.top();
 		  continue;
 		}
 	    }

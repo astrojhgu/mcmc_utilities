@@ -25,6 +25,11 @@ namespace mcmc_utilities
     {
       return parent[0]+parent[1];
     }
+
+    std::shared_ptr<node<T> > do_clone()const override
+    {
+      return std::shared_ptr<node<T> >(new add_node);
+    }
   };
 
   template <typename T>
@@ -94,6 +99,11 @@ namespace mcmc_utilities
     T do_calc(size_t idx,const std::vector<T>& parent)const override
     {
       return parent[0]-parent[1];
+    }
+
+    std::shared_ptr<node<T> > do_clone()const override
+    {
+      return std::shared_ptr<node<T> >(new sub_node);
     }
   };
 
@@ -165,6 +175,12 @@ namespace mcmc_utilities
     {
       return -parent[0];
     }
+
+    std::shared_ptr<node<T> > do_clone()const override
+    {
+      return std::shared_ptr<node<T> >(new neg_node);
+    }
+
   };
 
   template <typename T>
@@ -226,6 +242,12 @@ namespace mcmc_utilities
     {
       return parent[0];
     }
+
+    std::shared_ptr<node<T> > do_clone()const override
+    {
+      return std::shared_ptr<node<T> >(new pos_node);
+    }
+
   };
 
   template <typename T>
@@ -288,6 +310,12 @@ namespace mcmc_utilities
     {
       return parent[0]*parent[1];
     }
+
+    std::shared_ptr<node<T> > do_clone()const override
+    {
+      return std::shared_ptr<node<T> >(new mul_node);
+    }
+
   };
   
   template <typename T>
@@ -358,6 +386,12 @@ namespace mcmc_utilities
     {
       return parent[0]/parent[1];
     }
+
+    std::shared_ptr<node<T> > do_clone()const override
+    {
+      return std::shared_ptr<node<T> >(new div_node);
+    }
+
   };
 
   template <typename T>
@@ -429,6 +463,12 @@ namespace mcmc_utilities
     {
       return std::pow(parent[0],parent[1]);
     }
+
+    std::shared_ptr<node<T> > do_clone()const override
+    {
+      return std::shared_ptr<node<T> >(new pow_node);
+    }
+
   };
 
   template <typename T>

@@ -23,6 +23,11 @@ namespace mcmc_utilities
     {
       return v;
     }
+
+    std::shared_ptr<node<T> > do_clone()const override
+    {
+      return std::shared_ptr<node<T> >(new const_node(v));
+    }
   };
 
   template <typename T>

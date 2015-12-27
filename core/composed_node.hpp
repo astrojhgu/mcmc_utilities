@@ -26,6 +26,16 @@ namespace mcmc_utilities
       this->parents.at(n)=std::make_pair(rhs,idx);
     }
 
+    std::shared_ptr<node<T> > do_clone()const override
+    {
+      throw mcmc_exception("should not be called!");
+      return std::shared_ptr<node<T> >(new forward_node<T>);
+    }
+
+    T do_value(size_t idx)const override
+    {
+      return this->parents[0].first->value(idx);
+    }
   };
 
   
@@ -118,7 +128,7 @@ namespace mcmc_utilities
 
     T do_calc(size_t idx,const std::vector<T>& parent)const override
     {
-      throw mcmc_exception("should never be called");
+      throw mcmc_exception("should never be called!");
     }
   };
 }

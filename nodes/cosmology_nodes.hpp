@@ -88,6 +88,11 @@ namespace mcmc_utilities
       //return value_cache;
       return cc.calc_dl(z);
     }
+
+    std::shared_ptr<node<T> > do_clone()const override
+    {
+      return std::shared_ptr<node<T> >(new luminosity_distance_node);
+    }
   };
 
 
@@ -201,6 +206,12 @@ namespace mcmc_utilities
       const_cast<T&>(value_cache)=cc.calc_da(z);
       return value_cache;
     }
+
+    std::shared_ptr<node<T> > do_clone()const override
+    {
+      return std::shared_ptr<node<T> >(new asize_distance_node);
+    }
+
   };
 
 

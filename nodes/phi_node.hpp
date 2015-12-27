@@ -25,6 +25,13 @@ namespace mcmc_utilities
     {
       return phi(parent[0]);
     }
+
+    std::shared_ptr<node<T> > do_clone()const override
+    {
+      auto p=new phi_node;
+      return std::shared_ptr<node<T> >(p);
+    }
+
   };
 
 

@@ -25,6 +25,12 @@ namespace mcmc_utilities
     {
       return std::cos(parent[0]);
     }
+
+    std::shared_ptr<node<T> > do_clone()const override
+    {
+      return std::shared_ptr<node<T> >(new cos_node);
+    }
+
   };
 
 
