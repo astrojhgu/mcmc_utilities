@@ -12,7 +12,7 @@ namespace mcmc_utilities
   public:
     urand()
     {
-      //srand(time(0));
+      srand(time(0));
     }
   private:
     T do_rand()const override

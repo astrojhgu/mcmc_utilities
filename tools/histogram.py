@@ -3,10 +3,11 @@
 import numpy
 import sys
 
-style=1
+style=2
 
 if len(sys.argv)!=3:
     print("Usage:{0} <input data> <nbins>".format(sys.argv[0]))
+    sys.exit(-1)
 
 nbins=int(sys.argv[2])
 

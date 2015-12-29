@@ -50,13 +50,46 @@ namespace mcmc_utilities
 	return pps->init_points(t,prev_state,prev_t,ndim);
       }
     }sm;
+
+    class smoother_model_reverse
+      :public pf_model<T_p,T_state,T_obs,T_t>
+    {
+    private:
+      particle_smoother<T_p,T_state,T_obs,T_t>* pps;
+    public:
+      smoother_model_reverse(particle_smoother<T_p,T_state,T_obs,T_t>* _pps)
+	:pps(_pps)
+      {}
+
+    private:
+      T_p do_evol_log_prob(const T_state& x,const T_t& t,const T_state& future_stat,const T_t& future_t)const
+      {
+	return pps->evol_log_prob_rev(x,t,future_stat,future_t);
+      }
+      
+      T_p do_obs_log_prob(const T_obs& y,const T_state& x,const T_t& t)const
+      {
+	return pps->obs_log_prob(y,x,t);
+      }
+
+      std::pair<T_state1,T_state1> do_state_var_range(const T_t& t,const T_state& future_state,const T_t& future_t,size_t ndim)const
+      {
+	return pps->state_var_range(t,future_state,future_t,ndim);
+      }
+    
+      std::vector<T_state1> do_init_points(const T_t& t,const T_state& future_state,const T_t& future_t,size_t ndim)const
+      {
+	return pps->init_points(t,future_state,future_t,ndim);
+      }
+    }sm_rev;    
   public:
     //size_t nparticles;
     std::vector<std::vector<particle<T_p,T_state> > > history;
     std::vector<T_t> t_list;
+    std::vector<T_obs> obs_list;
   public:
     particle_smoother()
-      :sm(this)
+      :sm(this),sm_rev(this)
     {}
 
     virtual ~particle_smoother(){}
@@ -65,6 +98,7 @@ namespace mcmc_utilities
     void load(const std::vector<T_obs>& obs,const std::vector<T_t>& t_vec,const std::vector<particle<T_p,T_state> >& ps,T_t t0,const base_urand<T_p>& rng)
     {
       history.clear();
+      obs_list.clear();
       std::vector<particle<T_p,T_state> > particles(ps);
       size_t nparticles=ps.size();
       T_t prev_t(t0);
@@ -74,8 +108,36 @@ namespace mcmc_utilities
 	  sm.update_sir(obs.at(i),t_vec.at(i),particles,prev_t,rng);
 	  history.push_back(particles);
 	  t_list.push_back(t_vec[i]);
+	  obs_list.push_back(obs[i]);
 	}
     }
+
+    void backward_simulate(const base_urand<T_p>& rng)
+    {
+      std::vector<particle<T_p,T_state> > particles(history.back());
+      size_t nparticles=particles.size();
+      T_t future_t(t_list.back());
+      
+      for(int i=obs_list.size()-1;i>=0;--i)
+	{
+	  sm_rev.update_sir(obs_list.at(i),t_list.at(i),particles,future_t,rng);
+	  history[i]=particles;
+	}
+    }
+
+    void forward_simulate(const base_urand<T_p>& rng)
+    {
+      std::vector<particle<T_p,T_state> > particles(history.front());
+      size_t nparticles=particles.size();
+      T_t prev_t(t_list.front());
+      
+      for(int i=0;i!=obs_list.size();++i)
+	{
+	  sm.update_sir(obs_list.at(i),t_list.at(i),particles,prev_t,rng);
+	  history[i]=particles;
+	}
+    }   
+    
 
     std::vector<T_state> draw_realization(const base_urand<T_p>& rng)
     {
@@ -126,6 +188,11 @@ namespace mcmc_utilities
     {
       return do_evol_log_prob(x,t,prev_state,prev_t);
     }
+
+    T_p evol_log_prob_rev(const T_state& x,const T_t& t,const T_state& future_state,const T_t& future_t)const
+    {
+      return do_evol_log_prob_rev(x,t,future_state,future_t);
+    }
     
     T_p obs_log_prob(const T_obs& y,const T_state& x,const T_t& t)const
     {
@@ -136,6 +203,11 @@ namespace mcmc_utilities
     {
       return do_state_var_range(t,prev_state,prev_t,ndim);
     }
+
+    std::pair<T_state1,T_state1> state_var_range_rev(const T_t& t,const T_state& future_state,const T_t& future_t,size_t ndim)const
+    {
+      return do_state_var_range_rev(t,future_state,future_t,ndim);
+    }    
     
     std::vector<T_state1> init_points(const T_t& t,const T_state& prev_state,const T_t& prev_t,size_t ndim)const
     {
@@ -144,8 +216,10 @@ namespace mcmc_utilities
 
   private:
     virtual T_p do_evol_log_prob(const T_state& x,const T_t& t,const T_state& prev_stat,const T_t& prev_t)const=0;
+    virtual T_p do_evol_log_prob_rev(const T_state& x,const T_t& t,const T_state& prev_stat,const T_t& prev_t)const=0;
     virtual T_p do_obs_log_prob(const T_obs& y,const T_state& x,const T_t& t)const=0;
     virtual std::pair<T_state1,T_state1> do_state_var_range(const T_t& t,const T_state& prev_state,const T_t& prev_t,size_t ndim)const=0;
+    virtual std::pair<T_state1,T_state1> do_state_var_range_rev(const T_t& t,const T_state& future_state,const T_t& future_t,size_t ndim)const=0;
     
     virtual std::vector<T_state1> do_init_points(const T_t& t,const T_state& prev_state,const T_t& prev_t,size_t ndim)const
     {
