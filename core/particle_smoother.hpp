@@ -12,18 +12,20 @@ namespace mcmc_utilities
   public:
     typedef typename element_type_trait<T_state>::element_type T_state1;
   private:
+    int verbose_level;
     particle_smoother(const particle_smoother&);
   public:
     typedef typename element_type_trait<T_state>::element_type stat_element_type;
     typedef typename element_type_trait<T_obs>::element_type obs_element_type;
 
-
+    
   private:
     class smoother_model
       :public pf_model<T_p,T_state,T_obs,T_t>
     {
     private:
       particle_smoother<T_p,T_state,T_obs,T_t>* pps;
+      
     public:
       smoother_model(particle_smoother<T_p,T_state,T_obs,T_t>* _pps)
 	:pps(_pps)
@@ -89,11 +91,15 @@ namespace mcmc_utilities
     std::vector<T_obs> obs_list;
   public:
     particle_smoother()
-      :sm(this),sm_rev(this)
+      :sm(this),sm_rev(this),verbose_level(0)
     {}
 
     virtual ~particle_smoother(){}
 
+    void set_verbose(int n)
+    {
+      verbose_level=n;
+    }
   public:
     void load(const std::vector<T_obs>& obs,const std::vector<T_t>& t_vec,const std::vector<particle<T_p,T_state> >& ps,T_t t0,const base_urand<T_p>& rng)
     {
@@ -109,6 +115,10 @@ namespace mcmc_utilities
 	  history.push_back(particles);
 	  t_list.push_back(t_vec[i]);
 	  obs_list.push_back(obs[i]);
+	  if(verbose_level)
+	    {
+	      std::cerr<<"loaded "<<i<<" of "<<obs.size()<<std::endl;
+	    }
 	}
     }
 
@@ -122,6 +132,10 @@ namespace mcmc_utilities
 	{
 	  sm_rev.update_sir(obs_list.at(i),t_list.at(i),particles,future_t,rng);
 	  history[i]=particles;
+	  if(verbose_level)
+	    {
+	      std::cerr<<"bs:"<<(obs_list.size()-1-i)<<" of "<<obs_list.size()<<std::endl;
+	    }
 	}
     }
 
@@ -135,6 +149,10 @@ namespace mcmc_utilities
 	{
 	  sm.update_sir(obs_list.at(i),t_list.at(i),particles,prev_t,rng);
 	  history[i]=particles;
+	  if(verbose_level)
+	    {
+	      std::cerr<<"fs:"<<i<<" of "<<obs_list.size()<<std::endl;
+	    }
 	}
     }   
     
