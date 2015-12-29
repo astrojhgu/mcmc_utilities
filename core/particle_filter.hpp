@@ -89,7 +89,7 @@ namespace mcmc_utilities
       
 
   public:
-    void update_sir(const T_obs& y,const T_t& t,std::vector<particle<T_p,T_state> >& particle_list,T_t& prev_t, const base_urand<T_p>& rnd)const
+    void update_sir(const T_obs& y,const T_t& t,std::vector<particle<T_p,T_state> >& particle_list,T_t& prev_t, const std::vector<std::shared_ptr<base_urand<T_p> > >& rnd_array)const
     {
       class cprob
 	:public probability_density_md<T_p,T_state>
@@ -127,27 +127,46 @@ namespace mcmc_utilities
       std::vector<T_p> weight_cdf(particle_list.size());
       std::vector<particle<T_p,T_state> > updated_state(particle_list.size());
       std::vector<T_p> log_weight(particle_list.size());
-      
-      for(size_t i=0;i<particle_list.size();++i)
-	{
-	  cprob prob;
-	  prob.ptr_pf_model=this;
-	  prob.ptr_obs_vec=std::addressof(y);
-	  prob.ptr_particle=std::addressof(particle_list[i].state);
-	  prob.ptr_prev_t=std::addressof(prev_t);
-	  prob.ptr_t=std::addressof(t);
-	  T_state new_pred(particle_list[i].state);
-	  //ofstream ofs("log.txt");
 
-	  gibbs_sample(prob,new_pred,rnd);
-	  
-	  
-	  //particle_list[i].weight=std::exp(obs_log_prob(y,new_pred,t));
-	  //log_weight[i]=obs_log_prob(y,new_pred,t);
-	  log_weight[i]=(1-alpha)*combined_log_prob(y,new_pred,t,particle_list[i].state,prev_t);
-	  //cout<<new_pred[0]<<" "<<particle_list[i].weight<<endl;
-	  particle_list[i].state=new_pred;
+      if(rnd_array.size()==1)
+	{
+	  for(size_t i=0;i<particle_list.size();++i)
+	    {
+	      cprob prob;
+	      prob.ptr_pf_model=this;
+	      prob.ptr_obs_vec=std::addressof(y);
+	      prob.ptr_particle=std::addressof(particle_list[i].state);
+	      prob.ptr_prev_t=std::addressof(prev_t);
+	      prob.ptr_t=std::addressof(t);
+	      T_state new_pred(particle_list[i].state);
+	      //ofstream ofs("log.txt");
+	      
+	      gibbs_sample(prob,new_pred,*(rnd_array[0]));
+	      log_weight[i]=(1-alpha)*combined_log_prob(y,new_pred,t,particle_list[i].state,prev_t);
+	      particle_list[i].state=new_pred;
+	    }
 	}
+      else
+	{
+#pragma omp parallel for
+	  for(size_t i=0;i<particle_list.size();++i)
+	    {
+	      cprob prob;
+	      prob.ptr_pf_model=this;
+	      prob.ptr_obs_vec=std::addressof(y);
+	      prob.ptr_particle=std::addressof(particle_list[i].state);
+	      prob.ptr_prev_t=std::addressof(prev_t);
+	      prob.ptr_t=std::addressof(t);
+	      T_state new_pred(particle_list[i].state);
+	      //ofstream ofs("log.txt");
+	      
+	      gibbs_sample(prob,new_pred,*(rnd_array.at(i)));
+	      log_weight[i]=(1-alpha)*combined_log_prob(y,new_pred,t,particle_list[i].state,prev_t);
+	      particle_list[i].state=new_pred;
+	    }
+	}
+
+      
       T_p max_log_weight=*(std::max_element(log_weight.begin(),log_weight.end()));
 #pragma omp parallel for
       for(size_t i=0;i<particle_list.size();++i)
@@ -159,26 +178,52 @@ namespace mcmc_utilities
 	{
 	  weight_cdf[i]=weight_cdf[i-1]+particle_list[i].weight;
 	}
-      
-#pragma omp parallel for
-      for(size_t i=0;i<particle_list.size();++i)
-	{
-	  T_p p=rnd()*weight_cdf.back();
 
-	  size_t n=0;
-	  bool changed=false;
-	  for(size_t j=0;j<weight_cdf.size();++j)
+
+      if(rnd_array.size()==1)
+	{
+	  for(size_t i=0;i<particle_list.size();++i)
 	    {
-	      if(weight_cdf[j]>=p)
+	      T_p p=0;
+	      p=(*(rnd_array[0]))()*weight_cdf.back();
+	      size_t n=0;
+	      bool changed=false;
+	      for(size_t j=0;j<weight_cdf.size();++j)
 		{
-		  n=j;
-		  changed=true;
-		  break;
+		  if(weight_cdf[j]>=p)
+		    {
+		      n=j;
+		      changed=true;
+		      break;
+		    }
 		}
+	      assert(changed);
+	      updated_state[i]=particle_list[n];
+	      updated_state[i].weight=1;
 	    }
-	  assert(changed);
-	  updated_state[i]=particle_list[n];
-	  updated_state[i].weight=1;
+	}
+      else
+	{
+#pragma omp parallel for
+	  for(size_t i=0;i<particle_list.size();++i)
+	    {
+	      T_p p=0;
+	      p=(*(rnd_array.at(i)))()*weight_cdf.back();
+	      size_t n=0;
+	      bool changed=false;
+	      for(size_t j=0;j<weight_cdf.size();++j)
+		{
+		  if(weight_cdf[j]>=p)
+		    {
+		      n=j;
+		      changed=true;
+		      break;
+		    }
+		}
+	      assert(changed);
+	      updated_state[i]=particle_list[n];
+	      updated_state[i].weight=1;
+	    }	  
 	}
       
       prev_t=t;

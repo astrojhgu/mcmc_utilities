@@ -2,9 +2,9 @@ targets=test_coal.out  test_eff.out  test_gibbs.out  test_pf.out test_eff_graph.
 
 all:$(targets)
 
-CXX=clang++
-CXXFLAGS=-I ../ -std=c++11 -g -I ../../east/include -I ../../coscalcpp/include/ -O3
-LDFLAGS=-L ../../east/lib -least -L ../../coscalcpp/lib/ -lcoscalcpp -O3
+CXX=g++
+CXXFLAGS=-I ../ -std=c++11 -g -I ../../east/include -I ../../coscalcpp/include/ -I ../rng -O3 -fopenmp
+LDFLAGS=-L ../../east/lib -least -L ../../coscalcpp/lib/ -lcoscalcpp -O3 -fopenmp
 
 %.out :	%.o
 	$(CXX) $< -o $@ $(LDFLAGS)  -static

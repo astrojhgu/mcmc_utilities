@@ -4,7 +4,7 @@
 #include "core/particle_filter.hpp"
 #include "random/normal.h"
 #include <core/urand.hpp>
-
+#include <rng/prng.hpp>
 using namespace std;
 using namespace mcmc_utilities;
 #include <SDL2/SDL.h>
@@ -223,6 +223,15 @@ int main()
   //ifstream ifs("noisy_motion.txt");
   double t=0;
   urand<double> rng;
+
+  std::vector<std::shared_ptr<base_urand<double> > > rng_array;
+  for(int i=0;i<nparticles;++i)
+    {
+      rng_array.push_back(std::shared_ptr<base_urand<double> >{new prng<double>(i)});
+    }
+  //rng_array.push_back(std::shared_ptr<base_urand<double> >{new urand<double>});
+  
+  
   for(int step=0;step<10000;++step)
     {
       t+=1;
@@ -234,7 +243,7 @@ int main()
       double y_mean=0;
       double vy_mean=0;
 
-      tm.update_sir(obs,t,particles,prev_t,rng);
+      tm.update_sir(obs,t,particles,prev_t,rng_array);
      
       double x,vx,y,vy;
       //cout<<t<<" "<<x_mean<<" "<<v_mean<<endl;
