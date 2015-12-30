@@ -101,7 +101,7 @@ namespace mcmc_utilities
       verbose_level=n;
     }
   public:
-    void load(const std::vector<T_obs>& obs,const std::vector<T_t>& t_vec,const std::vector<particle<T_p,T_state> >& ps,T_t t0,const base_urand<T_p>& rng)
+    void load(const std::vector<T_obs>& obs,const std::vector<T_t>& t_vec,const std::vector<particle<T_p,T_state> >& ps,T_t t0,const std::vector<std::shared_ptr< base_urand<T_p> > >& rng_array)
     {
       history.clear();
       obs_list.clear();
@@ -111,7 +111,7 @@ namespace mcmc_utilities
       
       for(size_t i=0;i<obs.size();++i)
 	{
-	  sm.update_sir(obs.at(i),t_vec.at(i),particles,prev_t,rng);
+	  sm.update_sir(obs.at(i),t_vec.at(i),particles,prev_t,rng_array);
 	  history.push_back(particles);
 	  t_list.push_back(t_vec[i]);
 	  obs_list.push_back(obs[i]);
@@ -122,7 +122,7 @@ namespace mcmc_utilities
 	}
     }
 
-    void backward_simulate(const base_urand<T_p>& rng)
+    void backward_simulate(const std::vector<std::shared_ptr< base_urand<T_p> > >& rng_array)
     {
       std::vector<particle<T_p,T_state> > particles(history.back());
       size_t nparticles=particles.size();
@@ -130,7 +130,7 @@ namespace mcmc_utilities
       
       for(int i=obs_list.size()-1;i>=0;--i)
 	{
-	  sm_rev.update_sir(obs_list.at(i),t_list.at(i),particles,future_t,rng);
+	  sm_rev.update_sir(obs_list.at(i),t_list.at(i),particles,future_t,rng_array);
 	  history[i]=particles;
 	  if(verbose_level)
 	    {
@@ -139,7 +139,7 @@ namespace mcmc_utilities
 	}
     }
 
-    void forward_simulate(const base_urand<T_p>& rng)
+    void forward_simulate(const std::vector<std::shared_ptr< base_urand<T_p> > >& rng_array)
     {
       std::vector<particle<T_p,T_state> > particles(history.front());
       size_t nparticles=particles.size();
@@ -147,7 +147,7 @@ namespace mcmc_utilities
       
       for(int i=0;i!=obs_list.size();++i)
 	{
-	  sm.update_sir(obs_list.at(i),t_list.at(i),particles,prev_t,rng);
+	  sm.update_sir(obs_list.at(i),t_list.at(i),particles,prev_t,rng_array);
 	  history[i]=particles;
 	  if(verbose_level)
 	    {
