@@ -9,7 +9,7 @@ namespace mcmc_utilities
   public:
     virtual ~base_urand(){}
   public:
-    T operator()()const
+    T operator()()
     {
       return do_rand();
     }
@@ -24,8 +24,17 @@ namespace mcmc_utilities
     {
       return static_cast<T>(0);
     }
+
+    bool is_parallel()const
+    {
+      return do_is_parallel();
+    }
   private:
-    virtual T do_rand()const=0;
+    virtual T do_rand()=0;
+    virtual bool do_is_parallel()const
+    {
+      return false;
+    }
       
   };
   

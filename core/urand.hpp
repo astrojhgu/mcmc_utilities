@@ -15,7 +15,7 @@ namespace mcmc_utilities
       srand(time(0));
     }
   private:
-    T do_rand()const override
+    T do_rand()override
     {
       return rand()/(T)RAND_MAX;
     }

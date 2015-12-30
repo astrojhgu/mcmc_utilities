@@ -84,13 +84,13 @@ namespace mcmc_utilities
     }
 
   public:
-    void sample(const base_urand<T>& urand)
+    void sample(base_urand<T>& urand)
     {
       do_sample(urand);
     }
 
   private:
-    virtual void do_sample(const base_urand<T>& urand)
+    virtual void do_sample(base_urand<T>& urand)
     {
       //constexpr size_t nsamp=10;
       for(size_t i=0;i<this->num_of_dims();++i)

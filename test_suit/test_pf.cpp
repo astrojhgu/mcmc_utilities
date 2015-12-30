@@ -222,15 +222,16 @@ int main()
   
   //ifstream ifs("noisy_motion.txt");
   double t=0;
-  urand<double> rng;
-
+  //urand<double> rng;
+  prng<double> rng;
+#if 0
   std::vector<std::shared_ptr<base_urand<double> > > rng_array;
   for(int i=0;i<nparticles;++i)
     {
       rng_array.push_back(std::shared_ptr<base_urand<double> >{new prng<double>(i)});
     }
   //rng_array.push_back(std::shared_ptr<base_urand<double> >{new urand<double>});
-  
+#endif
   
   for(int step=0;step<10000;++step)
     {
@@ -243,7 +244,7 @@ int main()
       double y_mean=0;
       double vy_mean=0;
 
-      tm.update_sir(obs,t,particles,prev_t,rng_array);
+      tm.update_sir(obs,t,particles,prev_t,rng);
      
       double x,vx,y,vy;
       //cout<<t<<" "<<x_mean<<" "<<v_mean<<endl;

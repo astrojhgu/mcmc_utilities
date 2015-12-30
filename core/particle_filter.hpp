@@ -89,7 +89,7 @@ namespace mcmc_utilities
       
 
   public:
-    void update_sir(const T_obs& y,const T_t& t,std::vector<particle<T_p,T_state> >& particle_list,T_t& prev_t, const std::vector<std::shared_ptr<base_urand<T_p> > >& rnd_array)const
+    void update_sir(const T_obs& y,const T_t& t,std::vector<particle<T_p,T_state> >& particle_list,T_t& prev_t, base_urand<T_p>& rnd)const
     {
       class cprob
 	:public probability_density_md<T_p,T_state>
@@ -128,25 +128,7 @@ namespace mcmc_utilities
       std::vector<particle<T_p,T_state> > updated_state(particle_list.size());
       std::vector<T_p> log_weight(particle_list.size());
 
-      if(rnd_array.size()==1)
-	{
-	  for(size_t i=0;i<particle_list.size();++i)
-	    {
-	      cprob prob;
-	      prob.ptr_pf_model=this;
-	      prob.ptr_obs_vec=std::addressof(y);
-	      prob.ptr_particle=std::addressof(particle_list[i].state);
-	      prob.ptr_prev_t=std::addressof(prev_t);
-	      prob.ptr_t=std::addressof(t);
-	      T_state new_pred(particle_list[i].state);
-	      //ofstream ofs("log.txt");
-	      
-	      gibbs_sample(prob,new_pred,*(rnd_array[0]));
-	      log_weight[i]=(1-alpha)*combined_log_prob(y,new_pred,t,particle_list[i].state,prev_t);
-	      particle_list[i].state=new_pred;
-	    }
-	}
-      else
+      if(rnd.is_parallel())
 	{
 #pragma omp parallel for
 	  for(size_t i=0;i<particle_list.size();++i)
@@ -160,12 +142,29 @@ namespace mcmc_utilities
 	      T_state new_pred(particle_list[i].state);
 	      //ofstream ofs("log.txt");
 	      
-	      gibbs_sample(prob,new_pred,*(rnd_array.at(i)));
+	      gibbs_sample(prob,new_pred,rnd);
 	      log_weight[i]=(1-alpha)*combined_log_prob(y,new_pred,t,particle_list[i].state,prev_t);
 	      particle_list[i].state=new_pred;
 	    }
 	}
-
+      else
+	{
+	  for(size_t i=0;i<particle_list.size();++i)
+	    {
+	      cprob prob;
+	      prob.ptr_pf_model=this;
+	      prob.ptr_obs_vec=std::addressof(y);
+	      prob.ptr_particle=std::addressof(particle_list[i].state);
+	      prob.ptr_prev_t=std::addressof(prev_t);
+	      prob.ptr_t=std::addressof(t);
+	      T_state new_pred(particle_list[i].state);
+	      //ofstream ofs("log.txt");
+	      
+	      gibbs_sample(prob,new_pred,rnd);
+	      log_weight[i]=(1-alpha)*combined_log_prob(y,new_pred,t,particle_list[i].state,prev_t);
+	      particle_list[i].state=new_pred;
+	    }
+	}
       
       T_p max_log_weight=*(std::max_element(log_weight.begin(),log_weight.end()));
 #pragma omp parallel for
@@ -179,13 +178,13 @@ namespace mcmc_utilities
 	  weight_cdf[i]=weight_cdf[i-1]+particle_list[i].weight;
 	}
 
-
-      if(rnd_array.size()==1)
+      if(rnd.is_parallel())
 	{
+#pragma omp parallel for
 	  for(size_t i=0;i<particle_list.size();++i)
 	    {
 	      T_p p=0;
-	      p=(*(rnd_array[0]))()*weight_cdf.back();
+	      p=rnd()*weight_cdf.back();
 	      size_t n=0;
 	      bool changed=false;
 	      for(size_t j=0;j<weight_cdf.size();++j)
@@ -204,11 +203,10 @@ namespace mcmc_utilities
 	}
       else
 	{
-#pragma omp parallel for
 	  for(size_t i=0;i<particle_list.size();++i)
 	    {
 	      T_p p=0;
-	      p=(*(rnd_array.at(i)))()*weight_cdf.back();
+	      p=rnd()*weight_cdf.back();
 	      size_t n=0;
 	      bool changed=false;
 	      for(size_t j=0;j<weight_cdf.size();++j)
@@ -225,6 +223,7 @@ namespace mcmc_utilities
 	      updated_state[i].weight=1;
 	    }	  
 	}
+      
       
       prev_t=t;
       particle_list.swap(updated_state);

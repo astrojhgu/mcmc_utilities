@@ -11,7 +11,7 @@ namespace mcmc_utilities
 {
 
   template <typename T,typename T_urand>
-  T discrete_sample(const probability_density_1d<T>& pd,T& xprev,size_t niter,const T_urand& urand)
+  T discrete_sample(const probability_density_1d<T>& pd,T& xprev,size_t niter,T_urand& urand)
   {
     std::vector<T> cp(pd.candidate_points());
     

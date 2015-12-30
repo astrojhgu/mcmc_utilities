@@ -84,7 +84,7 @@ namespace mcmc_utilities
       deterministic_node_list.clear();
     }
 
-    void sample(const base_urand<T>& rnd)
+    void sample(base_urand<T>& rnd)
     {
       for(auto& p:stochastic_node_list)
 	{

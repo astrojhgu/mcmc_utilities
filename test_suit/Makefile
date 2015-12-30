@@ -7,7 +7,7 @@ CXXFLAGS=-I ../ -std=c++11 -g -I ../../east/include -I ../../coscalcpp/include/ 
 LDFLAGS=-L ../../east/lib -least -L ../../coscalcpp/lib/ -lcoscalcpp -O3 -fopenmp
 
 %.out :	%.o
-	$(CXX) $< -o $@ $(LDFLAGS)  -static
+	$(CXX) $< -o $@ $(LDFLAGS)
 
 %.o:	%.cpp
 	$(CXX) -c $< -o $@ $(CXXFLAGS)

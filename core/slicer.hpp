@@ -38,7 +38,7 @@ namespace mcmc_utilities
     }
     
   private:
-    T exponential(const base_urand<T>& rnd)const
+    T exponential(base_urand<T>& rnd)const
     {
       T result=0;
       do
@@ -88,7 +88,7 @@ namespace mcmc_utilities
     }
     
   public:
-    T sample_double(T& xcur,const base_urand<T>& rng)
+    T sample_double(T& xcur,base_urand<T>& rng)
     {
       for(size_t i=0;i<nmin;++i)
 	{
@@ -97,7 +97,7 @@ namespace mcmc_utilities
       return xcur;
     }
     
-    T sample1_double(T& xcur,const base_urand<T>& rng)
+    T sample1_double(T& xcur,base_urand<T>& rng)
     {
       T lower = 0;
       T upper = 0;
@@ -215,7 +215,7 @@ namespace mcmc_utilities
       return xcur;
     }
 
-    T sample_step(T& xcur,const base_urand<T>& rng)
+    T sample_step(T& xcur,base_urand<T>& rng)
     {
       for(size_t i=0;i<nmin;++i)
 	{
@@ -224,7 +224,7 @@ namespace mcmc_utilities
       return xcur;
     }
 
-    T sample1_step(T& xcur,const base_urand<T>& rng)
+    T sample1_step(T& xcur,base_urand<T>& rng)
     {
       T lower = 0;
       T upper = 0;

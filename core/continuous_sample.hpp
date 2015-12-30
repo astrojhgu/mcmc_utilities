@@ -12,7 +12,7 @@
 namespace mcmc_utilities
 {
   template <typename T,typename T_urand>
-  T continuous_sample(const probability_density_1d<T>& pd,T& xprev,size_t niter,const T_urand& urand)
+  T continuous_sample(const probability_density_1d<T>& pd,T& xprev,size_t niter,T_urand& urand)
   {
     size_t xmchange_count=0;
     

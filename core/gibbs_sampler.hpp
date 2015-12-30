@@ -11,7 +11,7 @@
 namespace mcmc_utilities
 {
   template <typename T_p,typename T_var>
-  void gibbs_sample(const probability_density_md<T_p,T_var>& pd,T_var& init_var,const base_urand<T_p>& rnd)
+  void gibbs_sample(const probability_density_md<T_p,T_var>& pd,T_var& init_var,base_urand<T_p>& rnd)
   {
     size_t idx=0;
     typedef typename element_type_trait<T_var>::element_type T_var1;
@@ -85,7 +85,7 @@ namespace mcmc_utilities
 
   template <typename T_p,typename T_var,typename T_urand>
   void gibbs_sample1(const probability_density_md<T_p,T_var>& pd,
-		    T_var& init_var,size_t idx,const base_urand<T_p>& rnd)
+		    T_var& init_var,size_t idx,base_urand<T_p>& rnd)
   {
     if(idx>=get_size(init_var))
       {

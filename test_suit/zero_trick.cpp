@@ -13,7 +13,7 @@ class rnd
   :public base_urand<double>
 {
 private:
-  double do_rand()const
+  double do_rand()override
   {
     return rand()/(double)RAND_MAX;
   }

@@ -549,7 +549,7 @@ namespace mcmc_utilities
   }
 
   template <typename T,typename T_urand>
-  T sample(const std::list<section<T> >& ls,const T_urand& rnd)
+  T sample(const std::list<section<T> >& ls,T_urand& rnd)
   {
     T result=0;
 
@@ -624,7 +624,7 @@ namespace mcmc_utilities
   }
 
   template <typename T,typename T_urand>
-  T arms(const probability_density_1d<T>& pd,T xcur,size_t n,const T_urand& rnd,size_t& xmchange_count)
+  T arms(const probability_density_1d<T>& pd,T xcur,size_t n,T_urand& rnd,size_t& xmchange_count)
   {
     std::list<section<T> > ls;
     
