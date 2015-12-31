@@ -108,6 +108,7 @@ namespace mcmc_utilities
 
       if(xcur<xrange.first||xcur>xrange.second)
       {
+	std::cerr<<"xcur="<<xcur<<" ("<<xrange.first<<" , "<<xrange.second<<")"<<std::endl;
 	throw var_out_of_range();
       }
 
@@ -233,12 +234,14 @@ namespace mcmc_utilities
       upper=xrange.second;
       if(xcur<xrange.first||xcur>xrange.second)
 	{
+	  std::cerr<<"xcur="<<xcur<<" ("<<xrange.first<<" , "<<xrange.second<<")"<<std::endl;
 	  throw var_out_of_range();
 	}
 
       T g0 = pd.eval_log(xcur);
       if (std::isinf(g0))
 	{
+	  std::cerr<<"xcur="<<xcur<<std::endl;
 	  throw nan_or_inf();
 	}
 
