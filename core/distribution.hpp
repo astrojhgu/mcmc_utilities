@@ -94,7 +94,7 @@ namespace mcmc_utilities
     virtual std::pair<T,T> do_var_range()const=0;
     virtual std::vector<T> do_init_points()const
     {
-      std::vector<T> result(3);
+      std::vector<T> result(5);
       for(size_t n=0;n<result.size();++n)
 	{
 	  //if(n!=1)

@@ -639,6 +639,8 @@ namespace mcmc_utilities
     //assert(xcur>=xrange.first&&xcur<=xrange.second);
     if(xcur<xrange.first||xcur>xrange.second)
       {
+	std::cerr<<"xcur="<<xcur<<" ("<<xrange.first<<" , "<<xrange.second<<")"<<std::endl;
+
 	throw var_out_of_range();
       }
 

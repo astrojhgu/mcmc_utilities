@@ -42,13 +42,13 @@ namespace mcmc_utilities
 	std::vector<T_var1> xinit(ppd->init_points(*p_init_var,*p_idx));
 	if(xinit.size()==0)
 	  {
-	    xinit.resize(3);
+	    xinit.resize(5);
 	    
 	    std::pair<T_var1,T_var1> xrange(this->var_range());
 	    T_var1 xl=xrange.first;
 	    T_var1 xr=xrange.second;
 
-	    for(size_t n1=0;n1<3;++n1)
+	    for(size_t n1=0;n1<xinit.size();++n1)
 	      {
 		//if(n1!=1)
 		  {
@@ -119,13 +119,13 @@ namespace mcmc_utilities
 	std::vector<T_var1> xinit(ppd->init_points(*p_init_var,*p_idx));
 	if(xinit.size()==0)
 	  {
-	    xinit.resize(3);
+	    xinit.resize(5);
 	    
 	    std::pair<T_var1,T_var1> xrange(this->var_range());
 	    T_var1 xl=xrange.first;
 	    T_var1 xr=xrange.second;
 
-	    for(size_t n1=0;n1<3;++n1)
+	    for(size_t n1=0;n1<xinit.size();++n1)
 	      {
 		//if(n1!=1)
 		  {
