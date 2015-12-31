@@ -2,6 +2,7 @@
 #define MYARMS_HPP
 #include "distribution.hpp"
 #include <algorithm>
+#include <iomanip>
 //#define DEBUG
 #ifdef DEBUG
 #include <fstream>
@@ -243,7 +244,7 @@ namespace mcmc_utilities
     
     if(std::isnan(x_i)||std::isnan(y_i))
       {
-	std::cerr<<x1<<" "<<y1<<std::endl;
+	std::cerr<<std::setprecision(10)<<x1<<" "<<y1<<std::endl;
 	std::cerr<<x2<<" "<<y2<<std::endl;
 	std::cerr<<x3<<" "<<y3<<std::endl;
 	std::cerr<<x4<<" "<<y4<<std::endl;
