@@ -48,6 +48,7 @@ namespace mcmc_utilities
 	  }
 	if(isnan(result))
 	  {
+	    std::cerr<<"x1="<<x1<<" y1="<<y1<<" x2="<<x2<<" y2="<<y2<<" a="<<a<<std::endl;
 	    throw nan_or_inf();
 	  }
 	result=std::max(static_cast<T>(0),result);
@@ -227,9 +228,8 @@ namespace mcmc_utilities
 	x_i=-((-(x3 - x4) * (x2 * y1 - x1 * y2) + (x1 - x2) * (x4 * y3 -  x3 * y4))/(-(x3 - x4) * (-y1 + y2) + (x1 - x2) * (-y3 + y4)));
 	y_i=-(x2 * y1 * y3 - x4 * y1 * y3 - x1 * y2 * y3 + x4 * y2 * y3 - x2 * y1 * y4 + x3 * y1 * y4 +  x1 * y2 * y4 - x3 * y2 * y4)/(-x3 * y1 + x4 * y1 + x3 * y2 - x4 * y2 + x1 * y3 - x2 * y3 - x1 * y4 + x2 * y4);
 
-
-	if((y3-y1)*(x2-x1)==(y2-y1)*(x3-x1)&&
-	   (y4-y1)*(x2-x1)==(y2-y1)*(x4-x1))
+	if(((y3-y1)*(x2-x1)==(y2-y1)*(x3-x1)&&
+	    (y4-y1)*(x2-x1)==(y2-y1)*(x4-x1))||(y2-y1)*(x4-x3)==(x2-x1)*(y4-y3)||isnan(y_i))
 	  {
 	    x_i=(s.x_l+s.x_u)/2;
 	    y_i=(s.y_l+s.y_u)/2;
@@ -244,7 +244,7 @@ namespace mcmc_utilities
     
     if(std::isnan(x_i)||std::isnan(y_i))
       {
-	std::cerr<<std::setprecision(10)<<x1<<" "<<y1<<std::endl;
+	std::cerr<<std::setprecision(20)<<x1<<" "<<y1<<std::endl;
 	std::cerr<<x2<<" "<<y2<<std::endl;
 	std::cerr<<x3<<" "<<y3<<std::endl;
 	std::cerr<<x4<<" "<<y4<<std::endl;
