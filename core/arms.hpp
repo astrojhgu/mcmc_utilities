@@ -22,8 +22,8 @@ namespace mcmc_utilities
   T eval_log(const probability_density_1d<T>& pd,T x,T scale)
   {
     T result=pd.eval_log(x)-scale;
-    assert(!isnan(result));
-    assert(!isinf(result));
+    assert(!std::isnan(result));
+    assert(!std::isinf(result));
     return result;
   }
   
@@ -56,15 +56,15 @@ namespace mcmc_utilities
 	    throw nan_or_inf();
 	  }
 	result=std::max(static_cast<T>(0),result);
-	assert(!isnan(result));
-	//assert(!isinf(result));
+	assert(!std::isnan(result));
+	//assert(!std::isinf(result));
 	return result;
       }
     else
       {
 	T result=std::exp(y1)*(x-x1);
-	assert(!isnan(result));
-	//assert(!isinf(result));
+	assert(!std::isnan(result));
+	//assert(!std::isinf(result));
 	return result;
       }
   }
@@ -128,11 +128,11 @@ namespace mcmc_utilities
 	}
       else
 	{
-	  assert(!isinf(y_i));
-	  assert(!isnan(y_i));
+	  assert(!std::isinf(y_i));
+	  assert(!std::isnan(y_i));
 	  int_exp_y_l=int_exp_y(x_i,std::make_pair(x_l,y_l),std::make_pair(x_i,y_i));
-	  assert(!isnan(int_exp_y_l));
-	  //assert(!isinf(int_exp_y_l));
+	  assert(!std::isnan(int_exp_y_l));
+	  //assert(!std::isinf(int_exp_y_l));
 	  
 	}
       if(x_i==x_u)
@@ -141,11 +141,11 @@ namespace mcmc_utilities
 	}
       else
 	{
-	  assert(!isinf(y_i));
-	  assert(!isnan(y_i));
+	  assert(!std::isinf(y_i));
+	  assert(!std::isnan(y_i));
 	  int_exp_y_u=int_exp_y(x_u,std::make_pair(x_i,y_i),std::make_pair(x_u,y_u));
-	  assert(!isnan(int_exp_y_u));
-	  //assert(!isinf(int_exp_y_u));
+	  assert(!std::isnan(int_exp_y_u));
+	  //assert(!std::isinf(int_exp_y_u));
 	  
 	}
     }
@@ -229,7 +229,7 @@ namespace mcmc_utilities
 	    x_i=(s.x_l+s.x_u)/2;
 	    y_i=(s.y_l+s.y_u)/2;
 	  }
-	assert(!isinf(y_i));
+	assert(!std::isinf(y_i));
       }
     else if(std::isinf(y4))
       {
@@ -241,7 +241,7 @@ namespace mcmc_utilities
 	    x_i=(s.x_l+s.x_u)/2;
 	    y_i=(s.y_l+s.y_u)/2;
 	  }
-	assert(!isinf(y_i));
+	assert(!std::isinf(y_i));
       }
     else
       {
@@ -262,7 +262,7 @@ namespace mcmc_utilities
 	    x_i=(s.x_l+s.x_u)/2;
 	    y_i=(s.y_l+s.y_u)/2;
 	  }
-	assert(!isinf(y_i));
+	assert(!std::isinf(y_i));
       }
     
     if(std::isnan(x_i)||std::isnan(y_i))
@@ -349,14 +349,14 @@ namespace mcmc_utilities
 	i->x_i=p.first;
 	i->y_i=p.second;
       }
-    assert(!isinf(i->y_i));
+    assert(!std::isinf(i->y_i));
   }
 
   template <typename T>
-  T calc_scale(const std::list<section<T> >& ls)
+  T calc_scale(const std::list<section<T> >& section_list)
   {
     T scale=-INFINITY;
-    for(auto& i:ls)
+    for(auto& i:section_list)
       {
 	scale=std::max(scale,std::max(i.y_l,i.y_u));
       }
@@ -379,10 +379,11 @@ namespace mcmc_utilities
 	calc_intersection(section_list,i);
 	calc_cum_int_exp_y(section_list,i);
       }
-    assert(!isnan(section_list.back().cum_int_exp_y_u));
+
+    assert(!std::isnan(section_list.back().cum_int_exp_y_u));
   }
-  
-  
+
+
   template <typename T>
   void init(const probability_density_1d<T>& pd,std::list<section<T> >& section_list,T& scale)
   {
@@ -451,7 +452,7 @@ namespace mcmc_utilities
 	calc_intersection(section_list,i);
 	calc_cum_int_exp_y(section_list,i);
       }
-    assert(!isnan(section_list.back().cum_int_exp_y_u));
+    assert(!std::isnan(section_list.back().cum_int_exp_y_u));
 
     for(;;)
       {
@@ -545,17 +546,17 @@ namespace mcmc_utilities
 
 
   template <typename T>
-  typename std::list<section<T> >::const_iterator search_point(const std::list<section<T> >& ls,T p)
+  typename std::list<section<T> >::const_iterator search_point(const std::list<section<T> >& section_list,T p)
   {
     section<T> v;
-    v.cum_int_exp_y_u=p*ls.back().cum_int_exp_y_u;
+    v.cum_int_exp_y_u=p*section_list.back().cum_int_exp_y_u;
     
-    auto r=equal_range(ls.begin(),ls.end(),v,[](const section<T>& x,const section<T>& y){return x.cum_int_exp_y_u<y.cum_int_exp_y_u;});
+    auto r=equal_range(section_list.begin(),section_list.end(),v,[](const section<T>& x,const section<T>& y){return x.cum_int_exp_y_u<y.cum_int_exp_y_u;});
 
-    if(r.first==ls.end())
+    if(r.first==section_list.end())
       {
-	std::cerr<<(p*ls.back().cum_int_exp_y_u)<<std::endl;
-	std::cerr<<ls.back().cum_int_exp_y_u<<std::endl;
+	std::cerr<<(p*section_list.back().cum_int_exp_y_u)<<std::endl;
+	std::cerr<<section_list.back().cum_int_exp_y_u<<std::endl;
 	throw search_failed();
       }
     while(1)
@@ -577,8 +578,37 @@ namespace mcmc_utilities
     return r.first;
   }
 
+  template <typename T>
+  void check_range(const probability_density_1d<T>& pd,std::list<section<T> >& section_list,T& scale)
+  {
+    for(;;)
+      {
+	bool has_inf=false;
+	auto iter=section_list.begin();
+	
+	for(;iter!=section_list.end();++iter)
+	  {
+	    if(std::isinf(iter->cum_int_exp_y_u))
+	      {
+		has_inf=true;
+		T x=(iter->x_l+iter->x_u)/2;
+		
+		insert_point(pd,section_list,x,scale);
+		update_scale(section_list,scale);
+		break;
+	      }
+	  }
+	
+	if(!has_inf)
+	  {
+	    break;
+	  }
+      }
+  }
+
+  
   template <typename T,typename T_urand>
-  T sample(const std::list<section<T> >& ls,T_urand& rnd)
+  T sample(const std::list<section<T> >& section_list,T_urand& rnd)
   {
     T result=0;
 
@@ -590,7 +620,7 @@ namespace mcmc_utilities
     fname+=".qdp";
     n++;
     std::ofstream ofs(fname.c_str());
-    for(auto& i:ls)
+    for(auto& i:section_list)
       {
 	ofs<<i.x_i<<" "<<i.cum_int_exp_y_l<<std::endl;
 	ofs<<i.x_u<<" "<<i.cum_int_exp_y_u<<std::endl;
@@ -600,18 +630,18 @@ namespace mcmc_utilities
       {
 	T p=rnd();
 	//std::cerr<<"p="<<p<<" ";
-	auto iter=search_point(ls,p);
-	T y=ls.back().cum_int_exp_y_u*p;
-	assert(!isnan(p));
-	assert(!isnan(ls.back().cum_int_exp_y_u));
+	auto iter=search_point(section_list,p);
+	T y=section_list.back().cum_int_exp_y_u*p;
+	assert(!std::isnan(p));
+	assert(!std::isnan(section_list.back().cum_int_exp_y_u));
 	if(std::isnan(y))
 	  {
 	    std::cerr<<"p="<<p<<std::endl;
-	    std::cerr<<"cum_y="<<ls.back().cum_int_exp_y_u<<std::endl;
+	    std::cerr<<"cum_y="<<section_list.back().cum_int_exp_y_u<<std::endl;
 	  }
     
     
-	assert(!isnan(y));
+	assert(!std::isnan(y));
 	
 	T x1,x2,y1,y2;
 	T ybase;
@@ -629,7 +659,7 @@ namespace mcmc_utilities
 	  {
 	    auto iter1=iter;
 	    
-	    if(iter1!=ls.begin())
+	    if(iter1!=section_list.begin())
 	      {
 		--iter1;
 		ybase = iter1->cum_int_exp_y_u;
@@ -652,10 +682,10 @@ namespace mcmc_utilities
 	  }
 	else
 	  {
-	    assert(!isnan(y));
-	    assert(!isinf(y));
-	    assert(!isnan(ybase));
-	    assert(!isinf(ybase));
+	    assert(!std::isnan(y));
+	    assert(!std::isinf(y));
+	    assert(!std::isnan(ybase));
+	    assert(!std::isinf(ybase));
 	    result=inv_int_exp_y(y-ybase,std::make_pair(x1,y1),std::make_pair(x2,y2));
 	  }
 	if(std::isnan(result))
@@ -671,11 +701,11 @@ namespace mcmc_utilities
   template <typename T,typename T_urand>
   T arms(const probability_density_1d<T>& pd,T xcur,size_t n,T_urand& rnd,size_t& xmchange_count)
   {
-    std::list<section<T> > ls;
+    std::list<section<T> > section_list;
     
     T scale=0;
 
-    init(pd,ls,scale);
+    init(pd,section_list,scale);
     
     T xm=-1;
     //bool xmchanged=false;
@@ -695,24 +725,29 @@ namespace mcmc_utilities
 	T x=0;
 	do
 	  {
-	    x=sample(ls,rnd);
+	    x=sample(section_list,rnd);
 	  }
 	while(x<=xrange.first||x>=xrange.second);
 	  
 	
 	T u=rnd();
 	T xa=0;
-	if(std::log(u)+eval(x,ls)>eval_log(pd,x,scale))
+	if(std::log(u)+eval(x,section_list)>eval_log(pd,x,scale))
 	  {
-	    insert_point(pd,ls,x,scale);
-	    update_scale(ls,scale);
-
+	    insert_point(pd,section_list,x,scale);
+	    update_scale(section_list,scale);
+	    if(std::isinf(section_list.back().cum_int_exp_y_u))
+	      {
+		check_range(pd,section_list,scale);
+	      }
+	    assert(!std::isinf(section_list.back().cum_int_exp_y_u));
+	    assert(!std::isnan(section_list.back().cum_int_exp_y_u));
 	    if(cnt++>100*i)
 	      {
 		
 #ifdef DEBUG
 		std::ofstream ofs("dump.qdp");
-		for(auto& i:ls)
+		for(auto& i:section_list)
 		  {
 		    ofs<<i.x_l<<" "<<i.y_l<<std::endl;
 		    ofs<<i.x_i<<" "<<i.y_i<<std::endl;
@@ -727,7 +762,7 @@ namespace mcmc_utilities
 		  }
 		ofs.close();
 		ofs.open("cum.qdp");
-		for(auto& i:ls)
+		for(auto& i:section_list)
 		  {
 		    ofs<<i.x_i<<" "<<i.cum_int_exp_y_l<<std::endl;
 		    ofs<<i.x_u<<" "<<i.cum_int_exp_y_u<<std::endl;
@@ -747,7 +782,7 @@ namespace mcmc_utilities
 	  }
 	u=rnd();
 	
-	if(std::log(u)>std::min(static_cast<T>(0),eval_log(pd,xa,scale)-eval_log(pd,xcur,scale)+std::min(eval_log(pd,xcur,scale),eval(xcur,ls))-std::min(eval_log(pd,xa,scale),eval(xa,ls))))
+	if(std::log(u)>std::min(static_cast<T>(0),eval_log(pd,xa,scale)-eval_log(pd,xcur,scale)+std::min(eval_log(pd,xcur,scale),eval(xcur,section_list))-std::min(eval_log(pd,xa,scale),eval(xa,section_list))))
 	  {
 	    xm=xcur;
 	    ++i;
