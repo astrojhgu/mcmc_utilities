@@ -21,7 +21,10 @@ namespace mcmc_utilities
   template <typename T>
   T eval_log(const probability_density_1d<T>& pd,T x,T scale)
   {
-    return pd.eval_log(x)-scale;
+    T result=pd.eval_log(x)-scale;
+    assert(!isnan(result));
+    assert(!isinf(result));
+    return result;
   }
   
   template <typename T>
@@ -46,17 +49,23 @@ namespace mcmc_utilities
 	  {
 	    result=std::exp(a+y1)*(x1-x2)/(y1-y2);
 	  }
-	if(isnan(result))
+	if(std::isnan(result))
 	  {
 	    std::cerr<<"x1="<<x1<<" y1="<<y1<<" x2="<<x2<<" y2="<<y2<<" a="<<a<<std::endl;
+	    assert(0);
 	    throw nan_or_inf();
 	  }
 	result=std::max(static_cast<T>(0),result);
+	assert(!isnan(result));
+	//assert(!isinf(result));
 	return result;
       }
     else
       {
-	return std::exp(y1)*(x-x1);
+	T result=std::exp(y1)*(x-x1);
+	assert(!isnan(result));
+	//assert(!isinf(result));
+	return result;
       }
   }
 
@@ -77,6 +86,8 @@ namespace mcmc_utilities
 	  }
 	if(std::isnan(result)||std::isinf(result))
 	  {
+	    std::cerr<<std::setprecision(20)<<x1<<" "<<y1<<" "<<x2<<" "<<y2<<" "<<y<<std::endl;
+	    assert(0);
 	    throw nan_or_inf();
 	  }
 	return result;
@@ -117,7 +128,12 @@ namespace mcmc_utilities
 	}
       else
 	{
+	  assert(!isinf(y_i));
+	  assert(!isnan(y_i));
 	  int_exp_y_l=int_exp_y(x_i,std::make_pair(x_l,y_l),std::make_pair(x_i,y_i));
+	  assert(!isnan(int_exp_y_l));
+	  //assert(!isinf(int_exp_y_l));
+	  
 	}
       if(x_i==x_u)
 	{
@@ -125,7 +141,12 @@ namespace mcmc_utilities
 	}
       else
 	{
+	  assert(!isinf(y_i));
+	  assert(!isnan(y_i));
 	  int_exp_y_u=int_exp_y(x_u,std::make_pair(x_i,y_i),std::make_pair(x_u,y_u));
+	  assert(!isnan(int_exp_y_u));
+	  //assert(!isinf(int_exp_y_u));
+	  
 	}
     }
 
@@ -208,7 +229,7 @@ namespace mcmc_utilities
 	    x_i=(s.x_l+s.x_u)/2;
 	    y_i=(s.y_l+s.y_u)/2;
 	  }
-	
+	assert(!isinf(y_i));
       }
     else if(std::isinf(y4))
       {
@@ -220,6 +241,7 @@ namespace mcmc_utilities
 	    x_i=(s.x_l+s.x_u)/2;
 	    y_i=(s.y_l+s.y_u)/2;
 	  }
+	assert(!isinf(y_i));
       }
     else
       {
@@ -229,7 +251,7 @@ namespace mcmc_utilities
 	y_i=-(x2 * y1 * y3 - x4 * y1 * y3 - x1 * y2 * y3 + x4 * y2 * y3 - x2 * y1 * y4 + x3 * y1 * y4 +  x1 * y2 * y4 - x3 * y2 * y4)/(-x3 * y1 + x4 * y1 + x3 * y2 - x4 * y2 + x1 * y3 - x2 * y3 - x1 * y4 + x2 * y4);
 
 	if(((y3-y1)*(x2-x1)==(y2-y1)*(x3-x1)&&
-	    (y4-y1)*(x2-x1)==(y2-y1)*(x4-x1))||(y2-y1)*(x4-x3)==(x2-x1)*(y4-y3)||isnan(y_i))
+	    (y4-y1)*(x2-x1)==(y2-y1)*(x4-x1))||(y2-y1)*(x4-x3)==(x2-x1)*(y4-y3)||isnan(y_i)||isinf(y_i))
 	  {
 	    x_i=(s.x_l+s.x_u)/2;
 	    y_i=(s.y_l+s.y_u)/2;
@@ -240,6 +262,7 @@ namespace mcmc_utilities
 	    x_i=(s.x_l+s.x_u)/2;
 	    y_i=(s.y_l+s.y_u)/2;
 	  }
+	assert(!isinf(y_i));
       }
     
     if(std::isnan(x_i)||std::isnan(y_i))
@@ -248,10 +271,11 @@ namespace mcmc_utilities
 	std::cerr<<x2<<" "<<y2<<std::endl;
 	std::cerr<<x3<<" "<<y3<<std::endl;
 	std::cerr<<x4<<" "<<y4<<std::endl;
-	
+	assert(0);
 	throw nan_or_inf();
 	    
       }
+    
     return std::make_pair(x_i,y_i);
   }
 
@@ -273,6 +297,7 @@ namespace mcmc_utilities
 
     if(std::isnan(i->cum_int_exp_y_u))
       {
+	assert(0);
 	throw nan_or_inf();
       }
 
@@ -324,6 +349,7 @@ namespace mcmc_utilities
 	i->x_i=p.first;
 	i->y_i=p.second;
       }
+    assert(!isinf(i->y_i));
   }
 
   template <typename T>
@@ -353,6 +379,7 @@ namespace mcmc_utilities
 	calc_intersection(section_list,i);
 	calc_cum_int_exp_y(section_list,i);
       }
+    assert(!isnan(section_list.back().cum_int_exp_y_u));
   }
   
   
@@ -402,6 +429,7 @@ namespace mcmc_utilities
 	  {
 	    std::cerr<<s.x_l<<" "<<s.x_u<<std::endl;
 	    std::cerr<<s.y_l<<" "<<s.y_u<<std::endl;
+	    assert(0);
 	    throw nan_or_inf();
 	  }
 	
@@ -423,7 +451,7 @@ namespace mcmc_utilities
 	calc_intersection(section_list,i);
 	calc_cum_int_exp_y(section_list,i);
       }
-
+    assert(!isnan(section_list.back().cum_int_exp_y_u));
 
     for(;;)
       {
@@ -574,6 +602,17 @@ namespace mcmc_utilities
 	//std::cerr<<"p="<<p<<" ";
 	auto iter=search_point(ls,p);
 	T y=ls.back().cum_int_exp_y_u*p;
+	assert(!isnan(p));
+	assert(!isnan(ls.back().cum_int_exp_y_u));
+	if(std::isnan(y))
+	  {
+	    std::cerr<<"p="<<p<<std::endl;
+	    std::cerr<<"cum_y="<<ls.back().cum_int_exp_y_u<<std::endl;
+	  }
+    
+    
+	assert(!isnan(y));
+	
 	T x1,x2,y1,y2;
 	T ybase;
 
@@ -613,10 +652,15 @@ namespace mcmc_utilities
 	  }
 	else
 	  {
+	    assert(!isnan(y));
+	    assert(!isinf(y));
+	    assert(!isnan(ybase));
+	    assert(!isinf(ybase));
 	    result=inv_int_exp_y(y-ybase,std::make_pair(x1,y1),std::make_pair(x2,y2));
 	  }
-	if(isnan(result))
+	if(std::isnan(result))
 	  {
+	    assert(0);
 	    throw nan_or_inf();
 	  }
       }while(std::isnan(result));
