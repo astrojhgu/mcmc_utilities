@@ -76,12 +76,12 @@ namespace mcmc_utilities
 
       std::pair<T_state1,T_state1> do_state_var_range(const T_t& t,const T_state& future_state,const T_t& future_t,size_t ndim)const
       {
-	return pps->state_var_range(t,future_state,future_t,ndim);
+	return pps->state_var_range_rev(t,future_state,future_t,ndim);
       }
     
       std::vector<T_state1> do_init_points(const T_t& t,const T_state& future_state,const T_t& future_t,size_t ndim)const
       {
-	return pps->init_points(t,future_state,future_t,ndim);
+	return pps->init_points_rev(t,future_state,future_t,ndim);
       }
     }sm_rev;    
   public:
@@ -232,6 +232,12 @@ namespace mcmc_utilities
       return do_init_points(t,prev_state,prev_t,ndim);
     }
 
+    std::vector<T_state1> init_points_rev(const T_t& t,const T_state& prev_state,const T_t& prev_t,size_t ndim)const
+    {
+      return do_init_points_rev(t,prev_state,prev_t,ndim);
+    }
+
+
   private:
     virtual T_p do_evol_log_prob(const T_state& x,const T_t& t,const T_state& prev_stat,const T_t& prev_t)const=0;
     virtual T_p do_evol_log_prob_rev(const T_state& x,const T_t& t,const T_state& prev_stat,const T_t& prev_t)const=0;
@@ -240,6 +246,11 @@ namespace mcmc_utilities
     virtual std::pair<T_state1,T_state1> do_state_var_range_rev(const T_t& t,const T_state& future_state,const T_t& future_t,size_t ndim)const=0;
     
     virtual std::vector<T_state1> do_init_points(const T_t& t,const T_state& prev_state,const T_t& prev_t,size_t ndim)const
+    {
+      return std::vector<T_state1>();
+    }
+
+    virtual std::vector<T_state1> do_init_points_rev(const T_t& t,const T_state& future_state,const T_t& future_t,size_t ndim)const
     {
       return std::vector<T_state1>();
     }
