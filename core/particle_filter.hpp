@@ -52,7 +52,7 @@ namespace mcmc_utilities
     {}
     virtual ~pf_model(){}
 
-    void set_proposed_distributin_factor(const T_p& p)
+    void set_proposed_distribution_factor(const T_p& p)
     {
       alpha=p;
     }
