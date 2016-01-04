@@ -3,7 +3,7 @@ targets=test_arms.out test_coal.out  test_eff.out  test_gibbs.out  test_pf.out t
 all:$(targets)
 
 CXX=g++
-CXXFLAGS=-I ../ -std=c++11 -g -I ../../east/include -I ../../coscalcpp/include/ -I ../rng -O3 -fopenmp
+CXXFLAGS=-I ../ -std=c++11 -g -I ../../east/include -I ../../coscalcpp/include/ -I ../rng -O3
 LDFLAGS=-L ../../east/lib -least -L ../../coscalcpp/lib/ -lcoscalcpp -O3 -fopenmp
 
 %.out :	%.o
