@@ -5,6 +5,7 @@
 #include "random/normal.h"
 #include <core/urand.hpp>
 #include <rng/prng.hpp>
+#include <unistd.h>
 using namespace std;
 using namespace mcmc_utilities;
 #include <SDL2/SDL.h>
@@ -315,6 +316,7 @@ int main()
       //cout<<t<<" "<<x<<" "<<x_mean<<" "<<obs[0]<<endl;
       cout<<t<<" "<<y<<" "<<y_mean<<" "<<obs[1]<<endl;
       //cout<<vx_mean<<" "<<vy_mean<<endl;
+      //sleep(1);
     }
   clear_sdl(window,renderer);
   SDL_Quit();

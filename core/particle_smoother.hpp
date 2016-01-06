@@ -128,7 +128,7 @@ namespace mcmc_utilities
       size_t nparticles=particles.size();
       T_t future_t(t_list.back());
       
-      for(int i=obs_list.size()-1;i>=0;--i)
+      for(int i=obs_list.size()-2;i>=0;--i)
 	{
 	  sm_rev.update_sir(obs_list.at(i),t_list.at(i),particles,future_t,rng);
 	  history[i]=particles;
@@ -145,7 +145,7 @@ namespace mcmc_utilities
       size_t nparticles=particles.size();
       T_t prev_t(t_list.front());
       
-      for(int i=0;i!=obs_list.size();++i)
+      for(int i=1;i!=obs_list.size();++i)
 	{
 	  sm.update_sir(obs_list.at(i),t_list.at(i),particles,prev_t,rng);
 	  history[i]=particles;
