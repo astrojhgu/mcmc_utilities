@@ -41,7 +41,7 @@ namespace mcmc_utilities
       {
 	T result=0;
 	const T a=(x*y1-x*y2+x1*y2-x2*y1)/(x1-x2)-y1;
-	if(a<30)
+	if(a<static_cast<T>(30))
 	  {
 	    result=(std::exp(a)-1)*(x1-x2)/(y1-y2)*std::exp(y1);
 	  }
