@@ -10,6 +10,8 @@
 #include "phi_node.hpp"
 #include "const_node.hpp"
 #include "sqrt_node.hpp"
+#include "step_node.hpp"
+#include "abs_node.hpp"
 #include "log_node.hpp"
 #include "log10_node.hpp"
 #include "logit_node.hpp"
@@ -51,6 +53,8 @@ namespace mcmc_utilities
       register_function({"con"},std::shared_ptr<abstract_node_factory<T> >(new const_node_factory<T>()));
       register_function({"phi"},std::shared_ptr<abstract_node_factory<T> >(new phi_node_factory<T>()));
       register_function({"sqrt"},std::shared_ptr<abstract_node_factory<T> >(new sqrt_node_factory<T>()));
+      register_function({"step"},std::shared_ptr<abstract_node_factory<T> >(new step_node_factory<T>()));
+      register_function({"abs"},std::shared_ptr<abstract_node_factory<T> >(new abs_node_factory<T>()));
       register_function({"log"},std::shared_ptr<abstract_node_factory<T> >(new log_node_factory<T>()));
       register_function({"log10"},std::shared_ptr<abstract_node_factory<T> >(new log10_node_factory<T>()));
       register_function({"sin"},std::shared_ptr<abstract_node_factory<T> >(new sin_node_factory<T>()));
