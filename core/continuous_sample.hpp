@@ -15,15 +15,7 @@ namespace mcmc_utilities
   T continuous_sample(const probability_density_1d<T>& pd,T& xprev,size_t niter,T_urand& urand)
   {
     size_t xmchange_count=0;
-    try
-      {
-	xprev=arms(pd,xprev,niter,urand,xmchange_count);
-      }
-    catch(const nan_or_inf& e)
-      {
-	xmchange_count=0;
-      }
-    
+    xprev=arms(pd,xprev,niter,urand,xmchange_count);
     if(xmchange_count==0)
       {
 	slice_sampler<T> ss(pd,1,niter,10);
