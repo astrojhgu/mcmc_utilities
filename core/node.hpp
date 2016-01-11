@@ -105,11 +105,6 @@ namespace mcmc_utilities
       return this->do_value(idx);
     }
 
-    T regulate(const T& x)const
-    {
-      return do_regulate(x);
-    }
-
     virtual T log_likelihood()const final
     {
 #ifndef USE_NON_RECURSIVE
@@ -196,11 +191,6 @@ namespace mcmc_utilities
     virtual T do_value(size_t idx)const=0;
     
     virtual void do_connect_to_parent(node<T>* prhs,size_t n,size_t idx)=0;
-
-    virtual T do_regulate(const T& x)const
-    {
-      return x;
-    }
 
     virtual void do_initialize(size_t n)
     {}

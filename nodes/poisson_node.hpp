@@ -41,7 +41,7 @@ namespace mcmc_utilities
 	}
     }
 
-    T do_regulate(const T& x)const override
+    T do_regulate(size_t idx,const T& x)const override
     {
       return std::floor(x);
     }

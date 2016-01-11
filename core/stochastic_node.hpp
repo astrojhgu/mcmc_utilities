@@ -80,8 +80,15 @@ namespace mcmc_utilities
     void set_value(size_t idx,const T& v_)
     {
       this->set_initialized(idx,true);
-      v[idx]=this->regulate(v_);
+      v[idx]=this->regulate(idx,v_);
     }
+
+    T regulate(size_t idx,const T& x)const
+    {
+      return do_regulate(idx,x);
+    }
+
+
 
   public:
     void sample(base_urand<T>& urand)
@@ -138,6 +145,13 @@ namespace mcmc_utilities
       this->parents.at(n)=std::make_pair(rhs,idx);
       rhs->add_stochastic_child(this);
     }
+
+    virtual T do_regulate(size_t idx,const T& x)const
+    {
+      return x;
+    }
+
+
 
     virtual bool is_continuous(size_t idx)const=0;
   };  
