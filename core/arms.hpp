@@ -80,9 +80,13 @@ namespace mcmc_utilities
     if(y2!=y1)
       {
 	T result=x1 + (x1 - x2)/(y1 - y2) * std::log( (1 + (y1 - y2)/(x1 - x2)*y *std::exp(-y1) ));
-	if(std::isinf(result))
+	if(std::isinf(result)||std::isnan(result))
 	  {
 	    result=x1+(x1-x2)/(y1-y2)*(std::log(y*(y1-y2)/(x1-x2))-y1);
+	  }
+	if(std::isinf(result)||std::isnan(result))
+	  {
+	    result=x1+(x1-x2)/(y1-y2)*(std::log(y)+std::log(y1-y2)-std::log(x1-x2)-y1);
 	  }
 	if(std::isnan(result)||std::isinf(result))
 	  {
