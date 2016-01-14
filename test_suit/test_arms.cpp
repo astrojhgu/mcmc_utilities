@@ -8,7 +8,7 @@ class normal_dist
 public:
   double do_eval_log(const double& x)const
   {
-    return -x*x/(2*1e-9*1e-9);
+    return -(x-1)*(x-1)/(2*1e-9*1e-9);
   }
 
   std::pair<double,double> do_var_range()const
@@ -23,6 +23,6 @@ int main()
 {
   normal_dist nd;
   size_t n=0;
-  std::cout<<arms(nd,500.0,10,rng,n)<<std::endl;
+  std::cout<<arms(nd,500.0,10,rng,n)-1<<std::endl;
 }
 
