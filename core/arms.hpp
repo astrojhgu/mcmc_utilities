@@ -77,16 +77,17 @@ namespace mcmc_utilities
     const T& y1=p1.second;
     const T& y2=p2.second;
 
-    if(y2!=y1)
+    if(y2!=y1&&x1!=x2)
       {
-	T result=x1 + (x1 - x2)/(y1 - y2) * std::log( (1 + (y1 - y2)/(x1 - x2)*y *std::exp(-y1) ));
-	if(std::isinf(result)||std::isnan(result))
+	T result=0;
+	if(!isinf(std::exp(-y1)))
 	  {
-	    result=x1+(x1-x2)/(y1-y2)*(std::log(y*(y1-y2)/(x1-x2))-y1);
+	    //sult=x1 + (x1 - x2)/(y1 - y2) * std::log(1 + (y1 - y2)/(x1 - x2)*y *std::exp(-y1));
+	    result=x1 + (x1 - x2)/(y1 - y2) *(std::log(x2-x1+y*(y2-y1)*std::exp(-y1))-std::log(x2 - x1));
 	  }
-	if(std::isinf(result)||std::isnan(result))
+	else
 	  {
-	    result=x1+(x1-x2)/(y1-y2)*(std::log(y)+std::log(y1-y2)-std::log(x1-x2)-y1);
+	    result=x1 + (x1 - x2)/(y1 - y2) *(std::log((x2-x1)*std::exp(y1)+y*(y2-y1))-std::log(x2-x1)-y1);
 	  }
 	if(std::isnan(result)||std::isinf(result))
 	  {
@@ -96,9 +97,13 @@ namespace mcmc_utilities
 	  }
 	return result;
       }
-    else
+    else if(y1==y2)
       {
 	return y*std::exp(-y1)+x1;
+      }
+    else if(x1==x2)
+      {
+	return x1;
       }
   }
   
@@ -352,6 +357,14 @@ namespace mcmc_utilities
 				  std::make_pair((i_next)->x_u,(i_next)->y_u));
 	i->x_i=p.first;
 	i->y_i=p.second;
+      }
+    if(i->x_i<i->x_l)
+      {
+	i->x_i=i->x_l;
+      }
+    if(i->x_i>i->x_u)
+      {
+	i->x_i=i->x_u;
       }
     assert(!std::isinf(i->y_i));
   }
