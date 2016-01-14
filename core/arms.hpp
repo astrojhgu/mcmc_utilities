@@ -79,16 +79,27 @@ namespace mcmc_utilities
 
     if(y2!=y1&&x1!=x2)
       {
+	//result=x1 + (x1 - x2)/(y1 - y2) * std::log( (1 + (y1 - y2)/(x1 - x2)*y *std::exp(-y1) ));
+	
 	T result=0;
-	if(!isinf(std::exp(-y1)))
+	T f1=std::log(1 + (y1 - y2)/(x1 - x2)*y *std::exp(-y1));
+	if(std::isinf(f1))
 	  {
-	    //sult=x1 + (x1 - x2)/(y1 - y2) * std::log(1 + (y1 - y2)/(x1 - x2)*y *std::exp(-y1));
-	    result=x1 + (x1 - x2)/(y1 - y2) *(std::log(x2-x1+y*(y2-y1)*std::exp(-y1))-std::log(x2 - x1));
+	    f1=std::log(y*(y2-y1)/(x2 - x1))-y1;
 	  }
-	else
+	if(std::isinf(f1))
 	  {
-	    result=x1 + (x1 - x2)/(y1 - y2) *(std::log((x2-x1)*std::exp(y1)+y*(y2-y1))-std::log(x2-x1)-y1);
+	    if(x2>x1)
+	      {
+		f1=std::log(y)+std::log(y2-y1)-std::log(x2 - x1)-y1;
+	      }
+	    else
+	      {
+		f1=std::log(y)+std::log(y1-y2)-std::log(x1 - x2)-y1;
+	      }
 	  }
+	//result=x1 + (x1 - x2)/(y1 - y2) * std::log(1 + (y1 - y2)/(x1 - x2)*y *std::exp(-y1));
+	result=x1 + (x1 - x2)/(y1 - y2) * f1;
 	if(std::isnan(result)||std::isinf(result))
 	  {
 	    std::cerr<<std::setprecision(20)<<x1<<" "<<y1<<" "<<x2<<" "<<y2<<" "<<y<<std::endl;
