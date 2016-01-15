@@ -200,11 +200,18 @@ namespace mcmc_utilities
 
     void set_x_i(T x)
     {
-      if(x<_x_l||x>_x_u)
-	{
-	  assert(0);
-	}
+      assert(!isnan(_x_l));
+      assert(!isnan(_x_u));
+      
       _x_i=x;
+      if(_x_i<_x_l)
+	{
+	  _x_i=_x_l;
+	}
+      if(_x_i>_x_u)
+	{
+	  _x_i=_x_u;
+	}
     }
    
     void set_y_l(T y)
@@ -700,12 +707,13 @@ namespace mcmc_utilities
   template <typename T>
   typename std::list<section<T> >::const_iterator search_point(const std::list<section<T> >& section_list,T p)
   {
+    /*
     section<T> v;
     v.set_cum_int_exp_y_u(p*section_list.back().cum_int_exp_y_u());
     
     auto r=equal_range(section_list.begin(),section_list.end(),v,[](const section<T>& x,const section<T>& y){return x.cum_int_exp_y_u()<y.cum_int_exp_y_u();});
 
-    if(r.first==section_list.end())
+    if(r.first==section_list.end()||r.second==section_list.end())
       {
 	std::cerr<<(p*section_list.back().cum_int_exp_y_u())<<std::endl;
 	std::cerr<<section_list.back().cum_int_exp_y_u()<<std::endl;
@@ -726,9 +734,27 @@ namespace mcmc_utilities
 	    break;
 	  }
       }
-    assert(r.first->x_l()<=r.first->x_i()&&
-	   r.first->x_i()<=r.first->x_u());
-    return r.first;
+    
+    assert(r.first!=section_list.end());
+    
+    if(!(r.first->x_l()<=r.first->x_i()&&
+	 r.first->x_i()<=r.first->x_u()))
+      {
+	std::cerr<<r.first->x_l()<<" "<<r.first->x_i()<<" "<<r.first->x_u()<<std::endl;
+	assert(0);
+      }
+    */
+    T x=p*section_list.back().cum_int_exp_y_u();
+    for(auto i=section_list.begin();i!=section_list.end();++i)
+      {
+	if(x<=i->cum_int_exp_y_u())
+	  {
+	    return i;
+	  }
+      }
+    assert(0);
+    throw search_failed();
+    return section_list.end();
   }
 
   template <typename T>
