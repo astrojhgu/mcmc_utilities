@@ -91,7 +91,7 @@ namespace mcmc_utilities
     std::vector<T_obs> obs_list;
   public:
     particle_smoother()
-      :sm(this),sm_rev(this),verbose_level(0)
+      :verbose_level(0),sm(this),sm_rev(this)
     {}
 
     virtual ~particle_smoother(){}
@@ -106,7 +106,7 @@ namespace mcmc_utilities
       history.clear();
       obs_list.clear();
       std::vector<particle<T_p,T_state> > particles(ps);
-      size_t nparticles=ps.size();
+      //size_t nparticles=ps.size();
       T_t prev_t(t0);
       
       for(size_t i=0;i<obs.size();++i)
@@ -125,7 +125,7 @@ namespace mcmc_utilities
     void backward_simulate(base_urand<T_p>& rng)
     {
       std::vector<particle<T_p,T_state> > particles(history.back());
-      size_t nparticles=particles.size();
+      //size_t nparticles=particles.size();
       T_t future_t(t_list.back());
       
       for(int i=obs_list.size()-2;i>=0;--i)
@@ -142,7 +142,7 @@ namespace mcmc_utilities
     void forward_simulate(base_urand<T_p>& rng)
     {
       std::vector<particle<T_p,T_state> > particles(history.front());
-      size_t nparticles=particles.size();
+      //size_t nparticles=particles.size();
       T_t prev_t(t_list.front());
       
       for(int i=1;i!=obs_list.size();++i)

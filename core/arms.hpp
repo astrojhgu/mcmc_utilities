@@ -82,25 +82,30 @@ namespace mcmc_utilities
 	//result=x1 + (x1 - x2)/(y1 - y2) * std::log( (1 + (y1 - y2)/(x1 - x2)*y *std::exp(-y1) ));
 	
 	T result=0;
-	T f1=std::log(1 + (y1 - y2)/(x1 - x2)*y *std::exp(-y1));
-	if(std::isinf(f1))
+	T f1=0;
+	T f2=0;
+	//T f1=std::log(1 + (y2 - y1)/(x2 - x1)*y *std::exp(-y1));
+	f2=std::log(std::abs(y2-y1))-std::log(x2-x1)+std::log(y)-y1;
+	T f3=(y2>y1)?(1+std::exp(f2)):(1-std::exp(f2));
+	if(!isinf(f3))
 	  {
-	    f1=std::log(y*(y2-y1)/(x2 - x1))-y1;
+	    f1=std::log(f3);
 	  }
-	if(std::isinf(f1))
+	else
 	  {
-	    if(x2>x1)
-	      {
-		f1=std::log(y)+std::log(y2-y1)-std::log(x2 - x1)-y1;
-	      }
-	    else
-	      {
-		f1=std::log(y)+std::log(y1-y2)-std::log(x1 - x2)-y1;
-	      }
+	    f1=f2;
 	  }
+	
+	
 	//result=x1 + (x1 - x2)/(y1 - y2) * std::log(1 + (y1 - y2)/(x1 - x2)*y *std::exp(-y1));
 	result=x1 + (x1 - x2)/(y1 - y2) * f1;
-	if(std::isnan(result)||std::isinf(result))
+	if(std::isnan(result))
+	  {
+	    std::cerr<<std::setprecision(20)<<x1<<" "<<y1<<" "<<x2<<" "<<y2<<" "<<y<<std::endl;
+	    assert(0);
+	    throw nan_or_inf();
+	  }
+	if(std::isinf(result))
 	  {
 	    std::cerr<<std::setprecision(20)<<x1<<" "<<y1<<" "<<x2<<" "<<y2<<" "<<y<<std::endl;
 	    assert(0);
@@ -108,63 +113,176 @@ namespace mcmc_utilities
 	  }
 	return result;
       }
-    else if(y1==y2)
+    else if(y1==y2&&x1!=x2)
       {
 	return y*std::exp(-y1)+x1;
       }
-    else if(x1==x2)
-      {
-	return x1;
-      }
+    return x1;
   }
   
   template <typename T>
-  struct section
+  class section
   {
-    T x_l;//lower x of this section
-    T x_u;//upper x of this section
-    T x_i;//intersection x of this section
+  private:
+    T _x_l;//lower x of this section
+    T _x_u;//upper x of this section
+    T _x_i;//intersection x of this section
     
-    T y_l;//ln y(x_l) of this section
-    T y_u;//ln y(x_u) of this section
-    T y_i;//ln y(x_i) of this section
+    T _y_l;//ln y(x_l) of this section
+    T _y_u;//ln y(x_u) of this section
+    T _y_i;//ln y(x_i) of this section
 
-    T int_exp_y_l;//\int_x_l^x_i exp(y)
-    T int_exp_y_u;//\int_x_i^x_u exp(y)
-    T cum_int_exp_y_l;
-    T cum_int_exp_y_u;
+    T _int_exp_y_l;//\int_x_l^x_i exp(y)
+    T _int_exp_y_u;//\int_x_i^x_u exp(y)
+    T _cum_int_exp_y_l;
+    T _cum_int_exp_y_u;
+  public:
+    T x_l()const
+    {
+      return _x_l;
+    }
+
+    T x_u()const
+    {
+      return _x_u;
+    }
+
+    T x_i()const
+    {
+      return _x_i;
+    }
+   
+    T y_l()const
+    {
+      return _y_l;
+    }
+
+    T y_u()const
+    {
+      return _y_u;
+    }
+
+    T y_i()const
+    {
+      return _y_i;
+    } 
+    
+    T int_exp_y_l()const
+    {
+      return _int_exp_y_l;
+    }
+
+    T int_exp_y_u()const
+    {
+      return _int_exp_y_u;
+    }
+
+    T cum_int_exp_y_l()const
+    {
+      return _cum_int_exp_y_l;
+    }
+    
+    T cum_int_exp_y_u()const
+    {
+      return _cum_int_exp_y_u;
+    }
+
+    //////////
+    void set_x_l(T x)
+    {
+      _x_l=x;
+    }
+
+    void set_x_u(T x)
+    {
+      _x_u=x;
+    }
+
+    void set_x_i(T x)
+    {
+      if(x<_x_l||x>_x_u)
+	{
+	  assert(0);
+	}
+      _x_i=x;
+    }
+   
+    void set_y_l(T y)
+    {
+      _y_l=y;
+    }
+
+    void set_y_u(T y)
+    {
+      _y_u=y;
+    }
+
+    void set_y_i(T y)
+    {
+      _y_i=y;
+    } 
+    
+    void set_int_exp_y_l(T y)
+    {
+      _int_exp_y_l=y;
+    }
+
+    void set_int_exp_y_u(T y)
+    {
+      _int_exp_y_u=y;
+    }
+
+    void set_cum_int_exp_y_l(T y)
+    {
+      _cum_int_exp_y_l=y;
+    }
+    
+    void set_cum_int_exp_y_u(T y)
+    {
+      _cum_int_exp_y_u=y;
+    }
+    
+  public:
+    section()
+      :_x_l(std::nan("")),_x_u(std::nan("")),_x_i(std::nan("")),
+       _y_l(std::nan("")),_y_u(std::nan("")),_y_i(std::nan("")),
+       _int_exp_y_l(std::nan("")),
+       _int_exp_y_u(std::nan("")),
+       _cum_int_exp_y_l(std::nan("")),
+       _cum_int_exp_y_u(std::nan(""))
+    {}
     
   public:
     bool encloses(const T& x)const
     {
-      return x>=x_l&&x<=x_u;
+      return x>=_x_l&&x<=_x_u;
     }
     
     void calc_int_exp_y()
     {
-      if(x_i==x_l)
+      if(_x_i==_x_l)
 	{
-	  int_exp_y_l=0;
+	  _int_exp_y_l=0;
 	}
       else
 	{
-	  assert(!std::isinf(y_i));
-	  assert(!std::isnan(y_i));
-	  int_exp_y_l=int_exp_y(x_i,std::make_pair(x_l,y_l),std::make_pair(x_i,y_i));
-	  assert(!std::isnan(int_exp_y_l));
+	  assert(!std::isinf(_y_i));
+	  assert(!std::isnan(_y_i));
+	  _int_exp_y_l=int_exp_y(_x_i,std::make_pair(_x_l,_y_l),std::make_pair(_x_i,_y_i));
+	  assert(!std::isnan(_int_exp_y_l));
 	  //assert(!std::isinf(int_exp_y_l));
 	  
 	}
-      if(x_i==x_u)
+      if(_x_i==_x_u)
 	{
-	  int_exp_y_u=0;
+	  _int_exp_y_u=0;
 	}
       else
 	{
-	  assert(!std::isinf(y_i));
-	  assert(!std::isnan(y_i));
-	  int_exp_y_u=int_exp_y(x_u,std::make_pair(x_i,y_i),std::make_pair(x_u,y_u));
-	  assert(!std::isnan(int_exp_y_u));
+	  assert(!std::isinf(_y_i));
+	  assert(!std::isnan(_y_i));
+	  _int_exp_y_u=int_exp_y(_x_u,std::make_pair(_x_i,_y_i),std::make_pair(_x_u,_y_u));
+	  assert(!std::isnan(_int_exp_y_u));
 	  //assert(!std::isinf(int_exp_y_u));
 	  
 	}
@@ -173,25 +291,25 @@ namespace mcmc_utilities
   public:
     T eval_y(const T& x)const
     {
-      if(x==x_l)
+      if(x==_x_l)
 	{
-	  return y_l;
+	  return _y_l;
 	}
-      if(x==x_u)
+      if(x==_x_u)
 	{
-	  return y_u;
+	  return _y_u;
 	}
-      if(x==x_i)
+      if(x==_x_i)
 	{
-	  return y_i;
+	  return _y_i;
 	}
-      if(x<x_i)
+      if(x<_x_i)
 	{
-	  return y_l+(x-x_l)*(y_i-y_l)/(x_i-x_l);
+	  return _y_l+(x-_x_l)*(_y_i-_y_l)/(_x_i-_x_l);
 	}
       else
 	{
-	  return y_u+(x-x_u)*(y_i-y_u)/(x_i-x_u);
+	  return _y_u+(x-_x_u)*(_y_i-_y_u)/(_x_i-_x_u);
 	}
     }
   };
@@ -246,8 +364,8 @@ namespace mcmc_utilities
 
 	if(y_i<y1)
 	  {
-	    x_i=(s.x_l+s.x_u)/2;
-	    y_i=(s.y_l+s.y_u)/2;
+	    x_i=(s.x_l()+s.x_u())/2;
+	    y_i=(s.y_l()+s.y_u())/2;
 	  }
 	assert(!std::isinf(y_i));
       }
@@ -258,8 +376,8 @@ namespace mcmc_utilities
 
 	if(y_i<y3)
 	  {
-	    x_i=(s.x_l+s.x_u)/2;
-	    y_i=(s.y_l+s.y_u)/2;
+	    x_i=(s.x_l()+s.x_u())/2;
+	    y_i=(s.y_l()+s.y_u())/2;
 	  }
 	assert(!std::isinf(y_i));
       }
@@ -273,14 +391,14 @@ namespace mcmc_utilities
 	if(((y3-y1)*(x2-x1)==(y2-y1)*(x3-x1)&&
 	    (y4-y1)*(x2-x1)==(y2-y1)*(x4-x1))||(y2-y1)*(x4-x3)==(x2-x1)*(y4-y3)||isnan(y_i)||isinf(y_i))
 	  {
-	    x_i=(s.x_l+s.x_u)/2;
-	    y_i=(s.y_l+s.y_u)/2;
+	    x_i=(s.x_l()+s.x_u())/2;
+	    y_i=(s.y_l()+s.y_u())/2;
 	  }
 	
-	if((x_i<=s.x_l)||(x_i>=s.x_u)||y_i<(y2+(x_i-x2)/(x3-x2)*(y3-y2)))
+	if((x_i<=s.x_l())||(x_i>=s.x_u())||y_i<(y2+(x_i-x2)/(x3-x2)*(y3-y2)))
 	  {
-	    x_i=(s.x_l+s.x_u)/2;
-	    y_i=(s.y_l+s.y_u)/2;
+	    x_i=(s.x_l()+s.x_u())/2;
+	    y_i=(s.y_l()+s.y_u())/2;
 	  }
 	assert(!std::isinf(y_i));
       }
@@ -308,20 +426,20 @@ namespace mcmc_utilities
       {
 	auto i_prev=i;
 	i_prev--;
-	cum_from=i_prev->cum_int_exp_y_u;
+	cum_from=i_prev->cum_int_exp_y_u();
       }
-    i->cum_int_exp_y_l=cum_from+i->int_exp_y_l;
-    i->cum_int_exp_y_u=i->cum_int_exp_y_l+i->int_exp_y_u;
-    assert(!std::isnan(i->cum_int_exp_y_u));
-    assert(i->cum_int_exp_y_u>=0);
+    i->set_cum_int_exp_y_l(cum_from+i->int_exp_y_l());
+    i->set_cum_int_exp_y_u(i->cum_int_exp_y_l()+i->int_exp_y_u());
+    assert(!std::isnan(i->cum_int_exp_y_u()));
+    assert(i->cum_int_exp_y_u()>=0);
 
-    if(std::isnan(i->cum_int_exp_y_u))
+    if(std::isnan(i->cum_int_exp_y_u()))
       {
 	assert(0);
 	throw nan_or_inf();
       }
 
-    if(i->cum_int_exp_y_u<0)
+    if(i->cum_int_exp_y_u()<0)
       {
 	throw cum_lt_zero();
       }
@@ -342,42 +460,44 @@ namespace mcmc_utilities
     if(i==section_list.begin())
       {
 	auto p=solve_intersection(*i,
-				  std::make_pair(i->x_l,i->y_l),
-				  std::make_pair(i->x_l,(T)INFINITY),
-				  std::make_pair((i_next)->x_l,(i_next)->y_l),
-				  std::make_pair((i_next)->x_u,(i_next)->y_u));
-	i->x_i=p.first;
-	i->y_i=p.second;
+				  std::make_pair(i->x_l(),i->y_l()),
+				  std::make_pair(i->x_l(),(T)INFINITY),
+				  std::make_pair((i_next)->x_l(),(i_next)->y_l()),
+				  std::make_pair((i_next)->x_u(),(i_next)->y_u()));
+	i->set_x_i(p.first);
+	i->set_y_i(p.second);
       }
     else if(i_next==section_list.end())
       {
 	auto p=solve_intersection(*i,
-				  std::make_pair((i_prev)->x_l,(i_prev)->y_l),
-				  std::make_pair((i_prev)->x_u,(i_prev)->y_u),
-				  std::make_pair(i->x_u,i->y_u),
-				  std::make_pair(i->x_u,(T)INFINITY));
-	i->x_i=p.first;
-	i->y_i=p.second;
+				  std::make_pair((i_prev)->x_l(),(i_prev)->y_l()),
+				  std::make_pair((i_prev)->x_u(),(i_prev)->y_u()),
+				  std::make_pair(i->x_u(),i->y_u()),
+				  std::make_pair(i->x_u(),(T)INFINITY));
+	i->set_x_i(p.first);
+	i->set_y_i(p.second);
       }
     else
       {
 	auto p=solve_intersection(*i,
-				  std::make_pair((i_prev)->x_l,(i_prev)->y_l),
-				  std::make_pair((i_prev)->x_u,(i_prev)->y_u),
-				  std::make_pair((i_next)->x_l,(i_next)->y_l),
-				  std::make_pair((i_next)->x_u,(i_next)->y_u));
-	i->x_i=p.first;
-	i->y_i=p.second;
+				  std::make_pair((i_prev)->x_l(),(i_prev)->y_l()),
+				  std::make_pair((i_prev)->x_u(),(i_prev)->y_u()),
+				  std::make_pair((i_next)->x_l(),(i_next)->y_l()),
+				  std::make_pair((i_next)->x_u(),(i_next)->y_u()));
+	i->set_x_i(p.first);
+	i->set_y_i(p.second);
       }
-    if(i->x_i<i->x_l)
+    if(i->x_i() < i->x_l())
       {
-	i->x_i=i->x_l;
+	i->set_x_i( i->x_l() );
       }
-    if(i->x_i>i->x_u)
+    if(i->x_i() > i->x_u())
       {
-	i->x_i=i->x_u;
+	i->set_x_i( i->x_u() );
       }
-    assert(!std::isinf(i->y_i));
+    assert(i->x_i() >= i->x_l());
+    assert(i->x_i() <= i->x_u());
+    assert(!std::isinf(i->y_i()));
   }
 
   template <typename T>
@@ -386,7 +506,7 @@ namespace mcmc_utilities
     T scale=-INFINITY;
     for(auto& i:section_list)
       {
-	scale=std::max(scale,std::max(i.y_l,i.y_u));
+	scale=std::max(scale,std::max(i.y_l(),i.y_u()));
       }
     return scale;
   }
@@ -397,8 +517,8 @@ namespace mcmc_utilities
     T new_scale=calc_scale(section_list);
     for(auto i=section_list.begin();i!=section_list.end();++i)
       {
-	i->y_l-=new_scale;
-	i->y_u-=new_scale;
+	i->set_y_l(i->y_l()-new_scale);
+	i->set_y_u(i->y_u()-new_scale);
       }
     
     scale+=new_scale;
@@ -406,9 +526,11 @@ namespace mcmc_utilities
       {
 	calc_intersection(section_list,i);
 	calc_cum_int_exp_y(section_list,i);
+	assert(i->x_l()<=i->x_i()&&
+	       i->x_i()<=i->x_u());
       }
 
-    assert(!std::isnan(section_list.back().cum_int_exp_y_u));
+    assert(!std::isnan(section_list.back().cum_int_exp_y_u()));
   }
 
 
@@ -445,19 +567,19 @@ namespace mcmc_utilities
       {
 	section<T> s;
 	
-	s.x_l=init_x[i];
-	s.x_u=init_x[i+1];
-	s.y_l=eval_log(pd,init_x[i],(T)0);
-	s.y_u=eval_log(pd,init_x[i+1],(T)0);
-	if(!(xrange.first<=s.x_l&&s.x_l<=s.x_u&&s.x_u<=xrange.second))
+	s.set_x_l(init_x[i]);
+	s.set_x_u(init_x[i+1]);
+	s.set_y_l(eval_log(pd,init_x[i],(T)0));
+	s.set_y_u(eval_log(pd,init_x[i+1],(T)0));
+	if(!(xrange.first<=s.x_l()&&s.x_l()<=s.x_u()&&s.x_u()<=xrange.second))
 	  {
 	    throw data_not_in_order();
 	  }
 
-	if(std::isnan(s.y_l)||std::isnan(s.y_u))
+	if(std::isnan(s.y_l())||std::isnan(s.y_u()))
 	  {
-	    std::cerr<<s.x_l<<" "<<s.x_u<<std::endl;
-	    std::cerr<<s.y_l<<" "<<s.y_u<<std::endl;
+	    std::cerr<<s.x_l()<<" "<<s.x_u()<<std::endl;
+	    std::cerr<<s.y_l()<<" "<<s.y_u()<<std::endl;
 	    assert(0);
 	    throw nan_or_inf();
 	  }
@@ -470,8 +592,8 @@ namespace mcmc_utilities
     //scale=0;
     for(auto i=section_list.begin();i!=section_list.end();++i)
       {
-	i->y_l-=scale;
-	i->y_u-=scale;
+	i->set_y_l(i->y_l()-scale);
+	i->set_y_u(i->y_u()-scale);
       }
 
     
@@ -479,8 +601,10 @@ namespace mcmc_utilities
       {
 	calc_intersection(section_list,i);
 	calc_cum_int_exp_y(section_list,i);
+	assert(i->x_l()<=i->x_i()&&
+	       i->x_i()<=i->x_u());
       }
-    assert(!std::isnan(section_list.back().cum_int_exp_y_u));
+    assert(!std::isnan(section_list.back().cum_int_exp_y_u()));
 
     for(;;)
       {
@@ -489,10 +613,10 @@ namespace mcmc_utilities
 	
 	for(;iter!=section_list.end();++iter)
 	  {
-	    if(std::isinf(iter->cum_int_exp_y_u))
+	    if(std::isinf(iter->cum_int_exp_y_u()))
 	      {
 		has_inf=true;
-		T x=(iter->x_l+iter->x_u)/2;
+		T x=(iter->x_l()+iter->x_u())/2;
 
 		insert_point(pd,section_list,x,scale);
 		update_scale(section_list,scale);
@@ -507,12 +631,12 @@ namespace mcmc_utilities
       }
     
 
-    if(std::isinf(section_list.back().cum_int_exp_y_u))
+    if(std::isinf(section_list.back().cum_int_exp_y_u()))
       {
 	std::cerr<<"initial points:"<<std::endl;
 	for(auto & i:section_list)
 	  {
-	    std::cerr<<i.x_l<<" "<<i.y_l<<"|"<<i.x_i<<" "<<i.y_i<<"|"<<i.x_u<<" "<<i.y_u<<std::endl;
+	    std::cerr<<i.x_l()<<" "<<i.y_l()<<"|"<<i.x_i()<<" "<<i.y_i()<<"|"<<i.x_u()<<" "<<i.y_u()<<std::endl;
 	  }
 	
 	throw more_init_points_needed();
@@ -528,7 +652,7 @@ namespace mcmc_utilities
     
     for(;iter!=section_list.end();++iter)
       {
-	if(iter->encloses(x)&&x!=iter->x_l&&x!=iter->x_u)
+	if(iter->encloses(x)&&x!=iter->x_l()&&x!=iter->x_u())
 	  {
 	    break;
 	  }
@@ -537,11 +661,11 @@ namespace mcmc_utilities
 #else
     auto iter=lower_bound(section_list.begin(),section_list.end(),x,[](const section<T>& x,const T& y)
 		       {
-			 if( (x.x_l-y)*(x.x_u-y)<=0  )
+			 if( (x.x_l()-y)*(x.x_u()-y)<=0  )
 			   {
 			     return false;
 			   }
-			 return x.x_l<y;
+			 return x.x_l()<y;
 		       });
 #endif    
       
@@ -549,25 +673,25 @@ namespace mcmc_utilities
       {
 	return;
       }
-    if(std::abs(iter->x_l-x)<std::numeric_limits<T>::epsilon()*10||std::abs(iter->x_u-x)<std::numeric_limits<T>::epsilon()*10)
+    if(std::abs(iter->x_l()-x)<std::numeric_limits<T>::epsilon()*10||std::abs(iter->x_u()-x)<std::numeric_limits<T>::epsilon()*10)
       {
 	return;
       }
 
 
-    if(std::abs(x-iter->x_l)<std::numeric_limits<T>::epsilon()*10||std::abs(x-iter->x_u)<std::numeric_limits<T>::epsilon()*10)
+    if(std::abs(x-iter->x_l())<std::numeric_limits<T>::epsilon()*10||std::abs(x-iter->x_u())<std::numeric_limits<T>::epsilon()*10)
       {
 	return;
       }
     section<T> s;
-    s.x_l=iter->x_l;
-    s.x_u=x;
-    s.y_l=eval_log(pd,s.x_l,scale);
-    s.y_u=eval_log(pd,s.x_u,scale);
+    s.set_x_l(iter->x_l());
+    s.set_x_u(x);
+    s.set_y_l(eval_log(pd,s.x_l(),scale));
+    s.set_y_u(eval_log(pd,s.x_u(),scale));
 
-    iter->x_l=x;
-    iter->y_l=eval_log(pd,iter->x_l,scale);
-
+    iter->set_x_l(x);
+    iter->set_y_l(eval_log(pd,iter->x_l(),scale));
+    
     section_list.insert(iter,s);
   }
 
@@ -577,14 +701,14 @@ namespace mcmc_utilities
   typename std::list<section<T> >::const_iterator search_point(const std::list<section<T> >& section_list,T p)
   {
     section<T> v;
-    v.cum_int_exp_y_u=p*section_list.back().cum_int_exp_y_u;
+    v.set_cum_int_exp_y_u(p*section_list.back().cum_int_exp_y_u());
     
-    auto r=equal_range(section_list.begin(),section_list.end(),v,[](const section<T>& x,const section<T>& y){return x.cum_int_exp_y_u<y.cum_int_exp_y_u;});
+    auto r=equal_range(section_list.begin(),section_list.end(),v,[](const section<T>& x,const section<T>& y){return x.cum_int_exp_y_u()<y.cum_int_exp_y_u();});
 
     if(r.first==section_list.end())
       {
-	std::cerr<<(p*section_list.back().cum_int_exp_y_u)<<std::endl;
-	std::cerr<<section_list.back().cum_int_exp_y_u<<std::endl;
+	std::cerr<<(p*section_list.back().cum_int_exp_y_u())<<std::endl;
+	std::cerr<<section_list.back().cum_int_exp_y_u()<<std::endl;
 	throw search_failed();
       }
     while(1)
@@ -602,7 +726,8 @@ namespace mcmc_utilities
 	    break;
 	  }
       }
-    
+    assert(r.first->x_l()<=r.first->x_i()&&
+	   r.first->x_i()<=r.first->x_u());
     return r.first;
   }
 
@@ -616,10 +741,10 @@ namespace mcmc_utilities
 	
 	for(;iter!=section_list.end();++iter)
 	  {
-	    if(std::isinf(iter->cum_int_exp_y_u))
+	    if(std::isinf(iter->cum_int_exp_y_u()))
 	      {
 		has_inf=true;
-		T x=(iter->x_l+iter->x_u)/2;
+		T x=(iter->x_l()+iter->x_u())/2;
 		
 		insert_point(pd,section_list,x,scale);
 		update_scale(section_list,scale);
@@ -650,8 +775,8 @@ namespace mcmc_utilities
     std::ofstream ofs(fname.c_str());
     for(auto& i:section_list)
       {
-	ofs<<i.x_i<<" "<<i.cum_int_exp_y_l<<std::endl;
-	ofs<<i.x_u<<" "<<i.cum_int_exp_y_u<<std::endl;
+	ofs<<i.x_i()<<" "<<i.cum_int_exp_y_l()<<std::endl;
+	ofs<<i.x_u()<<" "<<i.cum_int_exp_y_u()<<std::endl;
       }
 #endif
     do
@@ -659,13 +784,13 @@ namespace mcmc_utilities
 	T p=rnd();
 	//std::cerr<<"p="<<p<<" ";
 	auto iter=search_point(section_list,p);
-	T y=section_list.back().cum_int_exp_y_u*p;
+	T y=section_list.back().cum_int_exp_y_u()*p;
 	assert(!std::isnan(p));
-	assert(!std::isnan(section_list.back().cum_int_exp_y_u));
+	assert(!std::isnan(section_list.back().cum_int_exp_y_u()));
 	if(std::isnan(y))
 	  {
 	    std::cerr<<"p="<<p<<std::endl;
-	    std::cerr<<"cum_y="<<section_list.back().cum_int_exp_y_u<<std::endl;
+	    std::cerr<<"cum_y="<<section_list.back().cum_int_exp_y_u()<<std::endl;
 	  }
     
     
@@ -674,14 +799,15 @@ namespace mcmc_utilities
 	T x1,x2,y1,y2;
 	T ybase;
 
-	if(y>=iter->cum_int_exp_y_l)
+	if(y>=iter->cum_int_exp_y_l())
 	  {
-	    ybase = iter->cum_int_exp_y_l;
-	    x1 = iter -> x_i;
-	    y1 = iter -> y_i;
+	    ybase = iter->cum_int_exp_y_l();
+	    x1 = iter -> x_i();
+	    y1 = iter -> y_i();
 
-	    x2 = iter -> x_u;
-	    y2 = iter -> y_u;
+	    x2 = iter -> x_u();
+	    y2 = iter -> y_u();
+	    assert(x2>=x1);
 	  }
 	else
 	  {
@@ -690,19 +816,19 @@ namespace mcmc_utilities
 	    if(iter1!=section_list.begin())
 	      {
 		--iter1;
-		ybase = iter1->cum_int_exp_y_u;
+		ybase = iter1->cum_int_exp_y_u();
 	      }
 	    else
 	      {
 		ybase = 0;
 	      }
 	    
-	    x1 = iter -> x_l;
-	    y1 = iter -> y_l;
+	    x1 = iter -> x_l();
+	    y1 = iter -> y_l();
 	    
-	    x2 = iter -> x_i;	   
-	    y2 = iter -> y_i;
-
+	    x2 = iter -> x_i();	   
+	    y2 = iter -> y_i();
+	    assert(x2>=x1);
 	  }
 	if ( y == ybase )
 	  {
@@ -714,6 +840,7 @@ namespace mcmc_utilities
 	    assert(!std::isinf(y));
 	    assert(!std::isnan(ybase));
 	    assert(!std::isinf(ybase));
+	    assert(x2>=x1);
 	    result=inv_int_exp_y(y-ybase,std::make_pair(x1,y1),std::make_pair(x2,y2));
 	  }
 	if(std::isnan(result))
@@ -764,12 +891,12 @@ namespace mcmc_utilities
 	  {
 	    insert_point(pd,section_list,x,scale);
 	    update_scale(section_list,scale);
-	    if(std::isinf(section_list.back().cum_int_exp_y_u))
+	    if(std::isinf(section_list.back().cum_int_exp_y_u()))
 	      {
 		check_range(pd,section_list,scale);
 	      }
-	    assert(!std::isinf(section_list.back().cum_int_exp_y_u));
-	    assert(!std::isnan(section_list.back().cum_int_exp_y_u));
+	    assert(!std::isinf(section_list.back().cum_int_exp_y_u()));
+	    assert(!std::isnan(section_list.back().cum_int_exp_y_u()));
 	    if(cnt++>100*i)
 	      {
 		
@@ -777,9 +904,9 @@ namespace mcmc_utilities
 		std::ofstream ofs("dump.qdp");
 		for(auto& i:section_list)
 		  {
-		    ofs<<i.x_l<<" "<<i.y_l<<std::endl;
-		    ofs<<i.x_i<<" "<<i.y_i<<std::endl;
-		    ofs<<i.x_u<<" "<<i.y_u<<std::endl;	
+		    ofs<<i.x_l()<<" "<<i.y_l()<<std::endl;
+		    ofs<<i.x_i()<<" "<<i.y_i()<<std::endl;
+		    ofs<<i.x_u()<<" "<<i.y_u()<<std::endl;	
 		  }
 		
 		ofs<<"no no no"<<std::endl;
@@ -792,8 +919,8 @@ namespace mcmc_utilities
 		ofs.open("cum.qdp");
 		for(auto& i:section_list)
 		  {
-		    ofs<<i.x_i<<" "<<i.cum_int_exp_y_l<<std::endl;
-		    ofs<<i.x_u<<" "<<i.cum_int_exp_y_u<<std::endl;
+		    ofs<<i.x_i()<<" "<<i.cum_int_exp_y_l()<<std::endl;
+		    ofs<<i.x_u()<<" "<<i.cum_int_exp_y_u()<<std::endl;
 		  }
 		exit(0);
 #endif
