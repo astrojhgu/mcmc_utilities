@@ -84,16 +84,25 @@ namespace mcmc_utilities
 	T result=0;
 	T f1=0;
 	T f2=0;
-	//T f1=std::log(1 + (y2 - y1)/(x2 - x1)*y *std::exp(-y1));
-	f2=std::log(std::abs(y2-y1))-std::log(x2-x1)+std::log(y)-y1;
-	T f3=(y2>y1)?(1+std::exp(f2)):(1-std::exp(f2));
-	if(!isinf(f3))
+	/*
+	  T f1=std::log(1 + (y2 - y1)/(x2 - x1)*y *std::exp(-y1));
+	                ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^f2
+	*/
+	f2=(x2-x1+y *std::exp(-y1) * (y2 - y1))/(x2 - x1);
+	
+	
+	//T f3=(y2>y1)?(1+std::exp(f2)):(1-std::exp(f2));
+	if(!isinf(f2))
 	  {
-	    f1=std::log(f3);
+	    f1=std::log(f2);
+	  }
+	else if(f2>0)
+	  {
+	    f1=std::log(y2-y1)-std::log(x2-x1)+std::log(y)-y1;
 	  }
 	else
 	  {
-	    f1=f2;
+	    assert(0);
 	  }
 	
 	
