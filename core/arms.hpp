@@ -37,6 +37,35 @@ namespace mcmc_utilities
     const T& x2=p2.first;
     const T& y1=p1.second;
     const T& y2=p2.second;
+    T result=0;
+    if(x1==x2)
+      {
+	result=0;
+      }
+    else
+      {
+	const T k=(y2-y1)/(x2-x1);
+	if(k==0)
+	  {
+	    result=std::exp(y1)*(x-x1);
+	  }
+	else
+	  {
+	    //result=(std::exp(k*(x-x1))-1)*std::exp(y1)/k;
+	    result=(std::exp(k*(x-x1)+y1)-std::exp(y1))/k;
+	  }
+	if(std::isnan(result))
+	  {
+	    std::cerr<<std::setprecision(20)<<k<<" "<<x1<<" "<<y1<<" "<<x<<std::endl;
+	    std::cerr<<std::exp(k*(x-x1)+y1)<<std::endl;
+	    
+	    assert(0);
+	  }
+	
+
+      }
+    return result;
+    /*
     if(y1!=y2)
       {
 	T result=0;
@@ -67,16 +96,65 @@ namespace mcmc_utilities
 	//assert(!std::isinf(result));
 	return result;
       }
+    */
   }
 
   template <typename T>
-  T inv_int_exp_y(const T& y,const std::pair<T,T>& p1,const std::pair<T,T>& p2)
+  T inv_int_exp_y(const T& Z,const std::pair<T,T>& p1,const std::pair<T,T>& p2)
   {
+    //
+    //solve[\int_x1^x exp(k*(x-x1)+y1) dx==Z,x]
+
     const T& x1=p1.first;
     const T& x2=p2.first;
     const T& y1=p1.second;
     const T& y2=p2.second;
+    
+    T result=0;
+    T k=(y2-y1)/(x2-x1);
+    if(x1==x2||Z==0)
+      {
+	result=x1;
+      }
+    else
+      {
+	
+	if(k==0)
+	  {
+	    result= x1+Z*std::exp(-y1);
+	    if(std::isinf(result))
+	      {
+		return x1+std::exp(std::log(Z)-y1);
+	      }
+	  }
+	else
+	  {
+	    T U=1+k*Z*std::exp(-y1);
+	    if(!std::isinf(U))
+	      {
+		result= x1+std::log(U)/k;
+	      }
+	    else
+	      {
+		result=x1+(std::log(k*Z)-y1)/k;
+	      }
+	  }
+      }
+    if(std::isinf(result))
+      {
+	std::cerr<<std::setprecision(20);
+	std::cerr<<k*Z<<std::endl;
+	std::cerr<<y1<<std::endl;
+	std::cerr<<1+k*Z*std::exp(-y1)<<std::endl;
+	assert(0);
+      }
+    if(std::isnan(result))
+      {
+	assert(0);
+      }
+    return result;
 
+    /*
     if(y2!=y1&&x1!=x2)
       {
 	//result=x1 + (x1 - x2)/(y1 - y2) * std::log( (1 + (y1 - y2)/(x1 - x2)*y *std::exp(-y1) ));
@@ -84,10 +162,10 @@ namespace mcmc_utilities
 	T result=0;
 	T f1=0;
 	T f2=0;
-	/*
-	  T f1=std::log(1 + (y2 - y1)/(x2 - x1)*y *std::exp(-y1));
+	
+	//T f1=std::log(1 + (y2 - y1)/(x2 - x1)*y *std::exp(-y1));
 	                ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^f2
-	*/
+			
 	f2=(x2-x1+y *std::exp(-y1) * (y2 - y1))/(x2 - x1);
 	
 	
@@ -126,7 +204,8 @@ namespace mcmc_utilities
       {
 	return y*std::exp(-y1)+x1;
       }
-    return x1;
+      return x1;
+    */
   }
   
   template <typename T>
@@ -756,7 +835,8 @@ namespace mcmc_utilities
     T x=p*section_list.back().cum_int_exp_y_u();
     for(auto i=section_list.begin();i!=section_list.end();++i)
       {
-	if(x<=i->cum_int_exp_y_u())
+	const T xx=i->cum_int_exp_y_u();
+	if((p<1&&x<xx)||(p==1&&x<=xx))
 	  {
 	    return i;
 	  }
@@ -816,7 +896,12 @@ namespace mcmc_utilities
 #endif
     do
       {
-	T p=rnd();
+	T p=0;
+	do
+	  {
+	    p=rnd();
+	  }
+	while(p>=1);
 	//std::cerr<<"p="<<p<<" ";
 	auto iter=search_point(section_list,p);
 	T y=section_list.back().cum_int_exp_y_u()*p;
@@ -834,7 +919,8 @@ namespace mcmc_utilities
 	T x1,x2,y1,y2;
 	T ybase;
 
-	if(y>=iter->cum_int_exp_y_l())
+	if(y>=iter->cum_int_exp_y_l()&&
+	   y<=iter->cum_int_exp_y_u())
 	  {
 	    ybase = iter->cum_int_exp_y_l();
 	    x1 = iter -> x_i();
@@ -844,7 +930,7 @@ namespace mcmc_utilities
 	    y2 = iter -> y_u();
 	    assert(x2>=x1);
 	  }
-	else
+	else if(y<iter->cum_int_exp_y_l())
 	  {
 	    auto iter1=iter;
 	    
@@ -865,6 +951,11 @@ namespace mcmc_utilities
 	    y2 = iter -> y_i();
 	    assert(x2>=x1);
 	  }
+	else
+	  {
+	    assert(0);
+	  }
+
 	if ( y == ybase )
 	  {
 	    result = x1;
