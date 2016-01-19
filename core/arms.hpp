@@ -37,6 +37,7 @@ namespace mcmc_utilities
     const T& x2=p2.first;
     const T& y1=p1.second;
     const T& y2=p2.second;
+    //std::cerr<<x1<<" "<<y1<<" "<<x2<<" "<<y2<<std::endl;
     T result=0;
     if(x1==x2)
       {
@@ -51,14 +52,19 @@ namespace mcmc_utilities
 	  }
 	else
 	  {
-	    //result=(std::exp(k*(x-x1))-1)*std::exp(y1)/k;
-	    result=(std::exp(k*(x-x1)+y1)-std::exp(y1))/k;
+	    result=(std::exp(k*(x-x1))-1)*std::exp(y1)/k;
+	    if(std::isnan(result))
+	      {
+		result=(std::exp(k*(x-x1)+y1)-std::exp(y1))/k;
+	      }
+	    
 	  }
 	if(std::isnan(result))
 	  {
 	    std::cerr<<std::setprecision(20)<<k<<" "<<x1<<" "<<y1<<" "<<x<<std::endl;
 	    std::cerr<<std::exp(k*(x-x1)+y1)<<std::endl;
-	    
+	    std::cerr<<(std::exp(k*(x-x1)+y1)-std::exp(y1))<<std::endl;
+	    std::cerr<<(std::exp(k*(x-x1))-1)*std::exp(y1)<<std::endl;
 	    assert(0);
 	  }
 	
