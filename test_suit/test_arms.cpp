@@ -23,6 +23,9 @@ int main()
 {
   normal_dist nd;
   size_t n=0;
-  std::cout<<arms(nd,500.0,10,rng,n)-1<<std::endl;
+  for(int i=0;i<1000;++i)
+    {
+      std::cout<<arms(nd,500.0,10,rng,n)-1<<std::endl;
+    }
 }
 
