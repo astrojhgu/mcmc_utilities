@@ -22,8 +22,10 @@ namespace mcmc_utilities
   T eval_log(const probability_density_1d<T>& pd,T x,T scale)
   {
     T result=pd.eval_log(x)-scale;
+#ifdef DEBUG
     assert(!std::isnan(result));
     assert(!std::isinf(result));
+#endif
     return result;
   }
   
@@ -69,6 +71,11 @@ namespace mcmc_utilities
 	  }
 	
 
+      }
+
+    if(std::isnan(result))
+      {
+	throw nan_or_inf();
       }
     return result;
     /*
@@ -146,6 +153,7 @@ namespace mcmc_utilities
 	      }
 	  }
       }
+#ifdef DEBUG
     if(std::isinf(result))
       {
 	std::cerr<<std::setprecision(20);
@@ -153,11 +161,20 @@ namespace mcmc_utilities
 	std::cerr<<y1<<std::endl;
 	std::cerr<<1+k*Z*std::exp(-y1)<<std::endl;
 	assert(0);
+
+	throw nan_or_inf();
       }
     if(std::isnan(result))
       {
 	assert(0);
       }
+#endif
+
+    if(std::isinf(result)||std::isnan(result))
+      {
+	throw nan_or_inf();
+      }
+    
     return result;
 
     /*
@@ -367,10 +384,16 @@ namespace mcmc_utilities
 	}
       else
 	{
+#ifdef DEBUG
 	  assert(!std::isinf(_y_i));
 	  assert(!std::isnan(_y_i));
+#endif
+	  
 	  _int_exp_y_l=int_exp_y(_x_i,std::make_pair(_x_l,_y_l),std::make_pair(_x_i,_y_i));
+	  
+#ifdef DEBUG
 	  assert(!std::isnan(_int_exp_y_l));
+#endif
 	  //assert(!std::isinf(int_exp_y_l));
 	  
 	}
@@ -380,10 +403,16 @@ namespace mcmc_utilities
 	}
       else
 	{
+#ifdef DEBUG
 	  assert(!std::isinf(_y_i));
 	  assert(!std::isnan(_y_i));
+#endif
+	  
 	  _int_exp_y_u=int_exp_y(_x_u,std::make_pair(_x_i,_y_i),std::make_pair(_x_u,_y_u));
+	  
+#ifdef DEBUG
 	  assert(!std::isnan(_int_exp_y_u));
+#endif
 	  //assert(!std::isinf(int_exp_y_u));
 	  
 	}
@@ -501,16 +530,20 @@ namespace mcmc_utilities
 	    x_i=(s.x_l()+s.x_u())/2;
 	    y_i=(s.y_l()+s.y_u())/2;
 	  }
+#ifdef DEBUG
 	assert(!std::isinf(y_i));
+#endif
       }
     
     if(std::isnan(x_i)||std::isnan(y_i))
       {
+#ifdef DEBUG	
 	std::cerr<<std::setprecision(20)<<x1<<" "<<y1<<std::endl;
 	std::cerr<<x2<<" "<<y2<<std::endl;
 	std::cerr<<x3<<" "<<y3<<std::endl;
 	std::cerr<<x4<<" "<<y4<<std::endl;
 	assert(0);
+#endif
 	throw nan_or_inf();
 	    
       }
@@ -531,8 +564,11 @@ namespace mcmc_utilities
       }
     i->set_cum_int_exp_y_l(cum_from+i->int_exp_y_l());
     i->set_cum_int_exp_y_u(i->cum_int_exp_y_l()+i->int_exp_y_u());
+
+#ifdef DEBUG
     assert(!std::isnan(i->cum_int_exp_y_u()));
     assert(i->cum_int_exp_y_u()>=0);
+#endif
 
     if(std::isnan(i->cum_int_exp_y_u()))
       {
@@ -596,9 +632,11 @@ namespace mcmc_utilities
       {
 	i->set_x_i( i->x_u() );
       }
+#ifdef DEBUG
     assert(i->x_i() >= i->x_l());
     assert(i->x_i() <= i->x_u());
     assert(!std::isinf(i->y_i()));
+#endif
   }
 
   template <typename T>
@@ -630,8 +668,9 @@ namespace mcmc_utilities
 	assert(i->x_l()<=i->x_i()&&
 	       i->x_i()<=i->x_u());
       }
-
+#ifdef DEBUG
     assert(!std::isnan(section_list.back().cum_int_exp_y_u()));
+#endif
   }
 
 
@@ -705,7 +744,10 @@ namespace mcmc_utilities
 	assert(i->x_l()<=i->x_i()&&
 	       i->x_i()<=i->x_u());
       }
+
+#ifdef DEBUG
     assert(!std::isnan(section_list.back().cum_int_exp_y_u()));
+#endif
 
     for(;;)
       {
@@ -847,7 +889,11 @@ namespace mcmc_utilities
 	    return i;
 	  }
       }
+    
+#ifdef DEBUG
     assert(0);
+#endif
+    
     throw search_failed();
     return section_list.end();
   }
@@ -911,16 +957,19 @@ namespace mcmc_utilities
 	//std::cerr<<"p="<<p<<" ";
 	auto iter=search_point(section_list,p);
 	T y=section_list.back().cum_int_exp_y_u()*p;
+
+#ifdef DEBUG
 	assert(!std::isnan(p));
 	assert(!std::isnan(section_list.back().cum_int_exp_y_u()));
+
 	if(std::isnan(y))
 	  {
 	    std::cerr<<"p="<<p<<std::endl;
 	    std::cerr<<"cum_y="<<section_list.back().cum_int_exp_y_u()<<std::endl;
 	  }
-    
-    
+	
 	assert(!std::isnan(y));
+#endif
 	
 	T x1,x2,y1,y2;
 	T ybase;
@@ -934,7 +983,10 @@ namespace mcmc_utilities
 
 	    x2 = iter -> x_u();
 	    y2 = iter -> y_u();
+
+#ifdef DEBUG
 	    assert(x2>=x1);
+#endif
 	  }
 	else if(y<iter->cum_int_exp_y_l())
 	  {
@@ -955,7 +1007,9 @@ namespace mcmc_utilities
 	    
 	    x2 = iter -> x_i();	   
 	    y2 = iter -> y_i();
+#ifdef DEBUG	    
 	    assert(x2>=x1);
+#endif
 	  }
 	else
 	  {
@@ -968,16 +1022,20 @@ namespace mcmc_utilities
 	  }
 	else
 	  {
+#ifdef DEBUG
 	    assert(!std::isnan(y));
 	    assert(!std::isinf(y));
 	    assert(!std::isnan(ybase));
 	    assert(!std::isinf(ybase));
 	    assert(x2>=x1);
+#endif
 	    result=inv_int_exp_y(y-ybase,std::make_pair(x1,y1),std::make_pair(x2,y2));
 	  }
 	if(std::isnan(result))
 	  {
+#ifdef DEBUG	  
 	    assert(0);
+#endif
 	    throw nan_or_inf();
 	  }
       }while(std::isnan(result));
@@ -1027,8 +1085,10 @@ namespace mcmc_utilities
 	      {
 		check_range(pd,section_list,scale);
 	      }
+#ifdef DEBUG
 	    assert(!std::isinf(section_list.back().cum_int_exp_y_u()));
 	    assert(!std::isnan(section_list.back().cum_int_exp_y_u()));
+#endif
 	    if(cnt++>100*i)
 	      {
 		
