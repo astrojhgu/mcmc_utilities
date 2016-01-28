@@ -3,6 +3,7 @@
 #include <core/deterministic_node.hpp>
 #include <helper/vnode.hpp>
 #include <helper/node_counter.hpp>
+#include <helper/abstract_node_factory.hpp>
 #include <string>
 
 namespace mcmc_utilities
