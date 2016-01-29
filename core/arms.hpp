@@ -496,7 +496,7 @@ namespace mcmc_utilities
 	    x_i=(s.x_l()+s.x_u())/2;
 	    y_i=(s.y_l()+s.y_u())/2;
 	  }
-	assert(!std::isinf(y_i));
+	//assert(!std::isinf(y_i));
       }
     else if(std::isinf(y4))
       {
@@ -508,7 +508,7 @@ namespace mcmc_utilities
 	    x_i=(s.x_l()+s.x_u())/2;
 	    y_i=(s.y_l()+s.y_u())/2;
 	  }
-	assert(!std::isinf(y_i));
+	//assert(!std::isinf(y_i));
       }
     else
       {
