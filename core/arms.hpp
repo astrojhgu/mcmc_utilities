@@ -169,7 +169,7 @@ namespace mcmc_utilities
       }
 #endif
 
-    if(std::isinf(result)||std::isnan(result))
+    if(!std::isfinite(result))
       {
 	throw nan_or_inf();
       }
@@ -518,7 +518,7 @@ namespace mcmc_utilities
 	y_i=-(x2 * y1 * y3 - x4 * y1 * y3 - x1 * y2 * y3 + x4 * y2 * y3 - x2 * y1 * y4 + x3 * y1 * y4 +  x1 * y2 * y4 - x3 * y2 * y4)/(-x3 * y1 + x4 * y1 + x3 * y2 - x4 * y2 + x1 * y3 - x2 * y3 - x1 * y4 + x2 * y4);
 
 	if(((y3-y1)*(x2-x1)==(y2-y1)*(x3-x1)&&
-	    (y4-y1)*(x2-x1)==(y2-y1)*(x4-x1))||(y2-y1)*(x4-x3)==(x2-x1)*(y4-y3)||isnan(y_i)||isinf(y_i))
+	    (y4-y1)*(x2-x1)==(y2-y1)*(x4-x1))||(y2-y1)*(x4-x3)==(x2-x1)*(y4-y3)||!std::isfinite(y_i))
 	  {
 	    x_i=(s.x_l()+s.x_u())/2;
 	    y_i=(s.y_l()+s.y_u())/2;
