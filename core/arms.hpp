@@ -30,7 +30,7 @@ namespace mcmc_utilities
   }
   
   template <typename T>
-  T int_exp_y(const T& x,const std::pair<T,T> p1,const std::pair<T,T>& p2)
+  T int_exp_y(const T& x,const std::pair<T,T>& p1,const std::pair<T,T>& p2)
   {
     
     //calculate \int_x1^2 exp(y1+(x-x1)*(y2-y1)/(x2-x1)) dx
@@ -43,7 +43,7 @@ namespace mcmc_utilities
     T result=0;
     if(x1==x2)
       {
-	result=0;
+	//result=0;
       }
     else
       {
@@ -61,6 +61,7 @@ namespace mcmc_utilities
 	      }
 	    
 	  }
+#ifdef DEBUG
 	if(std::isnan(result))
 	  {
 	    std::cerr<<std::setprecision(20)<<k<<" "<<x1<<" "<<y1<<" "<<x<<std::endl;
@@ -69,8 +70,7 @@ namespace mcmc_utilities
 	    std::cerr<<(std::exp(k*(x-x1))-1)*std::exp(y1)<<std::endl;
 	    assert(0);
 	  }
-	
-
+#endif
       }
 
     if(std::isnan(result))
@@ -130,14 +130,13 @@ namespace mcmc_utilities
 	result=x1;
       }
     else
-      {
-	
+      {	
 	if(k==0)
 	  {
 	    result= x1+Z*std::exp(-y1);
 	    if(std::isinf(result))
 	      {
-		return x1+std::exp(std::log(Z)-y1);
+		result=x1+std::exp(std::log(Z)-y1);
 	      }
 	  }
 	else
@@ -145,7 +144,7 @@ namespace mcmc_utilities
 	    T U=1+k*Z*std::exp(-y1);
 	    if(!std::isinf(U))
 	      {
-		result= x1+std::log(U)/k;
+		result=x1+std::log(U)/k;
 	      }
 	    else
 	      {
