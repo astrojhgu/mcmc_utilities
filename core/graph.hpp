@@ -315,35 +315,6 @@ namespace mcmc_utilities
       add_node(pn,tag,parent_tags);
     }
 
-#if 0
-
-    void add_node(node<T>* pn,
-		  const T_tag& tag,
-		  const std::vector<std::pair<node<T>*,size_t> >& parents)
-    {
-      add_node(std::shared_ptr<node<T> >(pn),tag,parents);
-    }
-
-    
-    void add_node(const std::shared_ptr<node<T> >& pn,
-		  const T_tag& tag,
-		  const std::vector<std::pair<node<T>*,size_t> >& parents)
-    {
-      std::vector<std::pair<T_tag,size_t> > parent_tags;
-      for(auto& p:parents)
-	{
-	  node<T>* pp(p.first);
-	  if(tag_map.count(pp)==0)
-	    {
-	      throw parents_not_exist();
-	    }
-	  T_tag tag=tag_map[pp];
-	  parent_tags.push_back({tag,p.second});
-	}
-      this->add_node(pn,tag,parent_tags);
-    }
-#endif
-    
   };
 }
 
