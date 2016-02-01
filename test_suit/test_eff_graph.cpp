@@ -119,7 +119,23 @@ int main()
   
   graph<double,std::string> g2;
   g2.copy_from(g);
-  
+
+  auto topology=g2.topology();
+
+  ofstream ofs("eff_topology.txt");
+
+  for(auto& p:topology)
+    {
+      std::string tag=p.first;
+      std::vector<std::pair<std::string,size_t> > parents=p.second;
+      ofs<<tag;
+      for(auto q:parents)
+	{
+	  ofs<<" ("<<q.first<<" , "<<q.second<<" )";
+	}
+      ofs<<endl;
+    }
+  ofs.close();
   auto A=g2.get_monitor("A",0);
   auto B=g2.get_monitor("B",0);
   auto mu=g2.get_monitor("mu",0);

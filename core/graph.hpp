@@ -23,7 +23,8 @@ namespace mcmc_utilities
     std::list<stochastic_node<T>* > stochastic_node_list;
     std::list<deterministic_node<T>* > deterministic_node_list;
     std::map<T_tag,std::shared_ptr<node<T> > > node_map;
-    std::map<std::shared_ptr<node<T> > ,T_tag, std::owner_less<std::shared_ptr<node<T> > > > tag_map;
+    //std::map<std::shared_ptr<node<T> > ,T_tag, std::owner_less<std::shared_ptr<node<T> > > > tag_map;
+    std::map<std::shared_ptr<node<T> > ,T_tag > tag_map;
   public:
     void copy_from(const graph& rhs)
     {
@@ -313,6 +314,41 @@ namespace mcmc_utilities
 	  parent_tags.push_back({tag,p.second});
 	}
       add_node(pn,tag,parent_tags);
+    }
+
+    T_tag get_tag(const std::shared_ptr<node<T> >& p)const
+    {
+      auto result= tag_map.find(p);
+      if(result==tag_map.end())
+	{
+	  throw node_not_found();
+	}
+      return result->second;
+    }
+
+    T_tag get_tag(const node<T>* p)const
+    {
+      return get_tag(std::shared_ptr<node<T> >(const_cast<node<T>*>(p),[](node<T>*){}));
+    }
+
+    std::map<T_tag,std::vector<std::pair<T_tag,size_t> > > topology()const
+    {
+      std::map<T_tag,std::vector<std::pair<T_tag,size_t> > >  result;
+      for(auto& p:node_map)
+	{
+	  auto tag=p.first;
+	  auto pnode=p.second;
+	  size_t nparents=pnode->num_of_parents();
+	  std::vector<std::pair<T_tag,size_t> > parent_list;
+	  for(size_t i=0;i<nparents;++i)
+	    {
+	      auto px=pnode->get_parent(i);
+	      T_tag ptag=get_tag(px.first);
+	      parent_list.push_back({ptag,px.second});
+	    }
+	  result[tag]=parent_list;
+	}
+      return result;
     }
 
   };
