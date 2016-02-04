@@ -22,6 +22,7 @@
 #include "arithmetic_node.hpp"
 #include "phi_node.hpp"
 #include "cosmology_nodes.hpp"
+#include "ez_node.hpp"
 #include <atomic>
 
 namespace mcmc_utilities
@@ -64,6 +65,7 @@ namespace mcmc_utilities
       register_function({"ilogit"},std::shared_ptr<abstract_node_factory<T> >(new ilogit_node_factory<T>()));
       register_function({"D_L"},std::shared_ptr<abstract_node_factory<T> >(new luminosity_distance_node_factory<T>()));
       register_function({"D_A"},std::shared_ptr<abstract_node_factory<T> >(new asize_distance_node_factory<T>()));
+      register_function({"Ez"},std::shared_ptr<abstract_node_factory<T> >(new ez_node_factory<T>()));
       initialized=true;
     }
 
