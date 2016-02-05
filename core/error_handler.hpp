@@ -26,6 +26,12 @@ namespace mcmc_utilities
     {
       return _what.c_str();
     }
+
+    void attach_message(const std::string& str)
+    {
+      _what+="\n";
+      _what+=str;
+    }
   };
 
   class index_out_of_range
@@ -197,6 +203,19 @@ namespace mcmc_utilities
     too_many_rejections()
       :mcmc_exception("too may rejections, maybe illed-shaped pdf")
     {}    
+  };
+
+  class ill_conditioned_distribution
+    :public mcmc_exception
+  {
+  public:
+    ill_conditioned_distribution()
+      :mcmc_exception("ill condition distribution")
+    {}
+
+    ill_conditioned_distribution(const std::string& str)
+      :mcmc_exception(str)
+    {}
   };
 }
 

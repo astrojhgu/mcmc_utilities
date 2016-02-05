@@ -1,6 +1,7 @@
 #ifndef TAG_T
 #define TAG_T
 #include <string>
+#include <iostream>
 namespace mcmc_utilities
 {
   struct tag_t
@@ -67,6 +68,12 @@ namespace mcmc_utilities
       return !(*this==rhs);
     }
   };
+
+  std::ostream& operator<<(std::ostream& os,const tag_t& t)
+  {
+    os<<"("<<t.name<<" , "<<t.idx<<")";
+    return os;
+  }
 
 };
 

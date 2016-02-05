@@ -2,8 +2,9 @@
 #define MYARMS_HPP
 #include "distribution.hpp"
 #include <algorithm>
+#include <limits>
 #include <iomanip>
-//#define DEBUG
+#define DEBUG
 #ifdef DEBUG
 #include <fstream>
 #endif
@@ -24,7 +25,14 @@ namespace mcmc_utilities
     T result=pd.eval_log(x)-scale;
 #ifdef DEBUG
     assert(!std::isnan(result));
-    assert(!std::isinf(result));
+    if(std::isinf(result)&&result>0)
+      {
+	std::cerr<<result<<std::endl;
+	std::cerr<<scale<<std::endl;
+	std::cerr<<(&pd)<<std::endl;
+	std::cerr<<pd.eval_log(x)<<std::endl;
+      }
+    assert(!std::isinf(result)||result<0);
 #endif
     return result;
   }
@@ -45,7 +53,7 @@ namespace mcmc_utilities
       {
 	//result=0;
       }
-    else
+    else if(!std::isinf(y1)&&!std::isinf(y2))
       {
 	const T k=(y2-y1)/(x2-x1);
 	if(k==0)
@@ -72,7 +80,11 @@ namespace mcmc_utilities
 	  }
 #endif
       }
-
+    else
+      {
+	result=0;
+      }
+    
     if(std::isnan(result))
       {
 	throw nan_or_inf();
@@ -246,6 +258,7 @@ namespace mcmc_utilities
     T _int_exp_y_u;//\int_x_i^x_u exp(y)
     T _cum_int_exp_y_l;
     T _cum_int_exp_y_u;
+
   public:
     T x_l()const
     {
@@ -310,9 +323,10 @@ namespace mcmc_utilities
 
     void set_x_i(T x)
     {
+#ifdef DEBUG
       assert(!isnan(_x_l));
       assert(!isnan(_x_u));
-      
+#endif      
       _x_i=x;
       if(_x_i<_x_l)
 	{
@@ -326,16 +340,25 @@ namespace mcmc_utilities
    
     void set_y_l(T y)
     {
+#ifdef DEBUG
+      assert(!isnan(y));
+#endif
       _y_l=y;
     }
 
     void set_y_u(T y)
     {
+#ifdef DEBUG
+      assert(!isnan(y));
+#endif
       _y_u=y;
     }
 
     void set_y_i(T y)
     {
+#ifdef DEBUG
+      assert(!isnan(y));
+#endif
       _y_i=y;
     } 
     
@@ -384,7 +407,7 @@ namespace mcmc_utilities
       else
 	{
 #ifdef DEBUG
-	  assert(!std::isinf(_y_i));
+	  assert(!std::isinf(_y_i)||_y_i<0);
 	  assert(!std::isnan(_y_i));
 #endif
 	  
@@ -403,7 +426,7 @@ namespace mcmc_utilities
       else
 	{
 #ifdef DEBUG
-	  assert(!std::isinf(_y_i));
+	  assert(!std::isinf(_y_i)||_y_i<0);
 	  assert(!std::isnan(_y_i));
 #endif
 	  
@@ -481,7 +504,9 @@ namespace mcmc_utilities
     const T& y3=p3.second;
     const T& y4=p4.second;
 
-
+#ifdef DEBUG
+    assert(!isnan(y1)&&!isnan(y2)&&!isnan(y3)&&!isnan(y4));
+#endif
     
 
     T x_i,y_i;
@@ -530,7 +555,7 @@ namespace mcmc_utilities
 	    y_i=(s.y_l()+s.y_u())/2;
 	  }
 #ifdef DEBUG
-	assert(!std::isinf(y_i));
+	assert(!std::isinf(y_i)||y_i<0);
 #endif
       }
     
@@ -571,7 +596,9 @@ namespace mcmc_utilities
 
     if(std::isnan(i->cum_int_exp_y_u()))
       {
+#ifdef DEBUG
 	assert(0);
+#endif
 	throw nan_or_inf();
       }
 
@@ -587,39 +614,90 @@ namespace mcmc_utilities
     auto i_next=i;
     auto i_prev=i;
     
-
-    i_next++;
+    if(i_next!=section_list.end())
+      {
+	i_next++;
+      }
     if(i!=section_list.begin())
       {
 	i_prev--;
       }
     if(i==section_list.begin())
       {
+	T x1=i->x_l();
+	T x2=i->x_l();
+	T x3=i_next->x_l();
+	T x4=i_next->x_u();
+
+	T y1=i->y_l();
+	T y2=std::numeric_limits<T>::infinity();
+	T y3=i_next->y_l();
+	T y4=i_next->y_u();
+	
+#ifdef DEBUG
+	assert(!isnan(y1));
+	assert(!isnan(y2));
+	assert(!isnan(y3));
+	assert(!isnan(y4));
+
+#endif
 	auto p=solve_intersection(*i,
-				  std::make_pair(i->x_l(),i->y_l()),
-				  std::make_pair(i->x_l(),(T)INFINITY),
-				  std::make_pair((i_next)->x_l(),(i_next)->y_l()),
-				  std::make_pair((i_next)->x_u(),(i_next)->y_u()));
+				  std::make_pair(x1,y1),
+				  std::make_pair(x2,y2),
+				  std::make_pair(x3,y3),
+				  std::make_pair(x4,y4));
 	i->set_x_i(p.first);
 	i->set_y_i(p.second);
       }
     else if(i_next==section_list.end())
       {
+	T x1=i_prev->x_l();
+	T x2=i_prev->x_u();
+	T x3=i->x_u();
+	T x4=i->x_u();
+
+	T y1=i_prev->y_l();
+	T y2=i_prev->y_u();
+	T y3=i->y_u();
+	T y4=std::numeric_limits<T>::infinity();
+
+#ifdef DEBUG
+	assert(!isnan(y1)&&
+	       !isnan(y2)&&
+	       !isnan(y3)&&
+	       !isnan(y4));
+#endif
 	auto p=solve_intersection(*i,
-				  std::make_pair((i_prev)->x_l(),(i_prev)->y_l()),
-				  std::make_pair((i_prev)->x_u(),(i_prev)->y_u()),
-				  std::make_pair(i->x_u(),i->y_u()),
-				  std::make_pair(i->x_u(),(T)INFINITY));
+				  std::make_pair(x1,y1),
+				  std::make_pair(x2,y2),
+				  std::make_pair(x3,y3),
+				  std::make_pair(x4,y4));
 	i->set_x_i(p.first);
 	i->set_y_i(p.second);
       }
     else
       {
+	T x1=i_prev->x_l();
+	T x2=i_prev->x_u();
+	T x3=i_next->x_l();
+	T x4=i_next->x_u();
+
+	T y1=i_prev->y_l();
+	T y2=i_prev->y_u();
+	T y3=i_next->y_l();
+	T y4=i_next->y_u();
+
+#ifdef DEBUG
+	assert(!isnan(y1)&&
+	       !isnan(y2)&&
+	       !isnan(y3)&&
+	       !isnan(y4));
+#endif
 	auto p=solve_intersection(*i,
-				  std::make_pair((i_prev)->x_l(),(i_prev)->y_l()),
-				  std::make_pair((i_prev)->x_u(),(i_prev)->y_u()),
-				  std::make_pair((i_next)->x_l(),(i_next)->y_l()),
-				  std::make_pair((i_next)->x_u(),(i_next)->y_u()));
+				  std::make_pair(x1,y1),
+				  std::make_pair(x2,y2),
+				  std::make_pair(x3,y3),
+				  std::make_pair(x4,y4));
 	i->set_x_i(p.first);
 	i->set_y_i(p.second);
       }
@@ -634,18 +712,30 @@ namespace mcmc_utilities
 #ifdef DEBUG
     assert(i->x_i() >= i->x_l());
     assert(i->x_i() <= i->x_u());
-    assert(!std::isinf(i->y_i()));
+    assert(!std::isinf(i->y_i())||i->y_i()<0);
 #endif
   }
 
   template <typename T>
   T calc_scale(const std::list<section<T> >& section_list)
   {
-    T scale=-INFINITY;
+    T scale=-std::numeric_limits<T>::infinity();
     for(auto& i:section_list)
       {
 	scale=std::max(scale,std::max(i.y_l(),i.y_u()));
       }
+    if(std::isinf(scale))
+      {
+	if(scale<0)
+	  {
+	    throw ill_conditioned_distribution("maybe all values are zero");
+	  }
+	else
+	  {
+	    throw ill_conditioned_distribution("may have inf points");
+	  }
+      }
+    
     return scale;
   }
 
@@ -664,8 +754,10 @@ namespace mcmc_utilities
       {
 	calc_intersection(section_list,i);
 	calc_cum_int_exp_y(section_list,i);
+#ifdef DEBUG
 	assert(i->x_l()<=i->x_i()&&
 	       i->x_i()<=i->x_u());
+#endif
       }
 #ifdef DEBUG
     assert(!std::isnan(section_list.back().cum_int_exp_y_u()));
@@ -719,7 +811,9 @@ namespace mcmc_utilities
 	  {
 	    std::cerr<<s.x_l()<<" "<<s.x_u()<<std::endl;
 	    std::cerr<<s.y_l()<<" "<<s.y_u()<<std::endl;
-	    assert(0);
+#ifdef DEBUG
+    	    assert(0);
+#endif
 	    throw nan_or_inf();
 	  }
 	
@@ -740,8 +834,10 @@ namespace mcmc_utilities
       {
 	calc_intersection(section_list,i);
 	calc_cum_int_exp_y(section_list,i);
+#ifdef DEBUG
 	assert(i->x_l()<=i->x_i()&&
 	       i->x_i()<=i->x_u());
+#endif
       }
 
 #ifdef DEBUG
@@ -833,7 +929,11 @@ namespace mcmc_utilities
 
     iter->set_x_l(x);
     iter->set_y_l(eval_log(pd,iter->x_l(),scale));
-    
+
+#ifdef DEBUG
+    assert(!isnan(iter->y_l()));
+    assert(!isnan(iter->y_u()));
+#endif
     section_list.insert(iter,s);
   }
 
@@ -1091,7 +1191,7 @@ namespace mcmc_utilities
 	    if(cnt++>100*i)
 	      {
 		
-#ifdef DEBUG
+#if 0
 		std::ofstream ofs("dump.qdp");
 		for(auto& i:section_list)
 		  {
@@ -1113,7 +1213,7 @@ namespace mcmc_utilities
 		    ofs<<i.x_i()<<" "<<i.cum_int_exp_y_l()<<std::endl;
 		    ofs<<i.x_u()<<" "<<i.cum_int_exp_y_u()<<std::endl;
 		  }
-		exit(0);
+		//exit(0);
 #endif
 		if(cnt>100)
 		  {

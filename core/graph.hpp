@@ -87,9 +87,22 @@ namespace mcmc_utilities
 
     void sample(base_urand<T>& rnd)
     {
-      for(auto& p:stochastic_node_list)
+      stochastic_node<T>* p_current=nullptr;
+      try
 	{
-	  p->sample(rnd);
+	  for(auto& p:stochastic_node_list)
+	    {
+	      p_current=p;
+	      p_current->sample(rnd);
+	    }
+	}
+      catch(mcmc_exception& e)
+	{
+	  T_tag t=this->get_tag(p_current);
+	  std::ostringstream oss;
+	  oss<<"when sampling "<<t;
+	  e.attach_message(oss.str());
+	  throw ;
 	}
     }
 
@@ -350,6 +363,20 @@ namespace mcmc_utilities
 	}
       return result;
     }
+
+    node<T>* get_node(const T_tag& t)const
+    {
+      auto i=node_map.find(t);
+      if(i==node_map.end())
+	{
+	  return nullptr;
+	}
+      else
+	{
+	  return i->second.get();
+	}
+    }
+      
 
   };
 }
