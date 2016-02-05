@@ -25,6 +25,13 @@ namespace mcmc_utilities
     std::map<T_tag,std::shared_ptr<node<T> > > node_map;
     //std::map<std::shared_ptr<node<T> > ,T_tag, std::owner_less<std::shared_ptr<node<T> > > > tag_map;
     std::map<std::shared_ptr<node<T> > ,T_tag > tag_map;
+
+    int verbose_level;
+  public:
+    graph()
+      :verbose_level(0)
+    {}
+    
   public:
     void copy_from(const graph& rhs)
     {
@@ -85,15 +92,26 @@ namespace mcmc_utilities
       deterministic_node_list.clear();
     }
 
+    void set_verbose_level(int n)
+    {
+      verbose_level=n;
+    }
+
     void sample(base_urand<T>& rnd)
     {
       stochastic_node<T>* p_current=nullptr;
       try
 	{
+	  int n=0;
 	  for(auto& p:stochastic_node_list)
 	    {
+	      if(verbose_level>=1)
+		{
+		  std::cerr<<"sampling "<<n<<"-th node of "<<stochastic_node_list.size()<<" "<<get_tag(p)<<std::endl;
+		}
 	      p_current=p;
 	      p_current->sample(rnd);
+	      ++n;
 	    }
 	}
       catch(mcmc_exception& e)

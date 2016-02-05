@@ -566,7 +566,7 @@ namespace mcmc_utilities
 	std::cerr<<x2<<" "<<y2<<std::endl;
 	std::cerr<<x3<<" "<<y3<<std::endl;
 	std::cerr<<x4<<" "<<y4<<std::endl;
-	assert(0);
+	//assert(0);
 #endif
 	throw nan_or_inf();
 	    

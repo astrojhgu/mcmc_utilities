@@ -37,6 +37,7 @@ namespace mcmc_utilities
       name=rhs.name;
       idx=rhs.idx;
       is_array=rhs.is_array;
+      return *this;
     }
 
     bool operator < (const tag_t& rhs)const

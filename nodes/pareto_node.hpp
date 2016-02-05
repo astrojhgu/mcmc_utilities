@@ -37,8 +37,8 @@ namespace mcmc_utilities
     {
       T c=this->parent(0);
       T alpha=this->parent(1);
-      
-      return std::make_pair(c,std::exp(6/(alpha+1)));
+      T eta=1e-4;
+      return std::make_pair(c,c*std::pow(eta,-(T)(1.)/alpha));
     }
 
     void do_initialize(size_t n)override
