@@ -49,6 +49,19 @@ namespace mcmc_utilities
     {
       observed[n]=b?1:0;
     }
+
+    size_t num_of_observed()const
+    {
+      return std::accumulate(observed.begin(),
+			     observed.end(),
+			     0,
+			     [](int x1,int x2){return x1+x2;});
+    }
+
+    size_t num_of_unobserved()const
+    {
+      return this->num_of_dims()-num_of_observed();
+    }
     
     T log_posterior_prob()const
     {

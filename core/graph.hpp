@@ -105,13 +105,16 @@ namespace mcmc_utilities
 	  int n=0;
 	  for(auto& p:stochastic_node_list)
 	    {
-	      if(verbose_level>=1)
+	      if(p->num_of_unobserved()>0)
 		{
-		  std::cerr<<"sampling "<<n<<"-th node of "<<stochastic_node_list.size()<<" "<<get_tag(p)<<std::endl;
+		  if(verbose_level>=1)
+		    {		  
+		      std::cerr<<"sampling "<<n+1<<"-th node "<<get_tag(p)<<std::endl;
+		    }
+
+		  p->sample(rnd);
+		  ++n;
 		}
-	      p_current=p;
-	      p_current->sample(rnd);
-	      ++n;
 	    }
 	}
       catch(mcmc_exception& e)
