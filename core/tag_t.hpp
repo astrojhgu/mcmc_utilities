@@ -72,7 +72,11 @@ namespace mcmc_utilities
 
   std::ostream& operator<<(std::ostream& os,const tag_t& t)
   {
-    os<<"("<<t.name<<" , "<<t.idx<<")";
+    os<<t.name;
+    if(t.is_array)
+      {
+	os<<"["<<t.idx<<"]";
+      }
     return os;
   }
 

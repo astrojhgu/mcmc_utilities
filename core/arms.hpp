@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <limits>
 #include <iomanip>
-#define DEBUG
+//#define DEBUG
 #ifdef DEBUG
 #include <fstream>
 #endif

@@ -385,7 +385,7 @@ namespace mcmc_utilities
       return result;
     }
 
-    node<T>* get_node(const T_tag& t)const
+    const node<T>* get_node(const T_tag& t)const
     {
       auto i=node_map.find(t);
       if(i==node_map.end())
