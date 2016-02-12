@@ -1,7 +1,7 @@
 #ifndef UNARY_NODE_HPP
 #define UNARY_NODE_HPP
 
-#include <core/deterministic_node.hpp>
+#include <core/cached_dtm_node.hpp>
 #include <helper/node_counter.hpp>
 #include <memory>
 #include <utility>
@@ -13,13 +13,13 @@ namespace mcmc_utilities
 {
   template <typename T>
   class unary_node
-    :public deterministic_node<T>
+    :public cached_dtm_node<T>
   {
   private:
     std::function<T (const T&)> func;
   public:
     unary_node(const std::function<T (const T&)>& f)
-      :deterministic_node<T>(1,1),func(f)
+      :cached_dtm_node<T>(1,1),func(f)
     {}
 
     T do_calc(size_t idx,const std::vector<T>& parent)const override

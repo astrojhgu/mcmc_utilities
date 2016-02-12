@@ -1,7 +1,7 @@
 #ifndef EZ_NODE_HPP
 #define EZ_NODE_HPP
 
-#include <core/deterministic_node.hpp>
+#include <core/cached_dtm_node.hpp>
 #include <math/functions.hpp>
 #include <helper/node_counter.hpp>
 #include <memory>
@@ -14,11 +14,11 @@ namespace mcmc_utilities
 {
   template <typename T>
   class ez_node
-    :public deterministic_node<T>
+    :public cached_dtm_node<T>
   {
   public:
     ez_node()
-      :deterministic_node<T>(6,1)
+      :cached_dtm_node<T>(6,1)
     {}
 
     T E(T z,T Omega_m,T Omega_l,T Omega_k,T Omega_rad,T w)const

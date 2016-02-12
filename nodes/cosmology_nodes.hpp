@@ -1,7 +1,7 @@
 #ifndef COSMOLOGY_NODE_HPP
 #define COSMOLOGY_NODE_HPP
 
-#include <core/deterministic_node.hpp>
+#include <core/cached_dtm_node.hpp>
 #include <math/functions.hpp>
 #include <helper/node_counter.hpp>
 #include <memory>
@@ -16,7 +16,7 @@ namespace mcmc_utilities
   ///////////luminosity distance node//////////////
   template <typename T>
   class luminosity_distance_node
-    :public deterministic_node<T>
+    :public cached_dtm_node<T>
   {
   private:
     struct parent_value_cache_t
@@ -39,7 +39,7 @@ namespace mcmc_utilities
     T value_cache;
   public:
     luminosity_distance_node()
-      :deterministic_node<T>(7,1),parent_value_cache{},value_cache{}
+      :cached_dtm_node<T>(7,1),parent_value_cache{},value_cache{}
     {}
 
     T do_calc(size_t idx,const std::vector<T>& parent)const override
@@ -143,7 +143,7 @@ namespace mcmc_utilities
   ///////////asize distance node//////////////
   template <typename T>
   class asize_distance_node
-    :public deterministic_node<T>
+    :public cached_dtm_node<T>
   {
   private:
     struct parent_value_cache_t
@@ -167,7 +167,7 @@ namespace mcmc_utilities
 
   public:
     asize_distance_node()
-      :deterministic_node<T>(7,1),parent_value_cache{},value_cache{}
+      :cached_dtm_node<T>(7,1),parent_value_cache{},value_cache{}
     {}
 
     T do_calc(size_t idx,const std::vector<T>& parent)const override

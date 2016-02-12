@@ -1,6 +1,6 @@
 #ifndef COMPOSED_NODE_HPP
 #define COMPOSED_NODE_HPP
-#include "deterministic_node.hpp"
+#include "cached_dtm_node.hpp"
 #include <memory>
 #include <map>
 
@@ -9,11 +9,11 @@ namespace mcmc_utilities
 {
   template <typename T>
   class forward_node
-    :public deterministic_node<T>
+    :public cached_dtm_node<T>
   {
   public:
     forward_node()
-      :deterministic_node<T>(1,1)
+      :cached_dtm_node<T>(1,1)
       {}
 
     T do_calc(size_t idx,const std::vector<T>& parent)const override
@@ -42,7 +42,7 @@ namespace mcmc_utilities
   
   template <typename T,typename T_tag=std::string>
   class composed_node
-    :public deterministic_node<T>
+    :public cached_dtm_node<T>
   {
   protected:
     std::map<T_tag,std::shared_ptr<deterministic_node<T> > >elements;
@@ -50,7 +50,7 @@ namespace mcmc_utilities
     std::vector<std::pair<std::shared_ptr<deterministic_node<T> >,size_t> > return_list;
   public:
     composed_node(size_t nparents,size_t ndim)
-      :deterministic_node<T>(nparents,ndim)
+      :cached_dtm_node<T>(nparents,ndim)
     {}
     
   public:

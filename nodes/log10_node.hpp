@@ -1,7 +1,7 @@
 #ifndef LOG10_NODE_HPP
 #define LOG10_NODE_HPP
 
-#include <core/deterministic_node.hpp>
+#include <core/cached_dtm_node.hpp>
 #include <math/functions.hpp>
 #include <helper/node_counter.hpp>
 #include <memory>
@@ -14,11 +14,11 @@ namespace mcmc_utilities
 {
   template <typename T>
   class log10_node
-    :public deterministic_node<T>
+    :public cached_dtm_node<T>
   {
   public:
     log10_node()
-      :deterministic_node<T>(1,1)
+      :cached_dtm_node<T>(1,1)
     {}
 
     T do_calc(size_t idx,const std::vector<T>& parent)const override

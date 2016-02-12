@@ -22,6 +22,11 @@ namespace mcmc_utilities
     deterministic_node(const deterministic_node<T>& )=delete;
     deterministic_node<T>& operator=(const deterministic_node<T>&)=delete;
 
+  public:
+    T calc(size_t idx,const std::vector<T>& parents)const
+    {
+      return this->do_calc(idx,parents);
+    }
 
   private:
     void do_connect_to_parent(node<T>*  rhs,size_t n,size_t idx) override

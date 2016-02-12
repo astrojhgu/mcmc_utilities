@@ -1,6 +1,6 @@
 #ifndef ARITHMETIC_NODE
 #define ARITHMETIC_NODE
-#include <core/deterministic_node.hpp>
+#include <core/cached_dtm_node.hpp>
 #include <helper/node_counter.hpp>
 #include <helper/vnode.hpp>
 #include <memory>
@@ -14,11 +14,11 @@ namespace mcmc_utilities
   /////add////
   template <typename T>
   class add_node
-    :public deterministic_node<T>
+    :public cached_dtm_node<T>
   {
   public:
     add_node()
-      :deterministic_node<T>(2,1)
+      :cached_dtm_node<T>(2,1)
     {}
     
     T do_calc(size_t idx,const std::vector<T>& parent)const override
@@ -89,11 +89,11 @@ namespace mcmc_utilities
   /////sub////
   template <typename T>
   class sub_node
-    :public deterministic_node<T>
+    :public cached_dtm_node<T>
   {
   public:
     sub_node()
-      :deterministic_node<T>(2,1)
+      :cached_dtm_node<T>(2,1)
     {}
     
     T do_calc(size_t idx,const std::vector<T>& parent)const override
@@ -164,11 +164,11 @@ namespace mcmc_utilities
   /////neg////
   template <typename T>
   class neg_node
-    :public deterministic_node<T>
+    :public cached_dtm_node<T>
   {
   public:
     neg_node()
-      :deterministic_node<T>(1,1)
+      :cached_dtm_node<T>(1,1)
     {}
     
     T do_calc(size_t idx,const std::vector<T>& parent)const override
@@ -231,11 +231,11 @@ namespace mcmc_utilities
     /////pos////
   template <typename T>
   class pos_node
-    :public deterministic_node<T>
+    :public cached_dtm_node<T>
   {
   public:
     pos_node()
-      :deterministic_node<T>(1,1)
+      :cached_dtm_node<T>(1,1)
     {}
     
     T do_calc(size_t idx,const std::vector<T>& parent)const override
@@ -299,11 +299,11 @@ namespace mcmc_utilities
   /////mul////
   template <typename T>
   class mul_node
-    :public deterministic_node<T>
+    :public cached_dtm_node<T>
   {
   public:
     mul_node()
-      :deterministic_node<T>(2,1)
+      :cached_dtm_node<T>(2,1)
     {}
     
     T do_calc(size_t idx,const std::vector<T>& parent)const override
@@ -375,11 +375,11 @@ namespace mcmc_utilities
   /////div////
   template <typename T>
   class div_node
-    :public deterministic_node<T>
+    :public cached_dtm_node<T>
   {
   public:
     div_node()
-      :deterministic_node<T>(2,1)
+      :cached_dtm_node<T>(2,1)
     {}
     
     T do_calc(size_t idx,const std::vector<T>& parent)const override
@@ -452,11 +452,11 @@ namespace mcmc_utilities
   /////pow////
   template <typename T>
   class pow_node
-    :public deterministic_node<T>
+    :public cached_dtm_node<T>
   {
   public:
     pow_node()
-      :deterministic_node<T>(2,1)
+      :cached_dtm_node<T>(2,1)
     {}
     
     T do_calc(size_t idx,const std::vector<T>& parent)const override
