@@ -100,30 +100,19 @@ namespace mcmc_utilities
     void sample(base_urand<T>& rnd)
     {
       stochastic_node<T>* p_current=nullptr;
-      try
+      int n=0;
+      for(auto& p:stochastic_node_list)
 	{
-	  int n=0;
-	  for(auto& p:stochastic_node_list)
+	  if(p->num_of_unobserved()>0)
 	    {
-	      if(p->num_of_unobserved()>0)
-		{
-		  if(verbose_level>=1)
-		    {		  
-		      std::cerr<<"sampling "<<n+1<<"-th node "<<get_tag(p)<<std::endl;
-		    }
-
-		  p->sample(rnd);
-		  ++n;
+	      if(verbose_level>=1)
+		{		  
+		  std::cerr<<"sampling "<<n+1<<"-th node "<<get_tag(p)<<std::endl;
 		}
+	      
+	      p->sample(rnd);
+	      ++n;
 	    }
-	}
-      catch(mcmc_exception& e)
-	{
-	  T_tag t=this->get_tag(p_current);
-	  std::ostringstream oss;
-	  oss<<"when sampling "<<t;
-	  e.attach_message(oss.str());
-	  throw ;
 	}
     }
 

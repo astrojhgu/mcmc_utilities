@@ -68,7 +68,21 @@ namespace mcmc_utilities
     {
       return !(*this==rhs);
     }
+
+    operator std::string()const
+    {
+      std::string result=name;
+      if(is_array)
+	{
+	  result+="[";
+	  result+=std::to_string(idx);
+	  result+="]";
+	}
+      return result;
+    }
   };
+
+  
 
   std::ostream& operator<<(std::ostream& os,const tag_t& t)
   {
