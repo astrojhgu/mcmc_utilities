@@ -92,7 +92,7 @@ public:
   {
     if(ndim==0||ndim==1)
       {
-	return make_pair(.001,1-1e-3);
+	return make_pair(.001,1-1e-5);
       }
     else
       {
