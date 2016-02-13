@@ -101,18 +101,29 @@ namespace mcmc_utilities
     {
       stochastic_node<T>* p_current=nullptr;
       int n=0;
-      for(auto& p:stochastic_node_list)
+      try
 	{
-	  if(p->num_of_unobserved()>0)
+	  for(auto& p:stochastic_node_list)
 	    {
-	      if(verbose_level>=1)
-		{		  
-		  std::cerr<<"sampling "<<n+1<<"-th node "<<get_tag(p)<<std::endl;
+	      if(p->num_of_unobserved()>0)
+		{
+		  if(verbose_level>=1)
+		    {		  
+		      std::cerr<<"sampling "<<n+1<<"-th node "<<get_tag(p)<<std::endl;
+		  }
+		  p_current=p;
+		  p->sample(rnd);
+		  ++n;
 		}
-	      
-	      p->sample(rnd);
-	      ++n;
 	    }
+	}
+      catch(mcmc_exception& e)
+	{
+	  e.attach_message({"##################"});
+	  e.attach_message({"When sampling"});
+	  e.attach_message(this->get_tag(p_current));
+	  e.attach_message({"##################"});
+	  throw e;
 	}
     }
 
