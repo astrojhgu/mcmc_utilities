@@ -119,10 +119,13 @@ namespace mcmc_utilities
 	}
       catch(mcmc_exception& e)
 	{
-	  e.attach_message({"##################"});
-	  e.attach_message({"When sampling"});
-	  e.attach_message(this->get_tag(p_current));
-	  e.attach_message({"##################"});
+	  std::ostringstream oss;
+	  oss<<"##################\n";
+	  oss<<"When sampling\n";
+	  oss<<this->get_tag(p_current);
+	  oss<<"\n";
+	  oss<<"##################\n";
+	  e.attach_message(oss.str());
 	  throw e;
 	}
     }

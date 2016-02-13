@@ -2,6 +2,7 @@
 #define DISTRIBUTIONS_HPP
 #include <cmath>
 #include <cassert>
+#include <sstream>
 #include "../core/error_handler.hpp"
 #include "functions.hpp"
 namespace mcmc_utilities
@@ -11,7 +12,16 @@ namespace mcmc_utilities
   {
     if(x<0||lambda<=0||r<=0)
       {
-	throw var_out_of_range();
+	std::ostringstream oss;
+	var_out_of_range e;
+	oss<<"###########\n";
+	oss<<"logdgamma:\n";
+	oss<<"x= "<<x<<"\n";
+	oss<<"r= "<<r<<"\n";
+	oss<<"l= "<<lambda<<"\n";
+	oss<<"###########\n";
+	e.attach_message(oss.str());
+	throw e;
       }
     return r*std::log(lambda)+(r-1)*std::log(x)-lambda*x-lgamma(r);
   }
@@ -21,7 +31,15 @@ namespace mcmc_utilities
   {
     if(tau<=0||k<=0)
       {
-	throw var_out_of_range();
+	std::ostringstream oss;
+	var_out_of_range e;
+	oss<<"###########\n";
+	oss<<"logdt:\n";
+	oss<<"tau= "<<tau<<"\n";
+	oss<<"k= "<<k<<"\n";
+	oss<<"###########\n";
+	e.attach_message(oss.str());
+	throw e;
       }
     static const T_p pi=std::atan(1)*4;
     return lgamma((k+1)/2)-lgamma(k/2)+std::log(tau/k/pi)/2-(k+1)/2*std::log(1+tau*(x-mu)*(x-mu)/k);
@@ -32,10 +50,14 @@ namespace mcmc_utilities
   {
     if(sigma<=0)
       {
-	std::cerr<<"sigma="<<sigma<<std::endl;
-	std::cerr<<"x="<<x<<std::endl;
-	//assert(0);
-	throw var_out_of_range();
+	std::ostringstream oss;
+	var_out_of_range e;
+	oss<<"###########\n";
+	oss<<"logdnorm:\n";
+	oss<<"sigma= "<<sigma<<"\n";
+	oss<<"###########\n";
+	e.attach_message(oss.str());
+	throw e;
       }
     static const T_p pi=std::atan(1)*4;
     //return std::log(tau/(2*pi))/2-tau*(x-mu)*(x-mu)/2;
@@ -47,7 +69,14 @@ namespace mcmc_utilities
   {
     if(sigma<=0||x<=0)
       {
-	throw var_out_of_range();
+	std::ostringstream oss;
+	var_out_of_range e;
+	oss<<"###########\n";
+	oss<<"logdnorm:\n";
+	oss<<"sigma= "<<sigma<<"\n";
+	oss<<"###########\n";
+	e.attach_message(oss.str());
+	throw e;
       }
     static const T_p pi=std::atan(1)*4;
     T_p result=-std::log(2*pi*sigma*sigma)/2-std::log(x)-(std::log(x)-mu)*(std::log(x)-mu)/(2.*sigma*sigma);
@@ -73,7 +102,15 @@ namespace mcmc_utilities
   {
     if(x<c||c<=0)
       {
-	throw var_out_of_range();
+	std::ostringstream oss;
+	var_out_of_range e;
+	oss<<"###########\n";
+	oss<<"logdpar:\n";
+	oss<<"c= "<<c<<"\n";
+	oss<<"x= "<<x<<"\n";
+	oss<<"###########\n";
+	e.attach_message(oss.str());
+	throw e;
       }
     T_p result=std::log(alpha)+alpha*std::log(c)-(alpha+1)*std::log(x);
     return result;

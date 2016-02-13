@@ -87,7 +87,9 @@ namespace mcmc_utilities
     
     if(std::isnan(result))
       {
-	throw nan_or_inf();
+	nan_or_inf e;
+	e.attach_message("nan #1");
+	throw e;
       }
     return result;
     /*
@@ -183,7 +185,9 @@ namespace mcmc_utilities
 
     if(!std::isfinite(result))
       {
-	throw nan_or_inf();
+	nan_or_inf e;
+	e.attach_message("#2");
+	throw e;
       }
     
     return result;
@@ -477,7 +481,9 @@ namespace mcmc_utilities
 	  }
       }
     //cerr<<"x="<<x<<endl;
-    throw var_out_of_range();
+    var_out_of_range e;
+    e.attach_message("#3");
+    throw e;
     return 0;
   }
 
@@ -568,7 +574,9 @@ namespace mcmc_utilities
 	std::cerr<<x4<<" "<<y4<<std::endl;
 	//assert(0);
 #endif
-	throw nan_or_inf();
+	nan_or_inf e;
+	e.attach_message("#4");
+	throw e;
 	    
       }
     
@@ -599,12 +607,16 @@ namespace mcmc_utilities
 #ifdef DEBUG
 	assert(0);
 #endif
-	throw nan_or_inf();
+	nan_or_inf e;
+	e.attach_message("#5");
+	throw e;
       }
 
     if(i->cum_int_exp_y_u()<0)
       {
-	throw cum_lt_zero();
+	cum_lt_zero e;
+	e.attach_message("#6");
+	throw e;
       }
   }
 
@@ -728,11 +740,11 @@ namespace mcmc_utilities
       {
 	if(scale<0)
 	  {
-	    throw ill_conditioned_distribution("maybe all values are zero");
+	    throw ill_conditioned_distribution("maybe all values are zero 7");
 	  }
 	else
 	  {
-	    throw ill_conditioned_distribution("may have inf points");
+	    throw ill_conditioned_distribution("may have inf points 8");
 	  }
       }
     
@@ -778,7 +790,8 @@ namespace mcmc_utilities
     std::vector<T> init_x;
     std::pair<T,T> xrange(pd.var_range());
     std::sort(init_x1.begin(),init_x1.end());
-    init_x.push_back(xrange.first+std::numeric_limits<T>::epsilon());
+    //init_x.push_back(xrange.first+std::numeric_limits<T>::epsilon());
+    init_x.push_back(xrange.first);
     for(auto& x:init_x1)
       {
 	if(std::abs(x-init_x.back())<std::numeric_limits<T>::epsilon()*10||
@@ -788,10 +801,13 @@ namespace mcmc_utilities
 	  }
 	init_x.push_back(x);
       }
-    init_x.push_back(xrange.second-std::numeric_limits<T>::epsilon());
+    //init_x.push_back(xrange.second-std::numeric_limits<T>::epsilon());
+    init_x.push_back(xrange.second);
     if(init_x.size()<5)
       {
-	throw too_few_init_points();
+	too_few_init_points e;
+	e.attach_message("#8");
+	throw e;
       }
     
     for(size_t i=0;i!=init_x.size()-1;++i)
@@ -804,7 +820,9 @@ namespace mcmc_utilities
 	s.set_y_u(eval_log(pd,init_x[i+1],(T)0));
 	if(!(xrange.first<=s.x_l()&&s.x_l()<=s.x_u()&&s.x_u()<=xrange.second))
 	  {
-	    throw data_not_in_order();
+	    data_not_in_order e;
+	    e.attach_message("#9");
+	    throw e;
 	  }
 
 	if(std::isnan(s.y_l())||std::isnan(s.y_u()))
@@ -814,7 +832,9 @@ namespace mcmc_utilities
 #ifdef DEBUG
     	    assert(0);
 #endif
-	    throw nan_or_inf();
+	    nan_or_inf e;
+	    e.attach_message("#10");
+	    throw e;
 	  }
 	
 	section_list.push_back(s);
@@ -876,8 +896,10 @@ namespace mcmc_utilities
 	  {
 	    std::cerr<<i.x_l()<<" "<<i.y_l()<<"|"<<i.x_i()<<" "<<i.y_i()<<"|"<<i.x_u()<<" "<<i.y_u()<<std::endl;
 	  }
-	
-	throw more_init_points_needed();
+
+	more_init_points_needed e;
+	e.attach_message("#11");
+	throw e;
       }
   }
 
@@ -992,8 +1014,10 @@ namespace mcmc_utilities
 #ifdef DEBUG
     assert(0);
 #endif
-    
-    throw search_failed();
+
+    search_failed e;
+    e.attach_message("#12");
+    throw e;
     return section_list.end();
   }
 
@@ -1135,7 +1159,9 @@ namespace mcmc_utilities
 #ifdef DEBUG	  
 	    assert(0);
 #endif
-	    throw nan_or_inf();
+	    nan_or_inf e;
+	    e.attach_message("#13");
+	    throw e;
 	  }
       }while(std::isnan(result));
     //std::cerr<<result<<std::endl;
@@ -1160,7 +1186,9 @@ namespace mcmc_utilities
       {
 	std::cerr<<"xcur="<<xcur<<" ("<<xrange.first<<" , "<<xrange.second<<")"<<std::endl;
 
-	throw var_out_of_range();
+	var_out_of_range e;
+	e.attach_message("#14");
+	throw e;
       }
 
     
