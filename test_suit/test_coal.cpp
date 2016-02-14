@@ -62,7 +62,7 @@ public:
   {
     if(ndim==0||ndim==1)
       {
-	return make_pair(0.0001,100.);
+	return make_pair(1e-6,100.);
       }
     else
       {
