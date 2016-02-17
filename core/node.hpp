@@ -195,7 +195,13 @@ namespace mcmc_utilities
     virtual void do_initialize(size_t n)
     {}
 
-    virtual std::shared_ptr<node<T> > do_clone()const=0;
+    virtual std::shared_ptr<node<T> > do_clone()const
+    {
+      not_implemented e;
+      e.attach_message("clone operation not implemented");
+      throw e;
+      return std::shared_ptr<node<T> >(nullptr);
+    }
   };
 }
 

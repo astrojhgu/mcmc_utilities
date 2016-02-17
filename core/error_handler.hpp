@@ -217,6 +217,15 @@ namespace mcmc_utilities
       :mcmc_exception(str)
     {}
   };
+
+  class not_implemented
+    :public mcmc_exception
+  {
+  public:
+    not_implemented()
+      :mcmc_exception("not implemented")
+    {}
+  };
 }
 
 #endif
