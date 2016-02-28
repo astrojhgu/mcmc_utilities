@@ -15,21 +15,54 @@ namespace mcmc_utilities
 {
   template <typename T>
   class stochastic_node
-    :public node<T>,public probability_density_1d<T>
+    :public node<T>
   {
+  private:
+    class _pd1d
+      :public probability_density_1d<T>
+    {
+    private:
+      const stochastic_node<T>* psn;
+    public:
+      _pd1d(const stochastic_node<T>* _psn)
+	:psn(_psn)
+      {};
+
+    private:
+      T do_eval_log(const T& x)const
+      {
+	return psn->eval_log(x);
+      }
+
+      std::pair<T,T> do_var_range()const
+      {
+	return std::move(psn->do_var_range());
+      }
+
+      std::vector<T> do_init_points()const
+      {
+	return std::move(psn->do_init_points());
+      }
+
+      std::vector<T> do_candidate_points()const
+      {
+	return std::move(psn->do_candidate_points());
+      }
+    }pd1d;
+    
   private:
     std::vector<T> v;//store current value(s) of this node
     std::vector<int> observed;
     size_t current_idx;
   public:
     stochastic_node(size_t nparents,const std::vector<T>& v_)
-      :node<T>(nparents,v_.size()),
+      :node<T>(nparents,v_.size()),pd1d(this),
       v{v_},observed(v_.size()),current_idx(0)
     {
     }
 
     stochastic_node(size_t nparents,T v_)
-      :node<T>(nparents,1),
+      :node<T>(nparents,1),pd1d(this),
       v(1),observed(v.size()),current_idx(0)
     {
       v[0]=v_;
@@ -68,9 +101,8 @@ namespace mcmc_utilities
       return log_prob()+this->log_likelihood();
     }
 
-    T do_eval_log(const T& x)const override
+    T eval_log(const T& x)const
     {
-      
       const_cast<stochastic_node*>(this)->v[current_idx]=x;
       return log_posterior_prob();
     }
@@ -121,7 +153,7 @@ namespace mcmc_utilities
 	    }
 	  this->set_current_idx(i);
 	  T xprev=this->value(i);
-	  std::pair<T,T> xrange(this->var_range());
+	  std::pair<T,T> xrange(this->do_var_range());
 	  //xprev=xprev<xrange.first?xrange.first:xprev;
 	  //xprev=xprev>xrange.second?xrange.second:xprev;
 	  
@@ -135,11 +167,11 @@ namespace mcmc_utilities
 	  
 	  if(is_continuous(i))
 	    {
-	      xprev=continuous_sample(*this,xprev,1,urand);
+	      xprev=continuous_sample(pd1d,xprev,1,urand);
 	    }
 	  else
 	    {
-	      xprev=discrete_sample(*this,xprev,10,urand);
+	      xprev=discrete_sample(pd1d,xprev,10,urand);
 	    }
 	  
 	  this->set_value(i,xprev);
@@ -164,9 +196,26 @@ namespace mcmc_utilities
       return x;
     }
 
-
-
     virtual bool is_continuous(size_t idx)const=0;
+
+    virtual std::pair<T,T> do_var_range()const=0;
+
+    virtual std::vector<T> do_init_points()const
+    {
+      std::vector<T> result(5);
+      std::pair<T,T> xrange(do_var_range());
+      T xl=xrange.first,xr=xrange.second;
+      for(size_t n=0;n<result.size();++n)
+	{	 
+	  result[n]=xl+(xr-xl)/(result.size()+1)*(n+1);
+	}
+      return result;
+    }
+
+    virtual std::vector<T> do_candidate_points()const
+    {
+      return std::vector<T>();
+    }
   };  
 }
 
