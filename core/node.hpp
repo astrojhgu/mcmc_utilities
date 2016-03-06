@@ -105,7 +105,7 @@ namespace mcmc_utilities
       return this->do_value(idx);
     }
 
-    virtual T log_likelihood()const final
+    T log_likelihood()const
     {
 #ifndef USE_NON_RECURSIVE
       T result=0;
