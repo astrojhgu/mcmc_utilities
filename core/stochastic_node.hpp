@@ -185,7 +185,7 @@ namespace mcmc_utilities
     }
 
     
-    void do_connect_to_parent(node<T>*  rhs,size_t n,size_t idx) override
+    void do_connect_to_parent(node<T>*  rhs,size_t n,size_t idx) override final
     {
       this->parents.at(n)=std::make_pair(rhs,idx);
       rhs->add_stochastic_child(this);
