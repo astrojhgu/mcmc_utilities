@@ -18,51 +18,18 @@ namespace mcmc_utilities
     :public node<T>
   {
   private:
-    class _pd1d
-      :public probability_density_1d<T>
-    {
-    private:
-      const stochastic_node<T>* psn;
-    public:
-      _pd1d(const stochastic_node<T>* _psn)
-	:psn(_psn)
-      {};
-
-    private:
-      T do_eval_log(const T& x)const
-      {
-	return psn->eval_log(x);
-      }
-
-      std::pair<T,T> do_var_range()const
-      {
-	return std::move(psn->do_var_range());
-      }
-
-      std::vector<T> do_init_points()const
-      {
-	return std::move(psn->do_init_points());
-      }
-
-      std::vector<T> do_candidate_points()const
-      {
-	return std::move(psn->do_candidate_points());
-      }
-    }pd1d;
-    
-  private:
     std::vector<T> v;//store current value(s) of this node
     std::vector<int> observed;
     size_t current_idx;
   public:
     stochastic_node(size_t nparents,const std::vector<T>& v_)
-      :node<T>(nparents,v_.size()),pd1d(this),
+      :node<T>(nparents,v_.size()),
       v{v_},observed(v_.size()),current_idx(0)
     {
     }
 
     stochastic_node(size_t nparents,T v_)
-      :node<T>(nparents,1),pd1d(this),
+      :node<T>(nparents,1),
       v(1),observed(v.size()),current_idx(0)
     {
       v[0]=v_;
@@ -154,6 +121,7 @@ namespace mcmc_utilities
 	  this->set_current_idx(i);
 	  T xprev=this->value(i);
 	  std::pair<T,T> xrange(this->do_var_range());
+	  
 	  //xprev=xprev<xrange.first?xrange.first:xprev;
 	  //xprev=xprev>xrange.second?xrange.second:xprev;
 	  
@@ -167,11 +135,13 @@ namespace mcmc_utilities
 	  
 	  if(is_continuous(i))
 	    {
-	      xprev=continuous_sample(pd1d,xprev,1,urand);
+	      std::vector<T> init_x(this->do_init_points());
+	      xprev=continuous_sample([&](const T& x){return this->eval_log(x);},xrange,init_x, xprev,1,urand);
 	    }
 	  else
 	    {
-	      xprev=discrete_sample(pd1d,xprev,10,urand);
+	      std::vector<T> candidate_points(this->do_candidate_points());
+	      xprev=discrete_sample([&](const T& x){return this->eval_log(x);},xrange, candidate_points, xprev,10,urand);
 	    }
 	  
 	  this->set_value(i,xprev);

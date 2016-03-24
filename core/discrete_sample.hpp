@@ -10,25 +10,23 @@
 namespace mcmc_utilities
 {
 
-  template <typename T,typename T_urand>
-  T discrete_sample(const probability_density_1d<T>& pd,T& xprev,size_t niter,T_urand& urand)
+  template <typename T,typename TD,typename T_urand>
+  T discrete_sample(const TD& pd,const std::pair<T,T>& xrange, const std::vector<T>& cp, T& xprev,size_t niter,T_urand& urand)
   {
-    std::vector<T> cp(pd.candidate_points());
-    
     if(cp.empty())
       {
 	//throw no_candidate_point();
-	slice_sampler<T> ss(pd,2,10,niter);
+	slice_sampler<T,TD> ss(pd,xrange,2,10,niter);
 	xprev=ss.sample_double(xprev,urand);
 	return xprev;
       }
     else
       {
 	std::vector<T> prob(cp.size());
-	prob[0]=std::exp(pd.eval_log(cp[0]));
+	prob[0]=std::exp(pd(cp[0]));
 	for(size_t i=1;i<cp.size();++i)
 	  {
-	    prob[i]=prob[i-1]+std::exp(pd.eval_log(cp[i]));
+	    prob[i]=prob[i-1]+std::exp(pd(cp[i]));
 	  }
 	
 	T p=urand()*prob.back();

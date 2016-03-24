@@ -1,6 +1,7 @@
 #ifndef MYARMS_HPP
 #define MYARMS_HPP
-#include "distribution.hpp"
+//#include "distribution.hpp"
+#include "error_handler.hpp"
 #include <algorithm>
 #include <limits>
 #include <iomanip>
@@ -19,10 +20,10 @@
 
 namespace mcmc_utilities
 {
-  template <typename T>
-  T eval_log(const probability_density_1d<T>& pd,T x,T scale)
+  template <typename T,typename TD>
+  T eval_log(const TD& pd,T x,T scale)
   {
-    T result=pd.eval_log(x)-scale;
+    T result=pd(x)-scale;
 #ifdef DEBUG
     assert(!std::isnan(result));
     if(std::isinf(result)&&result>0)
@@ -30,7 +31,7 @@ namespace mcmc_utilities
 	std::cerr<<result<<std::endl;
 	std::cerr<<scale<<std::endl;
 	std::cerr<<(&pd)<<std::endl;
-	std::cerr<<pd.eval_log(x)<<std::endl;
+	std::cerr<<pd(x)<<std::endl;
       }
     assert(!std::isinf(result)||result<0);
 #endif
@@ -777,21 +778,22 @@ namespace mcmc_utilities
   }
 
 
-  template <typename T>
-  void init(const probability_density_1d<T>& pd,std::list<section<T> >& section_list,T& scale)
+  template <typename T,typename TD>
+  void init(const TD& pd,const std::pair<T,T>& xrange, const std::vector<T>& init_x1, std::list<section<T> >& section_list,T& scale)
   {
-    std::vector<T> init_x1(pd.init_points());
-    
-    //scale=0;
     if(init_x1.size()<3)
       {
 	throw too_few_init_points();
       }
-    std::vector<T> init_x;
-    std::pair<T,T> xrange(pd.var_range());
-    std::sort(init_x1.begin(),init_x1.end());
-    //init_x.push_back(xrange.first+std::numeric_limits<T>::epsilon());
-    init_x.push_back(xrange.first);
+
+    for(int i=1;i<init_x1.size();++i)
+      {
+	if(init_x1[i]<=init_x1[i-1])
+	  {
+	    throw data_not_in_order();
+	  }
+      }
+    std::vector<T> init_x{xrange.first};
     for(auto& x:init_x1)
       {
 	if(std::abs(x-init_x.back())<std::numeric_limits<T>::epsilon()*10||
@@ -903,8 +905,8 @@ namespace mcmc_utilities
       }
   }
 
-  template <typename T>
-  void insert_point(const probability_density_1d<T>& pd,std::list<section<T> >& section_list,const T& x,T scale)
+  template <typename T,typename TD>
+  void insert_point(const TD& pd,std::list<section<T> >& section_list,const T& x,T scale)
   {
 
 #if 0
@@ -1021,8 +1023,8 @@ namespace mcmc_utilities
     return section_list.end();
   }
 
-  template <typename T>
-  void check_range(const probability_density_1d<T>& pd,std::list<section<T> >& section_list,T& scale)
+  template <typename T,typename TD>
+  void check_range(const TD& pd,std::list<section<T> >& section_list,T& scale)
   {
     for(;;)
       {
@@ -1168,19 +1170,19 @@ namespace mcmc_utilities
     return result;
   }
 
-  template <typename T,typename T_urand>
-  T arms(const probability_density_1d<T>& pd,T xcur,size_t n,T_urand& rnd,size_t& xmchange_count)
+  template <typename T,typename TD,typename T_urand>
+  T arms(const TD& pd,const std::pair<T,T>& xrange,
+	 const std::vector<T>& init_x,T xcur,size_t n,T_urand& rnd,size_t& xmchange_count)
   {
     std::list<section<T> > section_list;
     
     T scale=0;
 
-    init(pd,section_list,scale);
+    init(pd,xrange,init_x,section_list,scale);
     
     T xm=-1;
     //bool xmchanged=false;
     //size_t xmchange_count=0;
-    auto xrange=pd.var_range();
     //assert(xcur>=xrange.first&&xcur<=xrange.second);
     if(xcur<xrange.first||xcur>xrange.second)
       {

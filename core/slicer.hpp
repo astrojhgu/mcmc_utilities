@@ -18,7 +18,7 @@
 namespace mcmc_utilities
 {
 
-  template <typename T>
+  template <typename T, typename TD>
   class slice_sampler
   {
   private:
@@ -29,11 +29,12 @@ namespace mcmc_utilities
     size_t niter;
     T sumdiff;
     const size_t min_adapt;
-    const probability_density_1d<T>& pd;
+    const TD& pd;
+    const std::pair<T,T>& xrange;
     
   public:
-    slice_sampler(const probability_density_1d<T>& _pd, const T& _width,size_t _nmax,size_t _nmin)
-      :adapt(true),width(_width),nmax(_nmax),nmin(_nmin),niter(0),sumdiff(0),min_adapt(50),pd(_pd)
+    slice_sampler(const TD& _pd, const std::pair<T,T>& _xrange, const T& _width,size_t _nmax,size_t _nmin)
+      :adapt(true),width(_width),nmax(_nmax),nmin(_nmin),niter(0),sumdiff(0),min_adapt(50),pd(_pd),xrange(_xrange)
     {
     }
     
@@ -71,12 +72,12 @@ namespace mcmc_utilities
 	      bool right_ok = true;
 	      if (R <= upper)
 		{
-		  right_ok = pd.eval_log(R) < z;
+		  right_ok = pd(R) < z;
 		}
 	      bool left_ok = true;
 	      if (L >= lower)
 		{
-		  left_ok = pd.eval_log(L) < z;
+		  left_ok = pd(L) < z;
 		}
 	      if (left_ok && right_ok)
 		{
@@ -102,7 +103,7 @@ namespace mcmc_utilities
       T lower = 0;
       T upper = 0;
       
-      auto xrange=pd.var_range();
+      //auto xrange=pd.var_range();
       lower=xrange.first;
       upper=xrange.second;
 
@@ -113,7 +114,7 @@ namespace mcmc_utilities
       }
 
       
-      T g0 = pd.eval_log(xcur);
+      T g0 = pd(xcur);
       if (std::isnan(g0)||std::isinf(g0))
 	{
 	  throw nan_or_inf();
@@ -143,7 +144,7 @@ namespace mcmc_utilities
 		else
 		  {
 		    xcur=L;
-		    left_ok = pd.eval_log(xcur) < z;
+		    left_ok = pd(xcur) < z;
 		  }
 	      }
 	    else
@@ -163,7 +164,7 @@ namespace mcmc_utilities
 		else
 		  {
 		    xcur=R;
-		    right_ok = pd.eval_log(xcur) < z;
+		    right_ok = pd(xcur) < z;
 		  }
 	      }
 	    else
@@ -185,7 +186,7 @@ namespace mcmc_utilities
 	  if (xnew >= lower && xnew <= upper)
 	    {
 	      xcur=xnew;
-	      T g = pd.eval_log(xnew);
+	      T g = pd(xnew);
 	      if (g >= z && accept(xold, xnew, z, L, R, lower, upper))
 		{
 		  xcur=xnew;
@@ -229,7 +230,7 @@ namespace mcmc_utilities
     {
       T lower = 0;
       T upper = 0;
-      auto xrange=pd.var_range();
+      //auto xrange=pd.var_range();
       lower=xrange.first;
       upper=xrange.second;
       if(xcur<xrange.first||xcur>xrange.second)
@@ -238,7 +239,7 @@ namespace mcmc_utilities
 	  throw var_out_of_range();
 	}
 
-      T g0 = pd.eval_log(xcur);
+      T g0 = pd(xcur);
       if (std::isinf(g0))
 	{
 	  std::cerr<<"xcur="<<xcur<<std::endl;
@@ -265,7 +266,7 @@ namespace mcmc_utilities
 	{
 	  //setValue(L);
 	  xcur=L;
-	  while (j-- > 0 && pd.eval_log(xcur) > z)
+	  while (j-- > 0 && pd(xcur) > z)
 	    {
 	      L -= width;
 	      if (L < lower)
@@ -286,7 +287,7 @@ namespace mcmc_utilities
 	{
 	  //setValue(R);
 	  xcur=R;
-	  while (k-- > 0 && pd.eval_log(xcur) > z)
+	  while (k-- > 0 && pd(xcur) > z)
 	    {
 	      R += width;
 	      if (R > upper)
@@ -303,7 +304,7 @@ namespace mcmc_utilities
 	{
 	  xnew =  L + rng() * (R - L);
 	  xcur=xnew;
-	  T g = pd.eval_log(xcur);
+	  T g = pd(xcur);
 	  if (g >= z - std::numeric_limits<T>::epsilon())
 	    {
 	      break;

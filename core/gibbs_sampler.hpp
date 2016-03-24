@@ -2,7 +2,7 @@
 #define GIBBS_SAMPLER_HPP
 //#include "rejection_sampler_1d.hpp"
 #include "base_urand.hpp"
-#include "arms.hpp"
+//#include "arms.hpp"
 #include "discrete_sample.hpp"
 #include "continuous_sample.hpp"
 #include <vector>
@@ -78,7 +78,7 @@ namespace mcmc_utilities
 		
 	//T_var1 x=sampler.sample(cpd,xprev);
 	//T_var1 x=arms(cpd,xprev,10,rnd);
-	T_var1 x=continuous_sample(cpd,xprev,10,rnd);
+	T_var1 x=continuous_sample([&](const T_var1& x){return cpd.eval_log(x);},cpd.var_range(),cpd.init_points(),xprev,10,rnd);
 	set_element(init_var,idx,x);
       }
   }
@@ -155,7 +155,7 @@ namespace mcmc_utilities
     xprev=get_element(init_var,idx);
     //T_var1 x=sampler.sample(cpd,xprev);
     //T_var1 x=arms(cpd,xprev,10,rnd);
-    T_var1 x=continuous_sample(cpd,xprev,10,rnd);
+    T_var1 x=continuous_sample([&](const T_var1& x){return cpd.eval_log(x);}, cpd.var_range(),cpd.init_points(),xprev,10,rnd);
     set_element(init_var,idx,x);
   }
   
