@@ -104,10 +104,6 @@ namespace mcmc_utilities
 	      
 	      result[n]= xl+(xr-xl)/(result.size()+1)*(n+1);
 	    }
-	    //else
-	    {
-	      //result[n]= find_peak(*this);
-	    }
 	}
       return result;
     };

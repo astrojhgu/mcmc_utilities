@@ -1276,6 +1276,19 @@ namespace mcmc_utilities
     return xm;
   }
 
+
+  template <typename T,typename TD,typename T_urand>
+  T arms(const TD& pd,const std::pair<T,T>& xrange,
+	 T xcur,size_t n,T_urand& rnd,size_t& xmchange_count)
+  {
+    std::vector<T> init_x(5);
+    T xl=xrange.first,xr=xrange.second;
+    for(size_t n=0;n<init_x.size();++n)
+	{
+	  init_x[n]= xl+(xr-xl)/(init_x.size()+1)*(n+1);
+	}
+    return arms(pd,xrange,init_x,xcur,n,rnd,xmchange_count);
+  }
 }
 
 
