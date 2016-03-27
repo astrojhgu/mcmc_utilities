@@ -6,13 +6,23 @@
 
 namespace mcmc_utilities
 {
+  /**
+     a particle smoother
+   */
   template <typename T_p,typename T_state,typename T_obs,typename T_t>
   class particle_smoother
   {
   public:
     typedef typename element_type_trait<T_state>::element_type T_state1;
   private:
+    /**
+       verbose level, to determine how much information to be outputed to the screen or log file
+     */
     int verbose_level;
+
+    /**
+       no copy constructor
+     */
     particle_smoother(const particle_smoother&);
   public:
     typedef typename element_type_trait<T_state>::element_type stat_element_type;
@@ -20,6 +30,9 @@ namespace mcmc_utilities
 
     
   private:
+    /**
+       a inner class for the particle filter, forward filtering
+     */
     class smoother_model
       :public pf_model<T_p,T_state,T_obs,T_t>
     {
@@ -53,6 +66,10 @@ namespace mcmc_utilities
       }
     }sm;
 
+
+    /**
+       backward particle filter model
+     */
     class smoother_model_reverse
       :public pf_model<T_p,T_state,T_obs,T_t>
     {
@@ -85,22 +102,46 @@ namespace mcmc_utilities
       }
     }sm_rev;    
   public:
-    //size_t nparticles;
+    /**
+       storing all the realizations of particles during the filtering
+     */
     std::vector<std::vector<particle<T_p,T_state> > > history;
+
+    /**
+       list of time (or other system evolution index)
+     */
     std::vector<T_t> t_list;
+
+    /**
+       observed quantity list
+     */
     std::vector<T_obs> obs_list;
   public:
+
+    /**
+       default constructor
+     */
     particle_smoother()
       :verbose_level(0),sm(this),sm_rev(this)
     {}
 
+    /**
+       destructor
+     */
     virtual ~particle_smoother(){}
 
+    /**
+       set verbose level
+     */
     void set_verbose(int n)
     {
       verbose_level=n;
     }
   public:
+
+    /**
+       load initial particle list
+     */
     void load(const std::vector<T_obs>& obs,const std::vector<T_t>& t_vec,const std::vector<particle<T_p,T_state> >& ps,T_t t0,base_urand<T_p>& rng)
     {
       history.clear();
@@ -108,7 +149,9 @@ namespace mcmc_utilities
       std::vector<particle<T_p,T_state> > particles(ps);
       //size_t nparticles=ps.size();
       T_t prev_t(t0);
-      
+      /**
+	 perform a forward particle filter
+       */
       for(size_t i=0;i<obs.size();++i)
 	{
 	  sm.update_sir(obs.at(i),t_vec.at(i),particles,prev_t,rng);
@@ -122,6 +165,9 @@ namespace mcmc_utilities
 	}
     }
 
+    /**
+       backward simulation
+     */
     void backward_simulate(base_urand<T_p>& rng)
     {
       std::vector<particle<T_p,T_state> > particles(history.back());
@@ -139,6 +185,9 @@ namespace mcmc_utilities
 	}
     }
 
+    /**
+       forward simulation
+     */
     void forward_simulate(base_urand<T_p>& rng)
     {
       std::vector<particle<T_p,T_state> > particles(history.front());
@@ -156,7 +205,9 @@ namespace mcmc_utilities
 	}
     }   
     
-
+    /**
+       draw realizations from previously simulated particles
+     */
     std::vector<T_state> draw_realization(base_urand<T_p>& rng)
     {
       std::vector<T_state> result(history.size());
@@ -202,6 +253,11 @@ namespace mcmc_utilities
     }
     
   public:
+    /**
+       following function members are the evolution model, observation model variable range, initial points.
+       see particle_filter.hpp for the details
+     */
+    
     T_p evol_log_prob(const T_state& x,const T_t& t,const T_state& prev_state,const T_t& prev_t)const
     {
       return do_evol_log_prob(x,t,prev_state,prev_t);
