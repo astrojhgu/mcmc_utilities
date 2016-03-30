@@ -5,7 +5,8 @@
 #include <algorithm>
 #include <limits>
 #include <iomanip>
-//#define DEBUG
+#include <iostream>
+#define DEBUG
 #ifdef DEBUG
 #include <fstream>
 #endif
@@ -329,8 +330,8 @@ namespace mcmc_utilities
     void set_x_i(T x)
     {
 #ifdef DEBUG
-      assert(!isnan(_x_l));
-      assert(!isnan(_x_u));
+      assert(!std::isnan(_x_l));
+      assert(!std::isnan(_x_u));
 #endif      
       _x_i=x;
       if(_x_i<_x_l)
@@ -346,7 +347,7 @@ namespace mcmc_utilities
     void set_y_l(T y)
     {
 #ifdef DEBUG
-      assert(!isnan(y));
+      assert(!std::isnan(y));
 #endif
       _y_l=y;
     }
@@ -354,7 +355,7 @@ namespace mcmc_utilities
     void set_y_u(T y)
     {
 #ifdef DEBUG
-      assert(!isnan(y));
+      assert(!std::isnan(y));
 #endif
       _y_u=y;
     }
@@ -362,7 +363,7 @@ namespace mcmc_utilities
     void set_y_i(T y)
     {
 #ifdef DEBUG
-      assert(!isnan(y));
+      assert(!std::isnan(y));
 #endif
       _y_i=y;
     } 
@@ -472,6 +473,30 @@ namespace mcmc_utilities
   };
 
   template <typename T>
+  std::ostream& operator<<(std::ostream& os,const section<T>& s)
+  {
+    os<<s.x_i()<<" "<<s.cum_int_exp_y_l()<<"\n";
+    os<<s.x_u()<<" "<<s.cum_int_exp_y_u()<<"\n";
+    return os;
+  }
+  
+  template <typename T>
+  std::ostream& operator<<(std::ostream& os,const std::list<section<T> >& section_list)
+  {
+    if(section_list.empty())
+      {
+	return os;
+      }
+    os<<section_list.front().x_l()<<" "<<0<<"\n";
+    for(auto& i:section_list)
+      {
+	os<<i;
+      }
+    return os;
+  }
+  
+
+  template <typename T>
   T eval(const T& x,const std::list<section<T> >& section_list)
   {
     for(auto& i:section_list)
@@ -512,7 +537,7 @@ namespace mcmc_utilities
     const T& y4=p4.second;
 
 #ifdef DEBUG
-    assert(!isnan(y1)&&!isnan(y2)&&!isnan(y3)&&!isnan(y4));
+    assert(!std::isnan(y1)&&!std::isnan(y2)&&!std::isnan(y3)&&!std::isnan(y4));
 #endif
     
 
@@ -648,10 +673,10 @@ namespace mcmc_utilities
 	T y4=i_next->y_u();
 	
 #ifdef DEBUG
-	assert(!isnan(y1));
-	assert(!isnan(y2));
-	assert(!isnan(y3));
-	assert(!isnan(y4));
+	assert(!std::isnan(y1));
+	assert(!std::isnan(y2));
+	assert(!std::isnan(y3));
+	assert(!std::isnan(y4));
 
 #endif
 	auto p=solve_intersection(*i,
@@ -675,10 +700,10 @@ namespace mcmc_utilities
 	T y4=std::numeric_limits<T>::infinity();
 
 #ifdef DEBUG
-	assert(!isnan(y1)&&
-	       !isnan(y2)&&
-	       !isnan(y3)&&
-	       !isnan(y4));
+	assert(!std::isnan(y1)&&
+	       !std::isnan(y2)&&
+	       !std::isnan(y3)&&
+	       !std::isnan(y4));
 #endif
 	auto p=solve_intersection(*i,
 				  std::make_pair(x1,y1),
@@ -701,10 +726,10 @@ namespace mcmc_utilities
 	T y4=i_next->y_u();
 
 #ifdef DEBUG
-	assert(!isnan(y1)&&
-	       !isnan(y2)&&
-	       !isnan(y3)&&
-	       !isnan(y4));
+	assert(!std::isnan(y1)&&
+	       !std::isnan(y2)&&
+	       !std::isnan(y3)&&
+	       !std::isnan(y4));
 #endif
 	auto p=solve_intersection(*i,
 				  std::make_pair(x1,y1),
@@ -955,8 +980,8 @@ namespace mcmc_utilities
     iter->set_y_l(eval_log(pd,iter->x_l(),scale));
 
 #ifdef DEBUG
-    assert(!isnan(iter->y_l()));
-    assert(!isnan(iter->y_u()));
+    assert(!std::isnan(iter->y_l()));
+    assert(!std::isnan(iter->y_u()));
 #endif
     section_list.insert(iter,s);
   }
@@ -1197,12 +1222,61 @@ namespace mcmc_utilities
     for(size_t i=0,cnt=0;i<n;)
       {
 	T x=0;
-	do
+	for(size_t j=0;;++j)
 	  {
 	    x=sample(section_list,rnd);
+	    if(x<=xrange.first)
+	      {
+		T x1=x;
+		for(auto & s:section_list)
+		  {
+		    if (x<s.x_i())
+		      {
+			x1=s.x_i();
+			break;
+		      }
+		    if(x<s.x_u())
+		      {
+			x1=s.x_u();
+			break;
+		      }
+		  }
+		x1=(x1+x)/2;
+		insert_point(pd,section_list,x1,scale);
+		update_scale(section_list,scale);
+		if(std::isinf(section_list.back().cum_int_exp_y_u()))
+		  {
+		    check_range(pd,section_list,scale);
+		  }
+		continue;
+	      }
+	    if(x>=xrange.second)
+	      {
+		T x1=x;
+		for(auto p=section_list.rbegin();p!=section_list.rend();++p)
+		  {
+		    if(p->x_i()<x)
+		      {
+			x1=p->x_i();
+			break;
+		      }
+		    if(p->x_l()<x)
+		      {
+			x1=p->x_l();
+			break;
+		      }
+		  }
+		x1=(x1+x)/2;
+		insert_point(pd,section_list,x1,scale);
+		update_scale(section_list,scale);
+		if(std::isinf(section_list.back().cum_int_exp_y_u()))
+		  {
+		    check_range(pd,section_list,scale);
+		  }
+		continue;
+	      }
+	    break;
 	  }
-	while(x<=xrange.first||x>=xrange.second);
-	  
 	
 	T u=rnd();
 	T xa=0;
