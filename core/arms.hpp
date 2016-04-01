@@ -6,9 +6,10 @@
 #include <limits>
 #include <iomanip>
 #include <iostream>
-#define DEBUG
+//#define DEBUG
 #ifdef DEBUG
 #include <fstream>
+#include <logger/logger.hpp>
 #endif
 
 
@@ -16,7 +17,7 @@
 #include <list>
 #include <utility>
 #include <limits>
-
+#include <mutex>
 //all the y in following program actually equal to log p(x)
 
 namespace mcmc_utilities
@@ -370,21 +371,35 @@ namespace mcmc_utilities
     
     void set_int_exp_y_l(T y)
     {
+#ifdef DEBUG
+      assert(!std::isnan(y));
+#endif
       _int_exp_y_l=y;
     }
 
     void set_int_exp_y_u(T y)
     {
+#ifdef DEBUG
+      assert(!std::isnan(y));
+#endif
+
       _int_exp_y_u=y;
     }
 
     void set_cum_int_exp_y_l(T y)
     {
+#ifdef DEBUG
+      assert(!std::isnan(y));
+#endif
+
       _cum_int_exp_y_l=y;
     }
     
     void set_cum_int_exp_y_u(T y)
     {
+#ifdef DEBUG
+      assert(!std::isnan(y));
+#endif
       _cum_int_exp_y_u=y;
     }
     
@@ -475,8 +490,13 @@ namespace mcmc_utilities
   template <typename T>
   std::ostream& operator<<(std::ostream& os,const section<T>& s)
   {
-    os<<s.x_i()<<" "<<s.cum_int_exp_y_l()<<"\n";
-    os<<s.x_u()<<" "<<s.cum_int_exp_y_u()<<"\n";
+    //os<<s.x_i()<<" "<<s.cum_int_exp_y_l()<<" "<<s.y_i()<<"\n";
+    //os<<s.x_u()<<" "<<s.cum_int_exp_y_u()<<" "<<s.y_u()<<"\n";
+    os<<"!\n";
+    os<<s.x_l()<<" "<<s.y_l()<<"\n";
+    os<<s.x_i()<<" "<<s.y_i()<<"  !"<<s.int_exp_y_l()<<"\n";
+    os<<s.x_u()<<" "<<s.y_u()<<"  !"<<s.int_exp_y_u()<<"\n";
+
     return os;
   }
   
@@ -487,7 +507,7 @@ namespace mcmc_utilities
       {
 	return os;
       }
-    os<<section_list.front().x_l()<<" "<<0<<"\n";
+    os<<section_list.front().x_l()<<" "<<0<<" "<<section_list.front().y_l()<<"\n";
     for(auto& i:section_list)
       {
 	os<<i;
@@ -605,7 +625,6 @@ namespace mcmc_utilities
 	throw e;
 	    
       }
-    
     return std::make_pair(x_i,y_i);
   }
 
@@ -854,9 +873,9 @@ namespace mcmc_utilities
 
 	if(std::isnan(s.y_l())||std::isnan(s.y_u()))
 	  {
+#ifdef DEBUG
 	    std::cerr<<s.x_l()<<" "<<s.x_u()<<std::endl;
 	    std::cerr<<s.y_l()<<" "<<s.y_u()<<std::endl;
-#ifdef DEBUG
     	    assert(0);
 #endif
 	    nan_or_inf e;
@@ -891,8 +910,9 @@ namespace mcmc_utilities
     assert(!std::isnan(section_list.back().cum_int_exp_y_u()));
 #endif
 
-    for(;;)
+    for(int i=0;;++i)
       {
+	assert(i<1000);
 	bool has_inf=false;
 	auto iter=section_list.begin();
 	
@@ -918,22 +938,27 @@ namespace mcmc_utilities
 
     if(std::isinf(section_list.back().cum_int_exp_y_u()))
       {
+#ifdef DEBUG
 	std::cerr<<"initial points:"<<std::endl;
 	for(auto & i:section_list)
 	  {
 	    std::cerr<<i.x_l()<<" "<<i.y_l()<<"|"<<i.x_i()<<" "<<i.y_i()<<"|"<<i.x_u()<<" "<<i.y_u()<<std::endl;
 	  }
-
+#endif
 	more_init_points_needed e;
 	e.attach_message("#11");
 	throw e;
       }
   }
 
-  template <typename T,typename TD>
-  void insert_point(const TD& pd,std::list<section<T> >& section_list,const T& x,T scale)
+  enum class insertion_result
   {
+    SUCCEEDED,SEARCH_FAILED,POINT_OVERLAPPED
+  };
 
+  template <typename T,typename TD>
+  insertion_result insert_point(const TD& pd,std::list<section<T> >& section_list,const T& x,T scale)
+  {
 #if 0
     auto iter=section_list.begin();
     
@@ -958,18 +983,20 @@ namespace mcmc_utilities
       
     if(iter==section_list.end())
       {
-	return;
+	return insertion_result::SEARCH_FAILED;
       }
+#if 0
     if(std::abs(iter->x_l()-x)<std::numeric_limits<T>::epsilon()*10||std::abs(iter->x_u()-x)<std::numeric_limits<T>::epsilon()*10)
       {
-	return;
+	return insertion_result::POINT_OVERLAPPED;
       }
 
-
+    
     if(std::abs(x-iter->x_l())<std::numeric_limits<T>::epsilon()*10||std::abs(x-iter->x_u())<std::numeric_limits<T>::epsilon()*10)
       {
-	return;
+	return insertion_result::POINT_OVERLAPPED;
       }
+#endif
     section<T> s;
     s.set_x_l(iter->x_l());
     s.set_x_u(x);
@@ -984,12 +1011,14 @@ namespace mcmc_utilities
     assert(!std::isnan(iter->y_u()));
 #endif
     section_list.insert(iter,s);
+    return insertion_result::SUCCEEDED;
   }
 
 
 
-  template <typename T>
-  typename std::list<section<T> >::const_iterator search_point(const std::list<section<T> >& section_list,T p)
+  template <typename T,typename TD>
+  typename std::list<section<T> >::const_iterator search_point(const std::list<section<T> >& section_list,T p,
+							       const TD& pd,const T scale)
   {
     /*
     section<T> v;
@@ -1028,10 +1057,20 @@ namespace mcmc_utilities
 	assert(0);
       }
     */
+    if(section_list.back().cum_int_exp_y_u()==0)
+      {
+	throw ill_conditioned_distribution("maybe all values are zero #1059");
+      }
+    
     T x=p*section_list.back().cum_int_exp_y_u();
+
     for(auto i=section_list.begin();i!=section_list.end();++i)
       {
 	const T xx=i->cum_int_exp_y_u();
+#ifdef DEBUG
+	assert(!std::isnan(xx));
+#endif
+
 	if((p<1&&x<xx)||(p==1&&x<=xx))
 	  {
 	    return i;
@@ -1039,6 +1078,27 @@ namespace mcmc_utilities
       }
     
 #ifdef DEBUG
+    std::ofstream ofs_log("log.txt");
+    ofs_log<<std::setprecision(20);
+    ofs_log<<section_list;
+    ofs_log.close();
+
+    ofs_log.open("dump.txt");
+    ofs_log<<std::setprecision(20);
+    for(auto& i:section_list)
+      {
+	ofs_log<<i.x_l()<<" "<<i.y_l()<<endl;
+	ofs_log<<i.x_i()<<" "<<i.y_i()<<endl;
+	ofs_log<<i.x_u()<<" "<<i.y_u()<<endl;
+      }
+    ofs_log<<"no no no"<<endl;
+    for(auto& i:section_list)
+      {
+	ofs_log<<i.x_l()<<" "<<eval_log(pd,i.x_l(),scale)<<endl;
+	ofs_log<<i.x_i()<<" "<<eval_log(pd,i.x_i(),scale)<<endl;
+	ofs_log<<i.x_u()<<" "<<eval_log(pd,i.x_u(),scale)<<endl;
+      }
+    ofs_log.close();
     assert(0);
 #endif
 
@@ -1051,21 +1111,40 @@ namespace mcmc_utilities
   template <typename T,typename TD>
   void check_range(const TD& pd,std::list<section<T> >& section_list,T& scale)
   {
-    for(;;)
+    for(int i=0;;++i)
       {
 	bool has_inf=false;
 	auto iter=section_list.begin();
-	
 	for(;iter!=section_list.end();++iter)
 	  {
-	    if(std::isinf(iter->cum_int_exp_y_u()))
+	    if(std::isinf(iter->cum_int_exp_y_l()))
 	      {
 		has_inf=true;
-		T x=(iter->x_l()+iter->x_u())/2;
+		T x=(iter->x_l()+iter->x_i())/2;
+		if(insert_point(pd,section_list,x,scale)==insertion_result::SUCCEEDED)
+		  {
+		    update_scale(section_list,scale);
+		    break;
+		  }
+		else
+		  {
+		    throw ill_conditioned_distribution();
+		  }
+	      }
+	    else if(std::isinf(iter->cum_int_exp_y_u()))
+	      {
+		has_inf=true;
+		T x=(iter->x_i()+iter->x_u())/2;
 		
-		insert_point(pd,section_list,x,scale);
-		update_scale(section_list,scale);
-		break;
+		if(insert_point(pd,section_list,x,scale)==insertion_result::SUCCEEDED)
+		  {
+		    update_scale(section_list,scale);
+		    break;
+		  }
+		else
+		  {
+		    throw ill_conditioned_distribution();
+		  }
 	      }
 	  }
 	
@@ -1077,8 +1156,8 @@ namespace mcmc_utilities
   }
 
   
-  template <typename T,typename T_urand>
-  T sample(const std::list<section<T> >& section_list,T_urand& rnd)
+  template <typename T,typename T_urand,typename TD>
+  T sample(const std::list<section<T> >& section_list,T_urand& rnd,const TD& pd,T scale)
   {
     T result=0;
 
@@ -1090,115 +1169,139 @@ namespace mcmc_utilities
     fname+=".qdp";
     n++;
     std::ofstream ofs(fname.c_str());
+    ofs<<std::setprecision(20);
     for(auto& i:section_list)
       {
 	ofs<<i.x_i()<<" "<<i.cum_int_exp_y_l()<<std::endl;
 	ofs<<i.x_u()<<" "<<i.cum_int_exp_y_u()<<std::endl;
       }
 #endif
-    do
+    T p=0;
+    for(int i=0;i<10;++i)
       {
-	T p=0;
-	do
+	p=rnd();
+	if(p>=0&&p<1)
 	  {
-	    p=rnd();
+	    break;
 	  }
-	while(p>=1);
-	//std::cerr<<"p="<<p<<" ";
-	auto iter=search_point(section_list,p);
-	T y=section_list.back().cum_int_exp_y_u()*p;
-
-#ifdef DEBUG
-	assert(!std::isnan(p));
-	assert(!std::isnan(section_list.back().cum_int_exp_y_u()));
-
-	if(std::isnan(y))
+	else
 	  {
-	    std::cerr<<"p="<<p<<std::endl;
-	    std::cerr<<"cum_y="<<section_list.back().cum_int_exp_y_u()<<std::endl;
-	  }
-	
-	assert(!std::isnan(y));
-#endif
-	
-	T x1,x2,y1,y2;
-	T ybase;
-
-	if(y>=iter->cum_int_exp_y_l()&&
-	   y<=iter->cum_int_exp_y_u())
-	  {
-	    ybase = iter->cum_int_exp_y_l();
-	    x1 = iter -> x_i();
-	    y1 = iter -> y_i();
-
-	    x2 = iter -> x_u();
-	    y2 = iter -> y_u();
-
 #ifdef DEBUG
-	    assert(x2>=x1);
+	    if(i>5)
+	      {
+		assert(0);
+	      }
 #endif
 	  }
-	else if(y<iter->cum_int_exp_y_l())
+      }
+    //std::cerr<<"p="<<p<<" ";
+    auto iter=search_point(section_list,p,pd,scale);
+    T y=section_list.back().cum_int_exp_y_u()*p;
+    
+#ifdef DEBUG
+    assert(!std::isnan(p));
+    assert(!std::isnan(section_list.back().cum_int_exp_y_u()));
+    
+    if(std::isnan(y))
+      {
+	std::cerr<<"p="<<p<<std::endl;
+	std::cerr<<"cum_y="<<section_list.back().cum_int_exp_y_u()<<std::endl;
+      }
+    
+    assert(!std::isnan(y));
+#endif
+    
+    T x1,x2,y1,y2;
+    T ybase;
+    
+    if(y>=iter->cum_int_exp_y_l()&&
+       y<=iter->cum_int_exp_y_u())
+      {
+	ybase = iter->cum_int_exp_y_l();
+	x1 = iter -> x_i();
+	y1 = iter -> y_i();
+	
+	x2 = iter -> x_u();
+	y2 = iter -> y_u();
+	
+#ifdef DEBUG
+	assert(x2>=x1);
+#endif
+      }
+    else if(y<iter->cum_int_exp_y_l())
+      {
+	auto iter1=iter;
+	
+	if(iter1!=section_list.begin())
 	  {
-	    auto iter1=iter;
-	    
-	    if(iter1!=section_list.begin())
-	      {
-		--iter1;
-		ybase = iter1->cum_int_exp_y_u();
-	      }
-	    else
-	      {
-		ybase = 0;
-	      }
-	    
-	    x1 = iter -> x_l();
-	    y1 = iter -> y_l();
-	    
-	    x2 = iter -> x_i();	   
-	    y2 = iter -> y_i();
+	    --iter1;
+	    ybase = iter1->cum_int_exp_y_u();
+	  }
+	else
+	  {
+	    ybase = 0;
+	  }
+	
+	x1 = iter -> x_l();
+	y1 = iter -> y_l();
+	
+	x2 = iter -> x_i();	   
+	y2 = iter -> y_i();
 #ifdef DEBUG	    
-	    assert(x2>=x1);
+	assert(x2>=x1);
 #endif
-	  }
-	else
-	  {
-	    assert(0);
-	  }
-
-	if ( y == ybase )
-	  {
-	    result = x1;
-	  }
-	else
-	  {
+      }
+    else
+      {
+	assert(0);
+      }
+    
+    if ( y == ybase )
+      {
+	result = x1;
+      }
+    else
+      {
 #ifdef DEBUG
-	    assert(!std::isnan(y));
-	    assert(!std::isinf(y));
-	    assert(!std::isnan(ybase));
-	    assert(!std::isinf(ybase));
-	    assert(x2>=x1);
+	assert(!std::isnan(y));
+	assert(!std::isinf(y));
+	assert(!std::isnan(ybase));
+	assert(!std::isinf(ybase));
+	assert(x2>=x1);
 #endif
-	    result=inv_int_exp_y(y-ybase,std::make_pair(x1,y1),std::make_pair(x2,y2));
-	  }
-	if(std::isnan(result))
-	  {
+	result=inv_int_exp_y(y-ybase,std::make_pair(x1,y1),std::make_pair(x2,y2));
+      }
+    if(std::isnan(result))
+      {
 #ifdef DEBUG	  
-	    assert(0);
+	assert(0);
 #endif
-	    nan_or_inf e;
-	    e.attach_message("#13");
-	    throw e;
-	  }
-      }while(std::isnan(result));
+	nan_or_inf e;
+	e.attach_message("#13");
+	throw e;
+      }
     //std::cerr<<result<<std::endl;
     return result;
   }
-
+  
   template <typename T,typename TD,typename T_urand>
   T arms(const TD& pd,const std::pair<T,T>& xrange,
 	 const std::vector<T>& init_x,T xcur,size_t n,T_urand& rnd,size_t& xmchange_count)
   {
+    if(xrange.second<xrange.first+std::numeric_limits<T>::epsilon()*std::abs(xrange.first))
+      {
+	throw too_small_var_range();
+      }
+    if(xcur<xrange.first||xcur>xrange.second)
+      {
+#ifdef DEBUG
+	std::cerr<<"xcur="<<xcur<<" ("<<xrange.first<<" , "<<xrange.second<<")"<<std::endl;
+#endif
+	var_out_of_range e;
+	e.attach_message("#14");
+	throw e;
+      }
+
     std::list<section<T> > section_list;
     
     T scale=0;
@@ -1209,14 +1312,6 @@ namespace mcmc_utilities
     //bool xmchanged=false;
     //size_t xmchange_count=0;
     //assert(xcur>=xrange.first&&xcur<=xrange.second);
-    if(xcur<xrange.first||xcur>xrange.second)
-      {
-	std::cerr<<"xcur="<<xcur<<" ("<<xrange.first<<" , "<<xrange.second<<")"<<std::endl;
-
-	var_out_of_range e;
-	e.attach_message("#14");
-	throw e;
-      }
 
     
     for(size_t i=0,cnt=0;i<n;)
@@ -1224,7 +1319,22 @@ namespace mcmc_utilities
 	T x=0;
 	for(size_t j=0;;++j)
 	  {
-	    x=sample(section_list,rnd);
+	    
+	    x=sample(section_list,rnd,pd,scale);
+	    
+	    if(j>10000)
+	      {
+		if(x<=xrange.first)
+		  {
+		    x=xrange.first+std::numeric_limits<T>::epsilon()*std::abs(xrange.first);
+		  }
+		else if(x>=xrange.second)
+		  {
+		    x=xrange.second-std::numeric_limits<T>::epsilon()*std::abs(xrange.second);
+		  }
+		break;
+	      }
+	    
 	    if(x<=xrange.first)
 	      {
 		T x1=x;
@@ -1269,12 +1379,14 @@ namespace mcmc_utilities
 		x1=(x1+x)/2;
 		insert_point(pd,section_list,x1,scale);
 		update_scale(section_list,scale);
+		
 		if(std::isinf(section_list.back().cum_int_exp_y_u()))
 		  {
 		    check_range(pd,section_list,scale);
 		  }
 		continue;
 	      }
+	    
 	    break;
 	  }
 	
@@ -1297,6 +1409,7 @@ namespace mcmc_utilities
 		
 #if 0
 		std::ofstream ofs("dump.qdp");
+		ofs<<std::setprecision(20);
 		for(auto& i:section_list)
 		  {
 		    ofs<<i.x_l()<<" "<<i.y_l()<<std::endl;

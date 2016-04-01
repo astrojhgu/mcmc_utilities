@@ -15,7 +15,14 @@ namespace mcmc_utilities
   T continuous_sample(const TD& pd,const std::pair<T,T>& xrange, const std::vector<T>& init_x, T& xprev,size_t niter,T_urand& urand)
   {
     size_t xmchange_count=0;
-    xprev=arms(pd,xrange, init_x, xprev,niter,urand,xmchange_count);
+    try
+      {
+	xprev=arms(pd,xrange, init_x, xprev,niter,urand,xmchange_count);
+      }
+    catch(const mcmc_exception& e)
+      {
+	xmchange_count=0;
+      }
     if(xmchange_count==0)
       {
 	slice_sampler<T,TD> ss(pd,xrange, 1,niter,10);

@@ -226,6 +226,15 @@ namespace mcmc_utilities
       :mcmc_exception("not implemented")
     {}
   };
+
+  class too_small_var_range
+    :public mcmc_exception
+  {
+  public:
+    too_small_var_range()
+      :mcmc_exception("too small var range")
+    {}
+  };
 }
 
 #endif
