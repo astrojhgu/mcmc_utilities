@@ -6,7 +6,7 @@
 #include <limits>
 #include <iomanip>
 #include <iostream>
-//#define DEBUG
+#define DEBUG
 #ifdef DEBUG
 #include <fstream>
 #include <logger/logger.hpp>
@@ -37,6 +37,12 @@ namespace mcmc_utilities
       }
     assert(!std::isinf(result)||result<0);
 #endif
+    if(std::isnan(result)||std::isinf(result))
+      {
+	nan_or_inf e;
+	e.attach_message("#0");
+	throw e;
+      }
     return result;
   }
   
@@ -90,8 +96,10 @@ namespace mcmc_utilities
     
     if(std::isnan(result))
       {
-	nan_or_inf e;
-	e.attach_message("nan #1");
+	//nan_or_inf e;
+	//e.attach_message("nan #1");
+	ill_conditioned_distribution e;
+	e.attach_message("ill #1");
 	throw e;
       }
     return result;
@@ -159,9 +167,20 @@ namespace mcmc_utilities
 	else
 	  {
 	    T U=1+k*Z*std::exp(-y1);
+	    
+	    
 	    if(!std::isinf(U))
 	      {
-		result=x1+std::log(U)/k;
+		T logU=0;
+		if(U<=0)
+		  {
+		    logU=std::log((std::exp(y1)+k*Z))-y1;
+		  }
+		else
+		  {
+		    logU=std::log(U);
+		  }
+		result=x1+logU/k;
 	      }
 	    else
 	      {
@@ -170,19 +189,18 @@ namespace mcmc_utilities
 	  }
       }
 #ifdef DEBUG
-    if(std::isinf(result))
+    if(std::isinf(result)||std::isnan(result))
       {
 	std::cerr<<std::setprecision(20);
+	std::cerr<<"x1="<<x1<<" y1="<<y1<<std::endl;
+	std::cerr<<"x2="<<x2<<" y2="<<y2<<std::endl;
+	std::cerr<<"Z="<<Z<<std::endl;
 	std::cerr<<k*Z<<std::endl;
 	std::cerr<<y1<<std::endl;
 	std::cerr<<1+k*Z*std::exp(-y1)<<std::endl;
 	assert(0);
 
-	throw nan_or_inf();
-      }
-    if(std::isnan(result))
-      {
-	assert(0);
+	//throw nan_or_inf();
       }
 #endif
 
@@ -690,6 +708,12 @@ namespace mcmc_utilities
 	T y2=std::numeric_limits<T>::infinity();
 	T y3=i_next->y_l();
 	T y4=i_next->y_u();
+
+	if(x3==x4)
+	  {
+	    throw ill_conditioned_distribution();
+	  }
+	  
 	
 #ifdef DEBUG
 	assert(!std::isnan(y1));
@@ -718,6 +742,11 @@ namespace mcmc_utilities
 	T y3=i->y_u();
 	T y4=std::numeric_limits<T>::infinity();
 
+	if(x1==x2)
+	  {
+	    throw ill_conditioned_distribution();
+	  }
+
 #ifdef DEBUG
 	assert(!std::isnan(y1)&&
 	       !std::isnan(y2)&&
@@ -743,6 +772,11 @@ namespace mcmc_utilities
 	T y2=i_prev->y_u();
 	T y3=i_next->y_l();
 	T y4=i_next->y_u();
+
+	if(x1==x2||x3==x4)
+	  {
+	    throw ill_conditioned_distribution();
+	  }
 
 #ifdef DEBUG
 	assert(!std::isnan(y1)&&
@@ -1087,16 +1121,16 @@ namespace mcmc_utilities
     ofs_log<<std::setprecision(20);
     for(auto& i:section_list)
       {
-	ofs_log<<i.x_l()<<" "<<i.y_l()<<endl;
-	ofs_log<<i.x_i()<<" "<<i.y_i()<<endl;
-	ofs_log<<i.x_u()<<" "<<i.y_u()<<endl;
+	ofs_log<<i.x_l()<<" "<<i.y_l()<<std::endl;
+	ofs_log<<i.x_i()<<" "<<i.y_i()<<std::endl;
+	ofs_log<<i.x_u()<<" "<<i.y_u()<<std::endl;
       }
-    ofs_log<<"no no no"<<endl;
+    ofs_log<<"no no no"<<std::endl;
     for(auto& i:section_list)
       {
-	ofs_log<<i.x_l()<<" "<<eval_log(pd,i.x_l(),scale)<<endl;
-	ofs_log<<i.x_i()<<" "<<eval_log(pd,i.x_i(),scale)<<endl;
-	ofs_log<<i.x_u()<<" "<<eval_log(pd,i.x_u(),scale)<<endl;
+	ofs_log<<i.x_l()<<" "<<eval_log(pd,i.x_l(),scale)<<std::endl;
+	ofs_log<<i.x_i()<<" "<<eval_log(pd,i.x_i(),scale)<<std::endl;
+	ofs_log<<i.x_u()<<" "<<eval_log(pd,i.x_u(),scale)<<std::endl;
       }
     ofs_log.close();
     assert(0);

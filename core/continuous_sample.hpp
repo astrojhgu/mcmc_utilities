@@ -19,7 +19,11 @@ namespace mcmc_utilities
       {
 	xprev=arms(pd,xrange, init_x, xprev,niter,urand,xmchange_count);
       }
-    catch(const mcmc_exception& e)
+    catch(const ill_conditioned_distribution& e)
+      {
+	xmchange_count=0;
+      }
+    catch(const too_many_rejections& e)
       {
 	xmchange_count=0;
       }
