@@ -864,7 +864,7 @@ namespace mcmc_utilities
 	throw too_few_init_points();
       }
 
-    for(int i=1;i<init_x1.size();++i)
+    for(size_t i=1;i<init_x1.size();++i)
       {
 	if(init_x1[i]<=init_x1[i-1])
 	  {
@@ -944,7 +944,7 @@ namespace mcmc_utilities
     assert(!std::isnan(section_list.back().cum_int_exp_y_u()));
 #endif
 
-    for(int i=0;;++i)
+    for(size_t i=0;;++i)
       {
 	assert(i<1000);
 	bool has_inf=false;
@@ -1145,7 +1145,7 @@ namespace mcmc_utilities
   template <typename T,typename TD>
   void check_range(const TD& pd,std::list<section<T> >& section_list,T& scale)
   {
-    for(int i=0;;++i)
+    for(size_t i=0;;++i)
       {
 	bool has_inf=false;
 	auto iter=section_list.begin();
@@ -1211,7 +1211,7 @@ namespace mcmc_utilities
       }
 #endif
     T p=0;
-    for(int i=0;i<10;++i)
+    for(size_t i=0;i<10;++i)
       {
 	p=rnd();
 	if(p>=0&&p<1)
