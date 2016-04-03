@@ -6,7 +6,7 @@
 #include <limits>
 #include <iomanip>
 #include <iostream>
-#define DEBUG
+//#define DEBUG
 #ifdef DEBUG
 #include <fstream>
 #include <logger/logger.hpp>
@@ -27,15 +27,15 @@ namespace mcmc_utilities
   {
     T result=pd(x)-scale;
 #ifdef DEBUG
-    assert(!std::isnan(result));
-    if(std::isinf(result)&&result>0)
+    if(std::isinf(result)||std::isnan(result))
       {
 	std::cerr<<result<<std::endl;
 	std::cerr<<scale<<std::endl;
 	std::cerr<<(&pd)<<std::endl;
 	std::cerr<<pd(x)<<std::endl;
+	assert(0);
       }
-    assert(!std::isinf(result)||result<0);
+    
 #endif
     if(std::isnan(result)||std::isinf(result))
       {
