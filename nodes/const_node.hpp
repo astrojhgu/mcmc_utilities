@@ -29,6 +29,11 @@ namespace mcmc_utilities
     {
       return std::shared_ptr<node<T> >(new const_node(v));
     }
+
+    void set_value(T v1)
+    {
+      v=v1;
+    }
   };
 
   template <typename T>
