@@ -25,11 +25,11 @@ namespace mcmc_utilities
     std::map<T_tag,std::shared_ptr<node<T> > > node_map;
     //std::map<std::shared_ptr<node<T> > ,T_tag, std::owner_less<std::shared_ptr<node<T> > > > tag_map;
     std::map<std::shared_ptr<node<T> > ,T_tag > tag_map;
-
+    bool shuffled_sampling;
     int verbose_level;
   public:
     graph()
-      :verbose_level(0)
+      :shuffled_sampling(false),verbose_level(0)
     {}
     
   public:
@@ -97,13 +97,39 @@ namespace mcmc_utilities
       verbose_level=n;
     }
 
+    void set_shuffle(bool s)
+    {
+      shuffled_sampling=s;
+    }
+
     void sample(base_urand<T>& rnd)
     {
       stochastic_node<T>* p_current=nullptr;
       int n=0;
+      std::vector<stochastic_node<T>*> stochastic_node_vector;
+      std::for_each(stochastic_node_list.begin(),
+		    stochastic_node_list.end(),
+		    [&](stochastic_node<T>* p){stochastic_node_vector.push_back(p);}
+		    );
+      if(shuffled_sampling)
+	{
+	  std::random_shuffle(stochastic_node_vector.begin(),stochastic_node_vector.end(),
+			      [&](size_t i)->size_t {
+				for(;;)
+				  {
+				    size_t result=rnd()*i;
+				    if(result<i&&result>=0)
+				      {
+					return result;
+				      }
+				  }
+				return 0;
+			      });
+	}
+      
       try
 	{
-	  for(auto& p:stochastic_node_list)
+	  for(auto& p:stochastic_node_vector)
 	    {
 	      if(p->num_of_unobserved()>0)
 		{

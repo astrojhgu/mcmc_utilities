@@ -74,9 +74,8 @@ namespace mcmc_utilities
       std::string result=name;
       if(is_array)
 	{
-	  result+="[";
+	  result+="_";
 	  result+=std::to_string(idx);
-	  result+="]";
 	}
       return result;
     }
