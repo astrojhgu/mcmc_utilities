@@ -107,6 +107,7 @@ namespace mcmc_utilities
       stochastic_node<T>* p_current=nullptr;
       int n=0;
       std::vector<stochastic_node<T>*> stochastic_node_vector;
+      stochastic_node_vector.reserve(stochastic_node_list.size());
       std::for_each(stochastic_node_list.begin(),
 		    stochastic_node_list.end(),
 		    [&](stochastic_node<T>* p){stochastic_node_vector.push_back(p);}
