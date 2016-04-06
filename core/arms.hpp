@@ -6,6 +6,7 @@
 #include <limits>
 #include <iomanip>
 #include <iostream>
+#include <string>
 //#define DEBUG
 #ifdef DEBUG
 #include <fstream>
@@ -41,6 +42,7 @@ namespace mcmc_utilities
       {
 	nan_or_inf e;
 	e.attach_message("#0");
+	e.attach_message(std::string("x=")+std::to_string(x));
 	throw e;
       }
     return result;

@@ -157,6 +157,16 @@ namespace mcmc_utilities
 	}
     }
 
+    T log_joint_prob()const
+    {
+      T result=0;
+      for(auto& p:stochastic_node_list)
+	{
+	  result+=p->log_prob();
+	}
+      return result;
+    }
+
     void initialize()
     {
       for(auto& p:stochastic_node_list)
