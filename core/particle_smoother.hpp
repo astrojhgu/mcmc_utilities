@@ -208,7 +208,7 @@ namespace mcmc_utilities
     /**
        draw realizations from previously simulated particles
      */
-    std::vector<T_state> draw_realization(base_urand<T_p>& rng)
+    std::vector<T_state> draw_realization(base_urand<T_p>& rng)const
     {
       std::vector<T_state> result(history.size());
       for(int i=history.size()-1;i>=0;--i)
