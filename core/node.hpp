@@ -108,7 +108,7 @@ namespace mcmc_utilities
     T log_likelihood()const
     {
 #ifndef USE_NON_RECURSIVE
-      T result=0;
+      T result=static_cast<T>(0);
       for(auto& p : stochastic_children)
 	{
 	  result+=p->log_prob();
@@ -119,7 +119,7 @@ namespace mcmc_utilities
 	}
       return result;
 #else
-      T result=0;
+      T result=static_cast<T>(0);
       for(auto& p : stochastic_children)
 	{
 	  result+=p->log_prob();
