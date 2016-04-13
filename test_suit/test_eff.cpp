@@ -73,7 +73,7 @@ public:
       }
   }
 
-  double do_eval_log(const variable& x)const
+  double do_eval_log(const variable& x,int n)const
   {
     double log_p=0;
 

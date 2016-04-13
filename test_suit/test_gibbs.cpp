@@ -16,9 +16,21 @@ class test_distribution
   :public probability_density_md<double,std::vector<double> >
 {
 public:
-  double do_eval_log(const std::vector<double>& x)const
+  double do_eval_log(const std::vector<double>& x,int n)const
   {
-    double log_p=-(x[0]*x[0]+x[1]*x[1]);
+    double log_p=0;
+    if(n==0)
+      {
+	log_p=-x[0]*x[0];
+      }
+    else if(n==1)
+      {
+	log_p=-x[1]*x[1];
+      }
+    else
+      {
+	log_p=-(x[0]*x[0]+x[1]*x[1]);
+      }
     return log_p;
   }
 

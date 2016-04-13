@@ -31,7 +31,7 @@ public:
       }
   }
 
-  double do_eval_log(const std::vector<double>& x)const
+  double do_eval_log(const std::vector<double>& x,int n)const
   {
     
     
