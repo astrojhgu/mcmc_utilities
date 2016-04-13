@@ -23,9 +23,9 @@ namespace mcmc_utilities
   public:
     typedef typename element_type_trait<T_var>::element_type T_var1;
   public:
-    T_p eval_log(const T_var& x)const
+    T_p eval_log(const T_var& x,int n=-1)const
     {
-      return do_eval_log(x);
+      return do_eval_log(x,n);
     }
 
     virtual ~probability_density_md()
@@ -47,7 +47,7 @@ namespace mcmc_utilities
     }
 
   private:
-    virtual T_p do_eval_log(const T_var& x)const=0;
+    virtual T_p do_eval_log(const T_var& x,int n)const=0;
     virtual std::pair<T_var1,T_var1> do_var_range(const T_var& x,size_t ndim)const=0;
     virtual std::vector<T_var1> do_init_points(const T_var& x,size_t ndim)const
     {

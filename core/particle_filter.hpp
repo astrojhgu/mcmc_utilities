@@ -112,34 +112,34 @@ namespace mcmc_utilities
     /**
        returns log(p(x_n|x_{n-1}))
      */
-    T_p evol_log_prob(const T_state& x,const T_t& t,const T_state& prev_state,const T_t& prev_t)const
+    T_p evol_log_prob(const T_state& x,const T_t& t,const T_state& prev_state,const T_t& prev_t,int n)const
     {
-      return do_evol_log_prob(x,t,prev_state,prev_t);
+      return do_evol_log_prob(x,t,prev_state,prev_t,n);
     }
 
     /**
        returns log(p(obsx|x_n))
      */
-    T_p obs_log_prob(const T_obs& y,const T_state& x,const T_t& t)const
+    T_p obs_log_prob(const T_obs& y,const T_state& x,const T_t& t,int n)const
     {
-      return do_obs_log_prob(y,x,t);
+      return do_obs_log_prob(y,x,t,n);
     }
 
     /**
        returns posterior probability
      */
-    T_p combined_log_prob(const T_obs& y,const T_state& x,const T_t& t,const T_state& prev_state,const T_t& prev_t)const
+    T_p combined_log_prob(const T_obs& y,const T_state& x,const T_t& t,const T_state& prev_state,const T_t& prev_t,int n)const
     {
-      return evol_log_prob(x,t,prev_state,prev_t)+obs_log_prob(y,x,t);
+      return evol_log_prob(x,t,prev_state,prev_t,n)+obs_log_prob(y,x,t,n);
     }
 
     /**
        proposed important sampling distribution, which is constructed as
        (p(x_n|x_{n-1})*p(obsx|x_n))^alpha
      */
-    T_p proposed_log_prob(const T_obs& y,const T_state& x,const T_t& t,const T_state& prev_state,const T_t& prev_t)const
+    T_p proposed_log_prob(const T_obs& y,const T_state& x,const T_t& t,const T_state& prev_state,const T_t& prev_t,int n)const
     {
-      return alpha*combined_log_prob(y,x,t,prev_state,prev_t);
+      return alpha*combined_log_prob(y,x,t,prev_state,prev_t,n);
     }
 
     /**
@@ -198,11 +198,11 @@ namespace mcmc_utilities
 	/**
 	   joint distribution of the system state
 	 */
-	T_p do_eval_log(const T_state& x)const
+	T_p do_eval_log(const T_state& x,int n)const
 	{
 	  //return ptr_pf_model->evol_log_prob(x,*ptr_t,*ptr_particle,*ptr_prev_t);
 	  //return ptr_pf_model->evol_log_prob(x,*ptr_t,*ptr_particle,*ptr_prev_t);
-	  return ptr_pf_model->proposed_log_prob(*ptr_obs_vec,x,*ptr_t,*ptr_particle,*ptr_prev_t);
+	  return ptr_pf_model->proposed_log_prob(*ptr_obs_vec,x,*ptr_t,*ptr_particle,*ptr_prev_t,n);
 	}
 
 	/**
@@ -262,7 +262,7 @@ namespace mcmc_utilities
 	      /**
 		 calculate the weights
 	       */
-	      log_weight[i]=(1-alpha)*combined_log_prob(y,new_pred,t,particle_list[i].state,prev_t);
+	      log_weight[i]=(1-alpha)*combined_log_prob(y,new_pred,t,particle_list[i].state,prev_t,-1);
 
 	      /**
 		 assign the predicted particles to the particle list
@@ -284,7 +284,7 @@ namespace mcmc_utilities
 	      //ofstream ofs("log.txt");
 	      
 	      gibbs_sample(prob,new_pred,rnd);
-	      log_weight[i]=(1-alpha)*combined_log_prob(y,new_pred,t,particle_list[i].state,prev_t);
+	      log_weight[i]=(1-alpha)*combined_log_prob(y,new_pred,t,particle_list[i].state,prev_t,-1);
 	      particle_list[i].state=new_pred;
 	    }
 	}
@@ -375,12 +375,12 @@ namespace mcmc_utilities
     /**
        system evolution model
      */
-    virtual T_p do_evol_log_prob(const T_state& x,const T_t& t,const T_state& prev_stat,const T_t& prev_t)const=0;
+    virtual T_p do_evol_log_prob(const T_state& x,const T_t& t,const T_state& prev_stat,const T_t& prev_t,int n)const=0;
 
     /**
        observation model
      */
-    virtual T_p do_obs_log_prob(const T_obs& y,const T_state& x,const T_t& t)const=0;
+    virtual T_p do_obs_log_prob(const T_obs& y,const T_state& x,const T_t& t,int n)const=0;
 
     /**
        system state variable range

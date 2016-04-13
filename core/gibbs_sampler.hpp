@@ -26,7 +26,7 @@ namespace mcmc_utilities
       T_p do_eval_log(const T_var1& x1)const
       {
 	set_element(*p_init_var,*p_idx,x1);
-	T_p result= ppd->eval_log(*p_init_var);
+	T_p result= ppd->eval_log(*p_init_var,*p_idx);
 	return result;
       }
       
@@ -103,7 +103,7 @@ namespace mcmc_utilities
       T_p do_eval_log(const T_var1& x1)const
       {
 	set_element(*p_init_var,*p_idx,x1);
-	T_p result= ppd->eval_log(*p_init_var);
+	T_p result= ppd->eval_log(*p_init_var,*p_idx);
 	return result;
       }
  

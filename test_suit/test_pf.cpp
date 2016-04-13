@@ -73,7 +73,7 @@ public:
   typedef double T_t;
   std::vector<double> xl,xr;
 private:
-  T_p do_evol_log_prob(const T_state& x,const T_t& t,const T_state& prev_stat,const T_t& prev_t)const
+  T_p do_evol_log_prob(const T_state& x,const T_t& t,const T_state& prev_stat,const T_t& prev_t,int n)const
   {
     double sx(.1),svx(.01);
     double sy(.1),svy(.01);
@@ -92,20 +92,59 @@ private:
     double y2=y_prev+vy_prev;
     double vy2=vy_prev;
 
-    
-    return
-      -(x[0]-x2)*(x[0]-x2)/(2*sx*sx)
-      -(x[1]-vx2)*(x[1]-vx2)/(2*svx*svx)
-      -(x[2]-y2)*(x[2]-y2)/(2*sy*sy)
-      -(x[3]-vy2)*(x[3]-vy2)/(2*svy*svy);
+    double result=0;
+    if(n==0)
+      {
+	result= -(x[0]-x2)*(x[0]-x2)/(2*sx*sx);
+      }
+    else if(n==1)
+      {
+	result= -(x[1]-vx2)*(x[1]-vx2)/(2*svx*svx);
+      }
+    else if(n==2)
+      {
+	result= -(x[2]-y2)*(x[2]-y2)/(2*sy*sy);
+      }
+    else if(n==3)
+      {
+	result= -(x[3]-vy2)*(x[3]-vy2)/(2*svy*svy);
+      }
+    else
+      {
+	result=
+	  -(x[0]-x2)*(x[0]-x2)/(2*sx*sx)
+	  -(x[1]-vx2)*(x[1]-vx2)/(2*svx*svx)
+	  -(x[2]-y2)*(x[2]-y2)/(2*sy*sy)
+	  -(x[3]-vy2)*(x[3]-vy2)/(2*svy*svy);
+      }
+    assert(isfinite(result));
+    return result;
   }
 
-  T_p do_obs_log_prob(const T_obs& obs,const T_state& stat,const T_t& t)const
+  T_p do_obs_log_prob(const T_obs& obs,const T_state& stat,const T_t& t,int n)const
   {
-    //return -(x[0]-y[0])*(x[0]-y[0])/(2*.4*.4);
+    //result= -(x[0]-y[0])*(x[0]-y[0])/(2*.4*.4);
+    double result=0;
     double osx(1),osy(1);
-    return -(obs[0]-stat[0])*(obs[0]-stat[0])/(2*osx*osx)
-      -(obs[1]-stat[2])*(obs[1]-stat[2])/(2*osx*osx);
+    if(n==0)
+      {
+	result= -(obs[0]-stat[0])*(obs[0]-stat[0])/(2*osx*osx);
+      }
+    else if(n==2)
+      {
+	result= -(obs[1]-stat[2])*(obs[1]-stat[2])/(2*osy*osy);
+      }
+    else if(n==1||n==3)
+      {
+	result= 0;
+      }
+    else
+      {
+	result= -(obs[0]-stat[0])*(obs[0]-stat[0])/(2*osx*osx)
+	  -(obs[1]-stat[2])*(obs[1]-stat[2])/(2*osy*osy);
+      }
+    assert(isfinite(result));
+    return result;
   }
 
   std::pair<double,double> do_state_var_range(const T_t& t,const T_state& x0,const T_t& prev_t,size_t ndim)const
