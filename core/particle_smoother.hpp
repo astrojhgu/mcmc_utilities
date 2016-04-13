@@ -45,14 +45,14 @@ namespace mcmc_utilities
       {}
 
     private:
-      T_p do_evol_log_prob(const T_state& x,const T_t& t,const T_state& prev_stat,const T_t& prev_t)const
+      T_p do_evol_log_prob(const T_state& x,const T_t& t,const T_state& prev_stat,const T_t& prev_t,int n)const
       {
-	return pps->evol_log_prob(x,t,prev_stat,prev_t);
+	return pps->evol_log_prob(x,t,prev_stat,prev_t,n);
       }
       
-      T_p do_obs_log_prob(const T_obs& y,const T_state& x,const T_t& t)const
+      T_p do_obs_log_prob(const T_obs& y,const T_state& x,const T_t& t,int n)const
       {
-	return pps->obs_log_prob(y,x,t);
+	return pps->obs_log_prob(y,x,t,n);
       }
 
       std::pair<T_state1,T_state1> do_state_var_range(const T_t& t,const T_state& prev_state,const T_t& prev_t,size_t ndim)const
@@ -81,14 +81,14 @@ namespace mcmc_utilities
       {}
 
     private:
-      T_p do_evol_log_prob(const T_state& x,const T_t& t,const T_state& future_stat,const T_t& future_t)const
+      T_p do_evol_log_prob(const T_state& x,const T_t& t,const T_state& future_stat,const T_t& future_t,int n)const
       {
-	return pps->evol_log_prob_rev(x,t,future_stat,future_t);
+	return pps->evol_log_prob_rev(x,t,future_stat,future_t,n);
       }
       
-      T_p do_obs_log_prob(const T_obs& y,const T_state& x,const T_t& t)const
+      T_p do_obs_log_prob(const T_obs& y,const T_state& x,const T_t& t,int n)const
       {
-	return pps->obs_log_prob(y,x,t);
+	return pps->obs_log_prob(y,x,t,n);
       }
 
       std::pair<T_state1,T_state1> do_state_var_range(const T_t& t,const T_state& future_state,const T_t& future_t,size_t ndim)const
@@ -258,19 +258,19 @@ namespace mcmc_utilities
        see particle_filter.hpp for the details
      */
     
-    T_p evol_log_prob(const T_state& x,const T_t& t,const T_state& prev_state,const T_t& prev_t)const
+    T_p evol_log_prob(const T_state& x,const T_t& t,const T_state& prev_state,const T_t& prev_t,int n)const
     {
-      return do_evol_log_prob(x,t,prev_state,prev_t);
+      return do_evol_log_prob(x,t,prev_state,prev_t,n);
     }
 
-    T_p evol_log_prob_rev(const T_state& x,const T_t& t,const T_state& future_state,const T_t& future_t)const
+    T_p evol_log_prob_rev(const T_state& x,const T_t& t,const T_state& future_state,const T_t& future_t,int n)const
     {
-      return do_evol_log_prob_rev(x,t,future_state,future_t);
+      return do_evol_log_prob_rev(x,t,future_state,future_t,n);
     }
     
-    T_p obs_log_prob(const T_obs& y,const T_state& x,const T_t& t)const
+    T_p obs_log_prob(const T_obs& y,const T_state& x,const T_t& t,int n)const
     {
-      return do_obs_log_prob(y,x,t);
+      return do_obs_log_prob(y,x,t,n);
     }
 
     std::pair<T_state1,T_state1> state_var_range(const T_t& t,const T_state& prev_state,const T_t& prev_t,size_t ndim)const
@@ -295,9 +295,9 @@ namespace mcmc_utilities
 
 
   private:
-    virtual T_p do_evol_log_prob(const T_state& x,const T_t& t,const T_state& prev_stat,const T_t& prev_t)const=0;
-    virtual T_p do_evol_log_prob_rev(const T_state& x,const T_t& t,const T_state& prev_stat,const T_t& prev_t)const=0;
-    virtual T_p do_obs_log_prob(const T_obs& y,const T_state& x,const T_t& t)const=0;
+    virtual T_p do_evol_log_prob(const T_state& x,const T_t& t,const T_state& prev_stat,const T_t& prev_t,int n)const=0;
+    virtual T_p do_evol_log_prob_rev(const T_state& x,const T_t& t,const T_state& prev_stat,const T_t& prev_t,int n)const=0;
+    virtual T_p do_obs_log_prob(const T_obs& y,const T_state& x,const T_t& t,int n)const=0;
     virtual std::pair<T_state1,T_state1> do_state_var_range(const T_t& t,const T_state& prev_state,const T_t& prev_t,size_t ndim)const=0;
     virtual std::pair<T_state1,T_state1> do_state_var_range_rev(const T_t& t,const T_state& future_state,const T_t& future_t,size_t ndim)const=0;
     
