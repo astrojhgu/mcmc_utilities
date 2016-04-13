@@ -30,10 +30,11 @@ namespace mcmc_utilities
 #ifdef DEBUG
     if(std::isinf(result)||std::isnan(result))
       {
-	std::cerr<<result<<std::endl;
-	std::cerr<<scale<<std::endl;
-	std::cerr<<(&pd)<<std::endl;
-	std::cerr<<pd(x)<<std::endl;
+	std::cerr<<"result="<<result<<std::endl;
+	std::cerr<<"scale="<<scale<<std::endl;
+	std::cerr<<"&pd="<<(&pd)<<std::endl;
+	std::cerr<<"pd(x)="<<pd(x)<<std::endl;
+	std::cerr<<"x="<<x<<std::endl;
 	assert(0);
       }
     
