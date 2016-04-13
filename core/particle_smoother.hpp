@@ -218,7 +218,7 @@ namespace mcmc_utilities
 	    {
 	      for(int j=0;j<history[i].size();++j)
 		{
-		  weights[j]=history[i][j].weight*std::exp(evol_log_prob(result[i+1],t_list[i+1],history[i][j].state,t_list[i]));
+		  weights[j]=history[i][j].weight*std::exp(evol_log_prob(result[i+1],t_list[i+1],history[i][j].state,t_list[i],-1));
 		}
 	    }
 	  else
