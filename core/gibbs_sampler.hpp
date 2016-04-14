@@ -45,6 +45,7 @@ namespace mcmc_utilities
 	      {
 		std::cerr<<"inside gibbs sampler:"<<std::endl;
 		std::cerr<<"x="<<x<<std::endl;
+		std::cerr<<"init_var["<<idx<<"]="<<init_var[idx]<<std::endl;
 	      }
 	    return result;
 	  },var_range,xinit,xprev,10,rnd);

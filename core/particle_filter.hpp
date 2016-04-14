@@ -130,7 +130,18 @@ namespace mcmc_utilities
      */
     T_p combined_log_prob(const T_obs& y,const T_state& x,const T_t& t,const T_state& prev_state,const T_t& prev_t,int n)const
     {
-      return evol_log_prob(x,t,prev_state,prev_t,n)+obs_log_prob(y,x,t,n);
+      T_p result=evol_log_prob(x,t,prev_state,prev_t,n)+obs_log_prob(y,x,t,n);
+      if(!std::isfinite(result))
+	{
+	  std::cerr<<"inside pf-combined_log_prob"<<std::endl;
+	  std::cerr<<"n="<<n<<std::endl;
+	  for(int i=0;i<x.size();++i)
+	    {
+	      std::cerr<<"x["<<i<<"]="<<x[i]<<std::endl;
+	    }
+	}
+
+      return result;
     }
 
     /**
@@ -139,7 +150,17 @@ namespace mcmc_utilities
      */
     T_p proposed_log_prob(const T_obs& y,const T_state& x,const T_t& t,const T_state& prev_state,const T_t& prev_t,int n)const
     {
-      return alpha*combined_log_prob(y,x,t,prev_state,prev_t,n);
+      T_p result= alpha*combined_log_prob(y,x,t,prev_state,prev_t,n);
+      if(!std::isfinite(result))
+	{
+	  std::cerr<<"inside pf"<<std::endl;
+	  std::cerr<<"n="<<n<<std::endl;
+	  for(int i=0;i<x.size();++i)
+	    {
+	      std::cerr<<"x["<<i<<"]="<<x[i]<<std::endl;
+	    }
+	}
+      return result;
     }
 
     /**
@@ -202,7 +223,17 @@ namespace mcmc_utilities
 	{
 	  //return ptr_pf_model->evol_log_prob(x,*ptr_t,*ptr_particle,*ptr_prev_t);
 	  //return ptr_pf_model->evol_log_prob(x,*ptr_t,*ptr_particle,*ptr_prev_t);
-	  return ptr_pf_model->proposed_log_prob(*ptr_obs_vec,x,*ptr_t,*ptr_particle,*ptr_prev_t,n);
+	  T_p result= ptr_pf_model->proposed_log_prob(*ptr_obs_vec,x,*ptr_t,*ptr_particle,*ptr_prev_t,n);
+	  if(!std::isfinite(result))
+	    {
+	      std::cerr<<"inside pf-prob:"<<std::endl;
+	      std::cerr<<"n="<<n<<std::endl;
+	      for(int i=0;i<x.size();++i)
+		{
+		  std::cerr<<"x["<<i<<"]="<<x[i]<<std::endl;
+		}
+	    }
+	  return result;
 	}
 
 	/**

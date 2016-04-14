@@ -47,12 +47,34 @@ namespace mcmc_utilities
     private:
       T_p do_evol_log_prob(const T_state& x,const T_t& t,const T_state& prev_stat,const T_t& prev_t,int n)const
       {
-	return pps->evol_log_prob(x,t,prev_stat,prev_t,n);
+	T_p result= pps->evol_log_prob(x,t,prev_stat,prev_t,n);
+	if(!std::isfinite(result))
+	  {
+	    std::cerr<<"inside ps-pf-evol"<<std::endl;
+	    std::cerr<<"n="<<n<<std::endl;
+	    for(int i=0;i<x.size();++i)
+	      {
+		std::cerr<<"x["<<i<<"]="<<x[i]<<std::endl;
+	      }
+	  }
+
+	return result;
       }
       
       T_p do_obs_log_prob(const T_obs& y,const T_state& x,const T_t& t,int n)const
       {
-	return pps->obs_log_prob(y,x,t,n);
+        T_p result=pps->obs_log_prob(y,x,t,n);
+	if(!std::isfinite(result))
+	  {
+	    std::cerr<<"inside ps-pf-obs"<<std::endl;
+	    std::cerr<<"n="<<n<<std::endl;
+	    for(int i=0;i<x.size();++i)
+	      {
+		std::cerr<<"x["<<i<<"]="<<x[i]<<std::endl;
+	      }
+	  }
+	
+	return result;
       }
 
       std::pair<T_state1,T_state1> do_state_var_range(const T_t& t,const T_state& prev_state,const T_t& prev_t,size_t ndim)const
@@ -83,12 +105,34 @@ namespace mcmc_utilities
     private:
       T_p do_evol_log_prob(const T_state& x,const T_t& t,const T_state& future_stat,const T_t& future_t,int n)const
       {
-	return pps->evol_log_prob_rev(x,t,future_stat,future_t,n);
+	T_p result= pps->evol_log_prob_rev(x,t,future_stat,future_t,n);
+	if(!std::isfinite(result))
+	  {
+	    std::cerr<<"inside ps-pf-evol_rev"<<std::endl;
+	    std::cerr<<"n="<<n<<std::endl;
+	    for(int i=0;i<x.size();++i)
+	      {
+		std::cerr<<"x["<<i<<"]="<<x[i]<<std::endl;
+	      }
+	  }
+
+	return result;
       }
       
       T_p do_obs_log_prob(const T_obs& y,const T_state& x,const T_t& t,int n)const
       {
-	return pps->obs_log_prob(y,x,t,n);
+	T_p result=pps->obs_log_prob(y,x,t,n);
+	if(!std::isfinite(result))
+	  {
+	    std::cerr<<"inside ps-pf-obs-rev"<<std::endl;
+	    std::cerr<<"n="<<n<<std::endl;
+	    for(int i=0;i<x.size();++i)
+	      {
+		std::cerr<<"x["<<i<<"]="<<x[i]<<std::endl;
+	      }
+	  }
+
+	return result;
       }
 
       std::pair<T_state1,T_state1> do_state_var_range(const T_t& t,const T_state& future_state,const T_t& future_t,size_t ndim)const
@@ -260,17 +304,48 @@ namespace mcmc_utilities
     
     T_p evol_log_prob(const T_state& x,const T_t& t,const T_state& prev_state,const T_t& prev_t,int n)const
     {
-      return do_evol_log_prob(x,t,prev_state,prev_t,n);
+      T_p result=do_evol_log_prob(x,t,prev_state,prev_t,n);
+      if(!std::isfinite(result))
+	{
+	  std::cerr<<"inside ps-evol"<<std::endl;
+	  std::cerr<<"n="<<n<<std::endl;
+	  for(int i=0;i<x.size();++i)
+	    {
+	      std::cerr<<"x["<<i<<"]="<<x[i]<<std::endl;
+	    }
+	}
+
+      return result;
     }
 
     T_p evol_log_prob_rev(const T_state& x,const T_t& t,const T_state& future_state,const T_t& future_t,int n)const
     {
-      return do_evol_log_prob_rev(x,t,future_state,future_t,n);
+      T_p result=do_evol_log_prob_rev(x,t,future_state,future_t,n);
+      if(!std::isfinite(result))
+	{
+	  std::cerr<<"inside ps-evol_rev"<<std::endl;
+	  std::cerr<<"n="<<n<<std::endl;
+	  for(int i=0;i<x.size();++i)
+	    {
+	      std::cerr<<"x["<<i<<"]="<<x[i]<<std::endl;
+	    }
+	}
+      return result;
     }
     
     T_p obs_log_prob(const T_obs& y,const T_state& x,const T_t& t,int n)const
     {
-      return do_obs_log_prob(y,x,t,n);
+      T_p result=do_obs_log_prob(y,x,t,n);
+      if(!std::isfinite(result))
+	{
+	  std::cerr<<"inside ps-obs"<<std::endl;
+	  std::cerr<<"n="<<n<<std::endl;
+	  for(int i=0;i<x.size();++i)
+	    {
+	      std::cerr<<"x["<<i<<"]="<<x[i]<<std::endl;
+	    }
+	}
+      return result;
     }
 
     std::pair<T_state1,T_state1> state_var_range(const T_t& t,const T_state& prev_state,const T_t& prev_t,size_t ndim)const
