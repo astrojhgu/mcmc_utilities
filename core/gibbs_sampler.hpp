@@ -13,81 +13,9 @@ namespace mcmc_utilities
   template <typename T_p,typename T_var>
   void gibbs_sample(const probability_density_md<T_p,T_var>& pd,T_var& init_var,base_urand<T_p>& rnd)
   {
-    for(int i=0;i<get_size(init_var);++i)
-      {
-	auto xrange=pd.var_range(init_var,i);
-	if(xrange.first>get_element(init_var,i)||xrange.second<get_element(init_var,i))
-	  {
-	    var_out_of_range e;
-	    e.attach_message("gibbs sampler #1");
-	    throw e;
-	  }
-      }
-    
-    
     size_t idx=0;
     typedef typename element_type_trait<T_var>::element_type T_var1;
-    class conditional_probability_density
-      :public probability_density_1d<typename element_type_trait<T_var>::element_type>
-    {
-    public:
-      size_t* p_idx;
-      T_var* p_init_var;
-      const probability_density_md<T_p,T_var>* ppd;
-    private:
-      T_p do_eval_log(const T_var1& x1)const
-      {
-	set_element(*p_init_var,*p_idx,x1);
-	T_p result= ppd->eval_log(*p_init_var,*p_idx);
-	if(!std::isfinite(result))
-	  {
-	    std::cerr<<"inside gibbs:"<<std::endl;
-	    std::cerr<<"x="<<x1<<std::endl;
-	  }
-	return result;
-      }
-      
-      std::pair<T_var1,T_var1> do_var_range()const
-      {
-	//ppd->var_range(xmin,xmax,*p_init_var,(*p_idx));
-	return ppd->var_range(*p_init_var,*p_idx);
-      }
-
-      std::vector<T_var1> do_init_points()const
-      {
-	//int n=ppd->num_init_points(*p_init_var,*p_idx);
-	std::vector<T_var1> xinit(ppd->init_points(*p_init_var,*p_idx));
-	if(xinit.size()==0)
-	  {
-	    xinit.resize(5);
-	    
-	    std::pair<T_var1,T_var1> xrange(this->var_range());
-	    T_var1 xl=xrange.first;
-	    T_var1 xr=xrange.second;
-
-	    for(size_t n1=0;n1<xinit.size();++n1)
-	      {
-		//if(n1!=1)
-		  {
-		    xinit[n1]= xl+(xr-xl)/(xinit.size()+1)*(n1+1);
-		  }
-		  //else
-		  {
-		    // xinit[n1]= find_peak(*this);
-		  }
-	      }
-	  }
-	return xinit;
-      }
-
-      std::vector<T_var1> do_candidate_points()const
-      {
-	return ppd->candidate_points(*p_init_var,*p_idx);
-      }
-    }cpd;
-    cpd.p_idx=std::addressof(idx);
-    cpd.p_init_var=std::addressof(init_var);
-    cpd.ppd=std::addressof(pd);
+    
     T_var1 xprev=0.;
     for(idx=0;idx<get_size(init_var);++idx)
       {
@@ -95,7 +23,31 @@ namespace mcmc_utilities
 		
 	//T_var1 x=sampler.sample(cpd,xprev);
 	//T_var1 x=arms(cpd,xprev,10,rnd);
-	T_var1 x=continuous_sample([&](const T_var1& x){return cpd.eval_log(x);},cpd.var_range(),cpd.init_points(),xprev,10,rnd);
+	auto var_range=pd.var_range(init_var,idx);
+
+	std::vector<T_var1> xinit(pd.init_points(init_var,idx));
+	if(xinit.size()==0)
+	  {
+	    xinit.resize(5);
+	    T_var1 xl=var_range.first;
+	    T_var1 xr=var_range.second;
+
+	    for(size_t n1=0;n1<xinit.size();++n1)
+	      {
+		xinit[n1]= xl+(xr-xl)/(xinit.size()+1)*(n1+1);
+	      }
+	  }
+	
+	T_var1 x=continuous_sample([&](const T_var1& x){
+	    set_element(init_var,idx,x);
+	    T_p result= pd.eval_log(init_var,idx);
+	    if(!std::isfinite(result))
+	      {
+		std::cerr<<"inside gibbs sampler:"<<std::endl;
+		std::cerr<<"x="<<x<<std::endl;
+	      }
+	    return result;
+	  },var_range,xinit,xprev,10,rnd);
 	set_element(init_var,idx,x);
       }
   }
@@ -120,70 +72,32 @@ namespace mcmc_utilities
 	throw index_out_of_range();
       }
     typedef typename element_type_trait<T_var>::element_type T_var1;
-    class conditional_probability_density
-      :public probability_density_1d<typename element_type_trait<T_var>::element_type>
-    {
-    public:
-      size_t* p_idx;
-      T_var* p_init_var;
-      const probability_density_md<T_p,T_var>* ppd;
-    private:
-      T_p do_eval_log(const T_var1& x1)const
-      {
-	set_element(*p_init_var,*p_idx,x1);
-	T_p result= ppd->eval_log(*p_init_var,*p_idx);
-	return result;
-      }
- 
-      std::pair<T_var1,T_var1> do_var_range()const
-      {
-	//ppd->var_range(xmin,xmax,*p_init_var,(*p_idx));
-	return ppd->var_range(*p_init_var,*p_idx);
-      }
-
-      std::vector<T_var1> do_init_points()const
-      {
-	//int n=ppd->num_init_points(*p_init_var,*p_idx);
-	std::vector<T_var1> xinit(ppd->init_points(*p_init_var,*p_idx));
-	if(xinit.size()==0)
-	  {
-	    xinit.resize(5);
-	    
-	    std::pair<T_var1,T_var1> xrange(this->var_range());
-	    T_var1 xl=xrange.first;
-	    T_var1 xr=xrange.second;
-
-	    for(size_t n1=0;n1<xinit.size();++n1)
-	      {
-		//if(n1!=1)
-		  {
-		    xinit[n1]= xl+(xr-xl)/(xinit.size()+1)*(n1+1);
-		  }
-		  //else
-		  {
-		    //xinit[n1]= find_peak(*this);
-		  }
-	      }
-	  }
-	return xinit;
-      }
-
-      std::vector<T_var1> do_candidate_points()const
-      {
-	return ppd->candidate_points(*p_init_var,*p_idx);
-      }
-      
-    }cpd;
-    cpd.p_idx=std::addressof(idx);
-    cpd.p_init_var=std::addressof(init_var);
-    cpd.ppd=std::addressof(pd);
+    
     T_var1 xprev=0.;
 
 
     xprev=get_element(init_var,idx);
-    //T_var1 x=sampler.sample(cpd,xprev);
-    //T_var1 x=arms(cpd,xprev,10,rnd);
-    T_var1 x=continuous_sample([&](const T_var1& x){return cpd.eval_log(x);}, cpd.var_range(),cpd.init_points(),xprev,10,rnd);
+    auto var_range=pd.var_range(init_var,idx);    
+    std::vector<T_var1> xinit(pd.init_points(init_var,idx));
+    if(xinit.size()==0)
+      {
+	xinit.resize(5);
+	
+	
+	T_var1 xl=var_range.first;
+	T_var1 xr=var_range.second;
+	
+	for(size_t n1=0;n1<xinit.size();++n1)
+	  {
+	    xinit[n1]= xl+(xr-xl)/(xinit.size()+1)*(n1+1);
+	  }
+      }
+
+    T_var1 x=continuous_sample([&](const T_var1& x){
+	set_element(init_var,idx,x);
+	T_p result= pd.eval_log(init_var,idx);
+	return result;
+      }, var_range,xinit,xprev,10,rnd);
     set_element(init_var,idx,x);
   }
   
