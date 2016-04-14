@@ -39,6 +39,11 @@ namespace mcmc_utilities
       {
 	set_element(*p_init_var,*p_idx,x1);
 	T_p result= ppd->eval_log(*p_init_var,*p_idx);
+	if(!std::isfinite(result))
+	  {
+	    std::cerr<<"inside gibbs:"<<std::endl;
+	    std::cerr<<"x="<<x1<<std::endl;
+	  }
 	return result;
       }
       
