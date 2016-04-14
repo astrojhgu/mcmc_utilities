@@ -13,6 +13,18 @@ namespace mcmc_utilities
   template <typename T_p,typename T_var>
   void gibbs_sample(const probability_density_md<T_p,T_var>& pd,T_var& init_var,base_urand<T_p>& rnd)
   {
+    for(int i=0;i<get_size(init_var);++i)
+      {
+	auto xrange=pd.var_range(init_var,i);
+	if(xrange.first>get_element(init_var,i)||xrange.second<get_element(init_var,i))
+	  {
+	    var_out_of_range e;
+	    e.attach_message("gibbs sampler #1");
+	    throw e;
+	  }
+      }
+    
+    
     size_t idx=0;
     typedef typename element_type_trait<T_var>::element_type T_var1;
     class conditional_probability_density
@@ -87,6 +99,17 @@ namespace mcmc_utilities
   void gibbs_sample1(const probability_density_md<T_p,T_var>& pd,
 		    T_var& init_var,size_t idx,base_urand<T_p>& rnd)
   {
+    for(int i=0;i<get_size(init_var);++i)
+      {
+	auto xrange=pd.var_range(init_var,i);
+	if(xrange.first>get_element(init_var,i)||xrange.second<get_element(init_var,i))
+	  {
+	    var_out_of_range e;
+	    e.attach_message("gibbs sampler #1");
+	    throw e;
+	  }
+      }
+    
     if(idx>=get_size(init_var))
       {
 	throw index_out_of_range();
