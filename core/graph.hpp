@@ -119,7 +119,7 @@ namespace mcmc_utilities
 				for(;;)
 				  {
 				    size_t result=rnd()*i;
-				    if(result<i&&result>=0)
+				    if(result<i)
 				      {
 					return result;
 				      }

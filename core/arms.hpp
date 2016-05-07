@@ -814,10 +814,12 @@ namespace mcmc_utilities
   T calc_scale(const std::list<section<T> >& section_list)
   {
     T scale=-std::numeric_limits<T>::infinity();
-    for(auto& i:section_list)
-      {
-	scale=std::max(scale,std::max(i.y_l(),i.y_u()));
-      }
+    //for(auto& i:section_list)
+    //  {
+    //scale=std::max(scale,std::max(i.y_l(),i.y_u()));
+    //}
+    std::for_each(section_list.begin(),section_list.end(),
+		 [&scale](const section<T>& s){scale=std::max(scale,std::max(s.y_l(),s.y_u()));});
     if(std::isinf(scale))
       {
 	if(scale < static_cast<T>(0))
@@ -837,11 +839,17 @@ namespace mcmc_utilities
   void update_scale(std::list<section<T> >& section_list,T& scale)
   {
     T new_scale=calc_scale(section_list);
-    for(auto i=section_list.begin();i!=section_list.end();++i)
-      {
-	i->set_y_l(i->y_l()-new_scale);
-	i->set_y_u(i->y_u()-new_scale);
-      }
+    //for(auto i=section_list.begin();i!=section_list.end();++i)
+    //{
+    //i->set_y_l(i->y_l()-new_scale);
+    //i->set_y_u(i->y_u()-new_scale);
+    //}
+    std::for_each(section_list.begin(),
+		  section_list.end(),
+		  [new_scale](section<T>& s){
+		    s.set_y_l(s.y_l()-new_scale);
+		    s.set_y_u(s.y_u()-new_scale);
+		  });
     
     scale+=new_scale;
     for(auto i=section_list.begin();i!=section_list.end();++i)
