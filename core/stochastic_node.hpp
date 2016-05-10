@@ -2,6 +2,7 @@
 #define STOCHASTIC_NODE
 #include <memory>
 #include <vector>
+#include <numeric>
 #include <map>
 #include "error_handler.hpp"
 #include "arms.hpp"

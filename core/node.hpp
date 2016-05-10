@@ -1,5 +1,6 @@
 #include "error_handler.hpp"
 #include "stochastic_node.hpp"
+#include "deterministic_node.hpp"
 
 #ifndef NODE_HPP
 #define NODE_HPP

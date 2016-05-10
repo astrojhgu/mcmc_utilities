@@ -3,6 +3,7 @@
 //#include "distribution.hpp"
 #include "error_handler.hpp"
 #include <algorithm>
+#include <cmath>
 #include <limits>
 #include <iomanip>
 #include <iostream>
