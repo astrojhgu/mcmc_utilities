@@ -4,63 +4,94 @@
 #include <iostream>
 namespace mcmc_utilities
 {
-  struct tag_t
+  class tag_t
   {
-    std::string name;
-    int idx;
-    bool is_array;
-    
+  public:
+    std::string _name;
+    int _idx;
+    bool _is_array;
+  public:
     tag_t()
-      :name(),idx(-1),is_array(false)
+      :_name(),_idx(-1),_is_array(false)
     {}
     
     tag_t(std::string n)
-      :name(n),idx(-1),is_array(false)
+      :_name(n),_idx(-1),_is_array(false)
     {}
 
     tag_t(std::string n,
 	  int i)
-      :name(n),idx(i),is_array(true){}
+      :_name(n),_idx(i),_is_array(true){}
 
     tag_t(std::string n,
 	  int i,
 	  bool ia)
-      :name(n),idx(i),is_array(ia){}
+      :_name(n),_idx(i),_is_array(ia){}
 
     tag_t(const tag_t& rhs)
-      :name(rhs.name),idx(rhs.idx),is_array(rhs.is_array)
+      :_name(rhs._name),_idx(rhs._idx),_is_array(rhs._is_array)
     {
     }
 
+    std::string name()const
+    {
+      return _name;
+    }
+
+    int idx()const
+    {
+      return _idx;
+    }
+
+    int is_array()const
+    {
+      return _is_array;
+    }
+
+    void set_name(const std::string& n)
+    {
+      _name=n;
+    }
+
+    void set_idx(int i)
+    {
+      _idx=i;
+    }
+
+    void set_is_array(bool b)
+    {
+      _is_array=b;
+    }
+    
     tag_t& operator=(const tag_t& rhs)
     {
-      name=rhs.name;
-      idx=rhs.idx;
-      is_array=rhs.is_array;
+      _name=rhs._name;
+      _idx=rhs._idx;
+      _is_array=rhs._is_array;
       return *this;
     }
 
     bool operator < (const tag_t& rhs)const
     {
-      if(name==rhs.name)
+      if(_name==rhs._name)
 	{
-	  return idx<rhs.idx;
+	  return _idx<rhs._idx;
 	}
       else
 	{
-	  return name<rhs.name;
+	  return _name<rhs._name;
 	}
     }
 
     bool operator == (const tag_t& rhs)const
     {
-      if(!is_array&&!rhs.is_array)
+      if(!_is_array&&!rhs._is_array)
 	{
-	  return name==rhs.name;
+	  return _name==rhs._name;
 	}
       else
 	{
-	  return name==rhs.name&&idx==rhs.idx&&is_array==rhs.is_array;
+	  return _name==rhs._name&&_idx==rhs._idx&&_is_array==rhs._is_array;
 	}
     }
 
@@ -71,11 +102,11 @@ namespace mcmc_utilities
 
     operator std::string()const
     {
-      std::string result=name;
-      if(is_array)
+      std::string result=_name;
+      if(_is_array)
 	{
 	  result+="_";
-	  result+=std::to_string(idx);
+	  result+=std::to_string(_idx);
 	}
       return result;
     }
@@ -85,10 +116,10 @@ namespace mcmc_utilities
 
   std::ostream& operator<<(std::ostream& os,const tag_t& t)
   {
-    os<<t.name;
-    if(t.is_array)
+    os<<t.name();
+    if(t.is_array())
       {
-	os<<"["<<t.idx<<"]";
+	os<<"["<<t.idx()<<"]";
       }
     return os;
   }

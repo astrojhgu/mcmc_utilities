@@ -60,16 +60,16 @@ namespace mcmc_utilities
       std::map<std::string,std::vector<std::string> > nodes;
       for(const auto& i:topology)
 	{
-	  std::string n1=i.first.name;
-	  if(i.first.is_array)
+	  std::string n1=i.first.name();
+	  if(i.first.is_array())
 	    {
 	      n1+="_i";
 	    }
 	  std::vector<std::string> plist;
 	  for(const auto& j: i.second)
 	    {
-	      std::string n2=j.first.name;
-	      if(j.first.is_array)
+	      std::string n2=j.first.name();
+	      if(j.first.is_array())
 		{
 		  n2+="_i";
 		}
