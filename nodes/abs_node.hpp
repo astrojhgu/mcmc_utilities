@@ -4,6 +4,8 @@
 #include <core/cached_dtm_node.hpp>
 #include <math/functions.hpp>
 #include <helper/node_counter.hpp>
+#include <helper/abstract_node_factory.hpp>
+#include <helper/vnode.hpp>
 #include <memory>
 #include <utility>
 #include <string>
