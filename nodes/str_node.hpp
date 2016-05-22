@@ -42,7 +42,7 @@ namespace mcmc_utilities
 	  return;
 	}
 
-      auto& node_factories=str_node::node_factories;
+      //auto& node_factories=str_node::node_factories;
 
       register_function({"add"},std::shared_ptr<abstract_node_factory<T> >(new add_node_factory<T>()));
       register_function({"sub"},std::shared_ptr<abstract_node_factory<T> >(new sub_node_factory<T>()));
@@ -172,7 +172,7 @@ namespace mcmc_utilities
 	      throw std::logic_error("input names mismatch");
 	    }
 	}
-      for(int i=0;i<input_names.size();++i)
+      for(unsigned int i=0;i<input_names.size();++i)
 	{
 	  std::shared_ptr<deterministic_node<T> > pn(new forward_node<T>);
 	  this->elements.insert(std::make_pair(input_names[i],pn));

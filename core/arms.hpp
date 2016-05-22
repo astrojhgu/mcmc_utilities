@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <iostream>
 #include <string>
+#include <vector>
 //#define DEBUG
 #ifdef DEBUG
 #include <fstream>
@@ -1299,6 +1300,14 @@ namespace mcmc_utilities
       }
     else
       {
+	x1=std::nan("");
+	x2=std::nan("");
+	y1=std::nan("");
+	y2=std::nan("");
+	ybase=std::nan("");
+	ill_conditioned_distribution e;
+	e.attach_message("cum error");
+	throw e;
 	assert(0);
       }
     

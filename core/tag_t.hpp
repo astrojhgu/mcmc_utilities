@@ -110,6 +110,11 @@ namespace mcmc_utilities
 	}
       return result;
     }
+
+    std::string to_string()const
+    {
+      return std::string(*this);
+    }
   };
 
   

@@ -48,7 +48,7 @@ namespace mcmc_utilities
     std::vector<T> do_candidate_points()const override
     {
       std::vector<T> result((int)(this->parent(1))+1);
-      for(int i=0;i<result.size();++i)
+      for(unsigned int i=0;i<result.size();++i)
 	{
 	  result[i]=i;
 	}
