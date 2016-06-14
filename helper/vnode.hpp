@@ -11,10 +11,10 @@
 namespace mcmc_utilities
 {
   template <typename T>
-  class eq_vnode;
+  class id_vnode;
 
   template <typename T>
-  class eq_node;
+  class id_node;
   
   template <typename T>
   class vnode
@@ -68,19 +68,19 @@ namespace mcmc_utilities
     }
 
   public:
-    eq_vnode<T> operator()(size_t n)const
+    id_vnode<T> operator()(size_t n)const
     {
-      return eq_vnode<T>({*this,n});
+      return id_vnode<T>({*this,n});
     }
   };
 
   template <typename T>
-  class eq_vnode
+  class id_vnode
     :public vnode<T>
   {
   public:
-    eq_vnode(const std::pair<const vnode<T>&,size_t>& p)
-      :vnode<T>("eq",std::string("eq")+node_count<eq_vnode<T> >(),{p})
+    id_vnode(const std::pair<const vnode<T>&,size_t>& p)
+      :vnode<T>("eq",std::string("eq")+node_count<id_vnode<T> >(),{p})
     {
       this->binded=true;
       this->named=false;
@@ -89,22 +89,22 @@ namespace mcmc_utilities
   public:
     std::shared_ptr<node<T> > get_node()const override
     {
-      return std::shared_ptr<node<T> >(new eq_node<T>);
+      return std::shared_ptr<node<T> >(new id_node<T>);
     }
 
   public:
     std::shared_ptr<vnode<T> > clone()const override
     {
-      return std::shared_ptr<vnode<T> >(new eq_vnode<T>(*this));
+      return std::shared_ptr<vnode<T> >(new id_vnode<T>(*this));
     }
   };
 
   template <typename T>
-  class eq_node
+  class id_node
     :public deterministic_node<T>
   {
   public:
-    eq_node()
+    id_node()
       :deterministic_node<T>(1,1)
       {}
 
