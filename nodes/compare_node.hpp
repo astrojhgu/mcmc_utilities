@@ -35,6 +35,27 @@ namespace mcmc_utilities
   };
 
   template <typename T>
+  class lt_node_factory
+    :public abstract_node_factory<T>
+  {
+  public:
+    lt_node_factory()
+      :abstract_node_factory<T>({"op1","op2"},{"result"},{})
+    {}
+    
+    std::shared_ptr<node<T> >
+    do_get_node(const std::vector<T>& hparam)const override
+    {
+      return std::shared_ptr<node<T> >(new lt_node<T>);
+    }
+
+    std::string do_get_node_type()const override
+    {
+      return std::string("deterministic");
+    }
+  };
+
+  template <typename T>
   class le_node
     :public cached_dtm_node<T>
   {
@@ -56,6 +77,28 @@ namespace mcmc_utilities
   };
 
   template <typename T>
+  class le_node_factory
+    :public abstract_node_factory<T>
+  {
+  public:
+    le_node_factory()
+      :abstract_node_factory<T>({"op1","op2"},{"result"},{})
+    {}
+    
+    std::shared_ptr<node<T> >
+    do_get_node(const std::vector<T>& hparam)const override
+    {
+      return std::shared_ptr<node<T> >(new le_node<T>);
+    }
+
+    std::string do_get_node_type()const override
+    {
+      return std::string("deterministic");
+    }
+  };
+
+
+  template <typename T>
   class gt_node
     :public cached_dtm_node<T>
   {
@@ -73,6 +116,28 @@ namespace mcmc_utilities
     {
       auto p=new gt_node();
       return std::shared_ptr<node<T> >(p);
+    }
+  };
+
+
+  template <typename T>
+  class gt_node_factory
+    :public abstract_node_factory<T>
+  {
+  public:
+    gt_node_factory()
+      :abstract_node_factory<T>({"op1","op2"},{"result"},{})
+    {}
+    
+    std::shared_ptr<node<T> >
+    do_get_node(const std::vector<T>& hparam)const override
+    {
+      return std::shared_ptr<node<T> >(new gt_node<T>);
+    }
+
+    std::string do_get_node_type()const override
+    {
+      return std::string("deterministic");
     }
   };
 
@@ -98,6 +163,27 @@ namespace mcmc_utilities
   };
 
   template <typename T>
+  class ge_node_factory
+    :public abstract_node_factory<T>
+  {
+  public:
+    ge_node_factory()
+      :abstract_node_factory<T>({"op1","op2"},{"result"},{})
+    {}
+    
+    std::shared_ptr<node<T> >
+    do_get_node(const std::vector<T>& hparam)const override
+    {
+      return std::shared_ptr<node<T> >(new ge_node<T>);
+    }
+
+    std::string do_get_node_type()const override
+    {
+      return std::string("deterministic");
+    }
+  };
+
+  template <typename T>
   class eq_node
     :public cached_dtm_node<T>
   {
@@ -117,6 +203,28 @@ namespace mcmc_utilities
       return std::shared_ptr<node<T> >(p);
     }
   };
+
+  template <typename T>
+  class eq_node_factory
+    :public abstract_node_factory<T>
+  {
+  public:
+    eq_node_factory()
+      :abstract_node_factory<T>({"op1","op2"},{"result"},{})
+    {}
+    
+    std::shared_ptr<node<T> >
+    do_get_node(const std::vector<T>& hparam)const override
+    {
+      return std::shared_ptr<node<T> >(new eq_node<T>);
+    }
+
+    std::string do_get_node_type()const override
+    {
+      return std::string("deterministic");
+    }
+  };
+
 }
 
 

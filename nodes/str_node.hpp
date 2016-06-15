@@ -20,6 +20,8 @@
 #include "cos_node.hpp"
 #include "tan_node.hpp"
 #include "arithmetic_node.hpp"
+#include "compare_node.hpp"
+#include "cond_node.hpp"
 #include "phi_node.hpp"
 #include "cosmology_nodes.hpp"
 #include "ez_node.hpp"
@@ -43,7 +45,11 @@ namespace mcmc_utilities
 	}
 
       //auto& node_factories=str_node::node_factories;
-
+      register_function({"eq"},std::shared_ptr<abstract_node_factory<T> >(new eq_node_factory<T>()));
+      register_function({"lt"},std::shared_ptr<abstract_node_factory<T> >(new lt_node_factory<T>()));
+      register_function({"le"},std::shared_ptr<abstract_node_factory<T> >(new le_node_factory<T>()));
+      register_function({"gt"},std::shared_ptr<abstract_node_factory<T> >(new gt_node_factory<T>()));
+      register_function({"ge"},std::shared_ptr<abstract_node_factory<T> >(new ge_node_factory<T>()));
       register_function({"add"},std::shared_ptr<abstract_node_factory<T> >(new add_node_factory<T>()));
       register_function({"sub"},std::shared_ptr<abstract_node_factory<T> >(new sub_node_factory<T>()));
       register_function({"neg"},std::shared_ptr<abstract_node_factory<T> >(new neg_node_factory<T>()));
@@ -66,6 +72,7 @@ namespace mcmc_utilities
       register_function({"D_L"},std::shared_ptr<abstract_node_factory<T> >(new luminosity_distance_node_factory<T>()));
       register_function({"D_A"},std::shared_ptr<abstract_node_factory<T> >(new asize_distance_node_factory<T>()));
       register_function({"Ez"},std::shared_ptr<abstract_node_factory<T> >(new ez_node_factory<T>()));
+      register_function({"cond"},std::shared_ptr<abstract_node_factory<T> >(new cond_node_factory<T>()));
       initialized=true;
     }
 
