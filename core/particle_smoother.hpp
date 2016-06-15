@@ -20,10 +20,7 @@ namespace mcmc_utilities
      */
     int verbose_level;
 
-    /**
-       no copy constructor
-     */
-    particle_smoother(const particle_smoother&);
+    
   public:
     typedef typename element_type_trait<T_state>::element_type stat_element_type;
     typedef typename element_type_trait<T_obs>::element_type obs_element_type;
@@ -169,6 +166,11 @@ namespace mcmc_utilities
       :verbose_level(0),sm(this),sm_rev(this)
     {}
 
+    /**
+       no copy constructor
+     */
+    particle_smoother(const particle_smoother&)=delete;
+    
     /**
        destructor
      */

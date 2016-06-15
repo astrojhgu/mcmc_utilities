@@ -73,11 +73,6 @@ namespace mcmc_utilities
     typedef typename element_type_trait<T_state>::element_type T_state1;
   private:
     /**
-       No copy constructor
-     */
-    pf_model(const pf_model&);
-
-    /**
        A parameter affects the important sampling
      */
     T_p alpha;
@@ -94,6 +89,13 @@ namespace mcmc_utilities
     pf_model()
       :alpha(.5)
     {}
+
+    /**
+       No copy constructor
+    */
+    pf_model(const pf_model&)=delete;
+
+
 
     /**
        destructor

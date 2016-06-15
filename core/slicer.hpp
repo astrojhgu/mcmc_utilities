@@ -37,6 +37,9 @@ namespace mcmc_utilities
       :adapt(true),width(_width),nmax(_nmax),nmin(_nmin),niter(0),sumdiff(0),min_adapt(50),pd(_pd),xrange(_xrange)
     {
     }
+
+    slice_sampler(const slice_sampler<T,TD>&)=delete;
+    slice_sampler<T,TD>& operator=(const slice_sampler<T,TD>&)=delete;
     
   private:
     T exponential(base_urand<T>& rnd)const

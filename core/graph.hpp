@@ -31,6 +31,9 @@ namespace mcmc_utilities
     graph()
       :shuffled_sampling(false),verbose_level(0)
     {}
+
+    graph(const graph<T,T_tag>&)=delete;
+    graph<T,T_tag>& operator=(const graph<T,T_tag>&)=delete;
     
   public:
     void copy_from(const graph& rhs)
