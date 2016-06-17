@@ -35,7 +35,7 @@ namespace mcmc_utilities
     
     std::pair<T,T> do_var_range()const override
     {
-      return std::make_pair((T)0,(T)(20.)/this->parent(1));
+      return std::make_pair((T)1e-10/this->parent(1),(T)(20.)/this->parent(1));
     }
 
     void do_initialize(size_t n) override
