@@ -2,6 +2,7 @@
 #define MYARMS_HPP
 //#include "distribution.hpp"
 #include "error_handler.hpp"
+#include "mcmc_traits.hpp"
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -869,48 +870,48 @@ namespace mcmc_utilities
   }
 
 
-  template <typename T,typename TD>
-  void init(const TD& pd,const std::pair<T,T>& xrange, const std::vector<T>& init_x1, std::list<section<T> >& section_list,T& scale)
+  template <typename T,typename TD,typename T_vector>
+  void init(const TD& pd,const std::pair<T,T>& xrange, const T_vector& init_x1, std::list<section<T> >& section_list,T& scale)
   {
-    if(init_x1.size()<3)
+    if(get_size(init_x1)<3)
       {
 	throw too_few_init_points();
       }
 
-    for(size_t i=1;i<init_x1.size();++i)
+    for(size_t i=1;i<get_size(init_x1);++i)
       {
-	if(init_x1[i]<=init_x1[i-1])
+	if(get_element(init_x1,i)<=get_element(init_x1,i-1))
 	  {
 	    throw data_not_in_order();
 	  }
       }
-    std::vector<T> init_x{xrange.first};
+    T_vector init_x{xrange.first};
     for(auto& x:init_x1)
       {
-	if(std::abs(x-init_x.back())<std::numeric_limits<T>::epsilon()*static_cast<T>(10)||
-	   x<=init_x.back())
+	if(std::abs(x-last_element(init_x))<std::numeric_limits<T>::epsilon()*static_cast<T>(10)||
+	   x<=last_element(init_x))
 	  {
 	    continue;
 	  }
-	init_x.push_back(x);
+	push_back(init_x,x);
       }
     //init_x.push_back(xrange.second-std::numeric_limits<T>::epsilon());
-    init_x.push_back(xrange.second);
-    if(init_x.size()<5)
+    push_back(init_x,xrange.second);
+    if(get_size(init_x)<5)
       {
 	too_few_init_points e;
 	e.attach_message("#8");
 	throw e;
       }
     
-    for(size_t i=0;i!=init_x.size()-1;++i)
+    for(size_t i=0;i!=get_size(init_x)-1;++i)
       {
 	section<T> s;
 	
-	s.set_x_l(init_x[i]);
-	s.set_x_u(init_x[i+1]);
-	s.set_y_l(eval_log(pd,init_x[i],static_cast<T>(0)));
-	s.set_y_u(eval_log(pd,init_x[i+1],static_cast<T>(0)));
+	s.set_x_l(get_element(init_x,i));
+	s.set_x_u(get_element(init_x,i+1));
+	s.set_y_l(eval_log(pd,get_element(init_x,i),static_cast<T>(0)));
+	s.set_y_u(eval_log(pd,get_element(init_x,i+1),static_cast<T>(0)));
 	if(!(xrange.first<=s.x_l()&&s.x_l()<=s.x_u()&&s.x_u()<=xrange.second))
 	  {
 	    data_not_in_order e;
@@ -1339,9 +1340,9 @@ namespace mcmc_utilities
     return result;
   }
   
-  template <typename T,typename TD,typename T_urand>
+  template <typename T,typename TD,typename T_urand,typename T_vector>
   T arms(const TD& pd,const std::pair<T,T>& xrange,
-	 const std::vector<T>& init_x,T xcur,size_t n,T_urand& rnd,size_t& xmchange_count)
+	 const T_vector& init_x,T xcur,size_t n,T_urand& rnd,size_t& xmchange_count)
   {
     if(xrange.second<xrange.first+std::numeric_limits<T>::epsilon()*std::abs(xrange.first))
       {

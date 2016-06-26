@@ -74,6 +74,26 @@ namespace mcmc_utilities
     x[i]=v;
   }
 
+  template <typename T,typename TX>
+  inline void push_back(T& x,const TX& v)
+  {
+    x.push_back(v);
+  }
+
+  template <typename T>
+  inline typename return_type_trait<typename element_type_trait<T>::element_type>::
+  const_reference_type last_element(const T& x)
+  {
+    return x.back();
+  }
+
+  template <typename T>
+  inline typename return_type_trait<typename element_type_trait<T>::element_type>::
+  reference_type last_element(T& x)
+  {
+    return x.back();
+  }
+
 
   /**
      resize an array object
