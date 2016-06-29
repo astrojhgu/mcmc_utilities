@@ -16,15 +16,15 @@
 
 namespace mcmc_utilities
 {
-  template <typename T,typename T_tag>
+  template <typename T,typename T_tag,template <typename TE> class T_vector>
   class graph
   {
   private:
-    std::list<stochastic_node<T>* > stochastic_node_list;
-    std::list<deterministic_node<T>* > deterministic_node_list;
-    std::map<T_tag,std::shared_ptr<node<T> > > node_map;
-    //std::map<std::shared_ptr<node<T> > ,T_tag, std::owner_less<std::shared_ptr<node<T> > > > tag_map;
-    std::map<std::shared_ptr<node<T> > ,T_tag > tag_map;
+    std::list<stochastic_node<T,T_vector>* > stochastic_node_list;
+    std::list<deterministic_node<T,T_vector>* > deterministic_node_list;
+    std::map<T_tag,std::shared_ptr<node<T,T_vector> > > node_map;
+    //std::map<std::shared_ptr<node<T,T_vector> > ,T_tag, std::owner_less<std::shared_ptr<node<T,T_vector> > > > tag_map;
+    std::map<std::shared_ptr<node<T,T_vector> > ,T_tag > tag_map;
     bool shuffled_sampling;
     int verbose_level;
   public:
@@ -32,19 +32,19 @@ namespace mcmc_utilities
       :shuffled_sampling(false),verbose_level(0)
     {}
 
-    graph(const graph<T,T_tag>&)=delete;
-    graph<T,T_tag>& operator=(const graph<T,T_tag>&)=delete;
+    graph(const graph<T,T_tag,T_vector>&)=delete;
+    graph<T,T_tag,T_vector>& operator=(const graph<T,T_tag,T_vector>&)=delete;
     
   public:
     void copy_from(const graph& rhs)
     {
-      std::map<node<T>*,T_tag> tag_map1;
+      std::map<node<T,T_vector>*,T_tag> tag_map1;
       for(auto i=rhs.tag_map.begin();i!=rhs.tag_map.end();++i)
 	{
 	  tag_map1[i->first.get()]=i->second;
 	}
 
-      std::stack<std::shared_ptr<node<T> > > node_stack;
+      std::stack<std::shared_ptr<node<T,T_vector> > > node_stack;
       std::stack<size_t> parent_id_stack;
       
       for(auto i=rhs.node_map.begin();i!=rhs.node_map.end();++i)
@@ -59,14 +59,14 @@ namespace mcmc_utilities
 	    {
 	      if(parent_id_stack.top()==node_stack.top()->num_of_parents())
 		{
-		  std::vector<std::pair<T_tag,size_t> > parents(node_stack.top()->num_of_parents());
+		  T_vector<std::pair<T_tag,size_t> > parents(node_stack.top()->num_of_parents());
 		  
 		  if(node_map.count(rhs.tag_map.find(node_stack.top())->second)==0)
 		    {
-		      for(size_t i=0;i!=parents.size();++i)
+		      for(size_t i=0;i!=get_size(parents);++i)
 			{
-			  parents[i]=std::pair<T_tag,size_t>(tag_map1[node_stack.top()->get_parent(i).first],
-							     node_stack.top()->get_parent(i).second);
+			  set_element(parents,i,std::pair<T_tag,size_t>(tag_map1[node_stack.top()->get_parent(i).first],
+									node_stack.top()->get_parent(i).second));
 			}
 		      add_node(node_stack.top()->clone(),rhs.tag_map.find(node_stack.top())->second,parents);
 		    }
@@ -79,7 +79,7 @@ namespace mcmc_utilities
 		}
 	      else
 		{
-		  std::shared_ptr<node<T> > p(rhs.node_map.find(tag_map1[node_stack.top()->get_parent(parent_id_stack.top()).first])->second);
+		  std::shared_ptr<node<T,T_vector> > p(rhs.node_map.find(tag_map1[node_stack.top()->get_parent(parent_id_stack.top()).first])->second);
 		  node_stack.push(p);
 		  ++parent_id_stack.top();
 		  parent_id_stack.push(0);
@@ -107,13 +107,13 @@ namespace mcmc_utilities
 
     void sample(base_urand<T>& rnd)
     {
-      stochastic_node<T>* p_current=nullptr;
+      stochastic_node<T,T_vector>* p_current=nullptr;
       int n=0;
-      std::vector<stochastic_node<T>*> stochastic_node_vector;
-      stochastic_node_vector.reserve(stochastic_node_list.size());
+      T_vector<stochastic_node<T,T_vector>*> stochastic_node_vector;
+      //stochastic_node_vector.reserve(get_size(stochastic_node_list));
       std::for_each(stochastic_node_list.begin(),
 		    stochastic_node_list.end(),
-		    [&](stochastic_node<T>* p){stochastic_node_vector.push_back(p);}
+		    [&](stochastic_node<T,T_vector>* p){push_back(stochastic_node_vector,p);}
 		    );
       if(shuffled_sampling)
 	{
@@ -178,16 +178,16 @@ namespace mcmc_utilities
 	}
     }
 
-    std::vector<T> get_params()const
+    T_vector<T> get_params()const
     {
-      std::vector<T> result;
+      T_vector<T> result;
       size_t n=0;
       for(auto p=stochastic_node_list.begin();
 	  p!=stochastic_node_list.end();++p,++n)
 	{
 	  for(size_t i=0;i<(*p)->num_of_dims();++i)
 	    {
-	      result.push_back((*p)->value(i));
+	      push_back(result,(*p)->value(i));
 	    }
 	}
       return result;
@@ -202,13 +202,13 @@ namespace mcmc_utilities
 	  oss<<tag;
 	  throw node_not_found(oss.str());
 	}
-      stochastic_node<T>* ps=dynamic_cast<stochastic_node<T>*> (iter->second.get());
-      deterministic_node<T>* pd=dynamic_cast<deterministic_node<T>*> (iter->second.get());
+      stochastic_node<T,T_vector>* ps=dynamic_cast<stochastic_node<T,T_vector>*> (iter->second.get());
+      deterministic_node<T,T_vector>* pd=dynamic_cast<deterministic_node<T,T_vector>*> (iter->second.get());
       if(ps==nullptr&&pd==nullptr)
 	{
 	  throw invalid_node_type();
 	}
-      std::weak_ptr<node<T> > wp(iter->second);
+      std::weak_ptr<node<T,T_vector> > wp(iter->second);
       
 
       return [n,wp](){
@@ -228,7 +228,7 @@ namespace mcmc_utilities
 	  oss<<tag;
 	  throw node_not_found(oss.str());
 	}
-      stochastic_node<T>* ps=dynamic_cast<stochastic_node<T>* >(node_map[tag].get());
+      stochastic_node<T,T_vector>* ps=dynamic_cast<stochastic_node<T,T_vector>* >(node_map[tag].get());
       if(ps==nullptr)
 	{
 	  throw invalid_node_type();
@@ -246,7 +246,7 @@ namespace mcmc_utilities
 	  throw node_not_found(oss.str());
 	}
       
-      stochastic_node<T>* ps=dynamic_cast<stochastic_node<T>* >(node_map[tag].get());
+      stochastic_node<T,T_vector>* ps=dynamic_cast<stochastic_node<T,T_vector>* >(node_map[tag].get());
       if(ps==nullptr)
 	{
 	  throw invalid_node_type();
@@ -276,7 +276,7 @@ namespace mcmc_utilities
 	  throw node_not_found(oss.str());
 	}
 
-      auto ps=dynamic_cast<stochastic_node<T>*>(i->second.get());
+      auto ps=dynamic_cast<stochastic_node<T,T_vector>*>(i->second.get());
       if(ps==nullptr)
 	{
 	  throw invalid_node_type();
@@ -284,32 +284,32 @@ namespace mcmc_utilities
       return ps->log_posterior_prob();
     }
 
-    void add_node(node<T>* pn,
+    void add_node(node<T,T_vector>* pn,
 		  const T_tag& tag)
     {
-      std::vector<std::pair<T_tag,size_t> > parents;
-      this->add_node(std::shared_ptr<node<T> >(pn),tag,parents);
+      T_vector<std::pair<T_tag,size_t> > parents;
+      this->add_node(std::shared_ptr<node<T,T_vector> >(pn),tag,parents);
     }
     
-    void add_node(const std::shared_ptr<node<T> >& pn,
+    void add_node(const std::shared_ptr<node<T,T_vector> >& pn,
 		  const T_tag& tag)
     {
-      std::vector<std::pair<T_tag,size_t> > parents;
+      T_vector<std::pair<T_tag,size_t> > parents;
       this->add_node(pn,tag,parents);
     }
 
-    void add_node(node<T>* pn,
+    void add_node(node<T,T_vector>* pn,
 		  const T_tag& tag,
-		  const std::vector<std::pair<T_tag,size_t> >& parents
+		  const T_vector<std::pair<T_tag,size_t> >& parents
 		  )
     {
-      this->add_node(std::shared_ptr<node<T> >(pn),tag,parents);
+      this->add_node(std::shared_ptr<node<T,T_vector> >(pn),tag,parents);
     }
     
     
-    void add_node(const std::shared_ptr<node<T> >& pn,
+    void add_node(const std::shared_ptr<node<T,T_vector> >& pn,
 		  const T_tag& tag,
-		  const std::vector<std::pair<T_tag,size_t> >& parents
+		  const T_vector<std::pair<T_tag,size_t> >& parents
 		  )
     {
 #if 0
@@ -330,7 +330,7 @@ namespace mcmc_utilities
 	{
 	  throw node_already_added();
 	}
-      if(pn->num_of_parents()!=parents.size())
+      if(pn->num_of_parents()!=get_size(parents))
 	{
 	  throw parent_num_mismatch();
 	}
@@ -342,15 +342,15 @@ namespace mcmc_utilities
 	    }
 	}
       
-      auto ps=dynamic_cast<stochastic_node<T>*>(pn.get());
-      auto pd=dynamic_cast<deterministic_node<T>*>(pn.get());
+      auto ps=dynamic_cast<stochastic_node<T,T_vector>*>(pn.get());
+      auto pd=dynamic_cast<deterministic_node<T,T_vector>*>(pn.get());
       if(ps!=nullptr&&pd==nullptr)
 	{
-	  stochastic_node_list.push_back(ps);
+	  push_back(stochastic_node_list,ps);
 	}
       else if(pd!=nullptr&&ps==nullptr)
 	{
-	  deterministic_node_list.push_back(pd);
+	  push_back(deterministic_node_list,pd);
 	}
       else
 	{
@@ -368,19 +368,19 @@ namespace mcmc_utilities
     }
 
 
-    void add_node(node<T>*pn,
+    void add_node(node<T,T_vector>*pn,
 		  const T_tag& tag,
-		  const std::vector<std::pair<std::shared_ptr<node<T> >,size_t> >& parents)
+		  const T_vector<std::pair<std::shared_ptr<node<T,T_vector> >,size_t> >& parents)
     {
-      std::vector<std::pair<node<T>*,size_t> > parents1;
-      add_node(std::shared_ptr<node<T> >(pn),tag,parents);
+      T_vector<std::pair<node<T,T_vector>*,size_t> > parents1;
+      add_node(std::shared_ptr<node<T,T_vector> >(pn),tag,parents);
       }
     
-    void add_node(const std::shared_ptr<node<T> >& pn,
+    void add_node(const std::shared_ptr<node<T,T_vector> >& pn,
 		  const T_tag& tag,
-		  const std::vector<std::pair<std::shared_ptr<node<T> >,size_t> >& parents)
+		  const T_vector<std::pair<std::shared_ptr<node<T,T_vector> >,size_t> >& parents)
     {
-      std::vector<std::pair<T_tag,size_t> > parent_tags;
+      T_vector<std::pair<T_tag,size_t> > parent_tags;
       for(auto& p:parents)
 	{
 	  if(tag_map.count(p.first)==0)
@@ -388,12 +388,12 @@ namespace mcmc_utilities
 	      throw parents_not_exist();
 	    }
 	  T_tag tag=tag_map[p.first];
-	  parent_tags.push_back({tag,p.second});
+	  push_back(parent_tags,std::pair<T_tag,size_t>{tag,p.second});
 	}
       add_node(pn,tag,parent_tags);
     }
 
-    T_tag get_tag(const std::shared_ptr<node<T> >& p)const
+    T_tag get_tag(const std::shared_ptr<node<T,T_vector> >& p)const
     {
       auto result= tag_map.find(p);
       if(result==tag_map.end())
@@ -403,32 +403,32 @@ namespace mcmc_utilities
       return result->second;
     }
 
-    T_tag get_tag(const node<T>* p)const
+    T_tag get_tag(const node<T,T_vector>* p)const
     {
-      return get_tag(std::shared_ptr<node<T> >(const_cast<node<T>*>(p),[](node<T>*){}));
+      return get_tag(std::shared_ptr<node<T,T_vector> >(const_cast<node<T,T_vector>*>(p),[](node<T,T_vector>*){}));
     }
 
-    std::map<T_tag,std::vector<std::pair<T_tag,size_t> > > topology()const
+    std::map<T_tag,T_vector<std::pair<T_tag,size_t> > > topology()const
     {
-      std::map<T_tag,std::vector<std::pair<T_tag,size_t> > >  result;
+      std::map<T_tag,T_vector<std::pair<T_tag,size_t> > >  result;
       for(auto& p:node_map)
 	{
 	  auto tag=p.first;
 	  auto pnode=p.second;
 	  size_t nparents=pnode->num_of_parents();
-	  std::vector<std::pair<T_tag,size_t> > parent_list;
+	  T_vector<std::pair<T_tag,size_t> > parent_list;
 	  for(size_t i=0;i<nparents;++i)
 	    {
 	      auto px=pnode->get_parent(i);
 	      T_tag ptag=get_tag(px.first);
-	      parent_list.push_back({ptag,px.second});
+	      push_back(parent_list,std::pair<T_tag,size_t>{ptag,px.second});
 	    }
 	  result[tag]=parent_list;
 	}
       return result;
     }
 
-    const node<T>* get_node(const T_tag& t)const
+    const node<T,T_vector>* get_node(const T_tag& t)const
     {
       auto i=node_map.find(t);
       if(i==node_map.end())

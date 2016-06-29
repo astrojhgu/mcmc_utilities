@@ -9,6 +9,9 @@
 using namespace std;
 using namespace mcmc_utilities;
 
+template <typename T>
+using std_vector=std::vector<T>;
+
 class rnd
   :public base_urand<double>
 {
@@ -22,16 +25,16 @@ private:
 
 int main()
 {
-  auto pY=std::shared_ptr<node<double> >(new uniform_node<double>(-1000,1000));
-  auto p_poisson=new poisson_node<double>;
-  auto pl=std::shared_ptr<node<double> >(p_poisson);
-  auto pth=std::shared_ptr<node<double> >(new const_node<double>(150));
+  auto pY=std::shared_ptr<node<double,std_vector> >(new uniform_node<double,std_vector>(-1000,1000));
+  auto p_poisson=new poisson_node<double,std_vector>;
+  auto pl=std::shared_ptr<node<double,std_vector> >(p_poisson);
+  auto pth=std::shared_ptr<node<double,std_vector> >(new const_node<double,std_vector>(150));
   
-  auto pc=std::shared_ptr<node<double> >(new str_node<double>("log(1+(y-theta)^2+1)",{"y","theta"}));
+  auto pc=std::shared_ptr<node<double,std_vector> >(new str_node<double,std_vector>("log(1+(y-theta)^2+1)",{"y","theta"}));
 
   p_poisson->set_observed(0,true);
   p_poisson->set_value(0,0);
-  graph<double,std::string> g;
+  graph<double,std::string,std_vector> g;
   g.add_node(pY,"Y");
   g.add_node(pth,"theta");
   g.add_node(pc,"cauthy",{{pY,0},{pth,0}});

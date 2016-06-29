@@ -9,15 +9,19 @@
 
 using namespace mcmc_utilities;
 using namespace std;
+
+template <typename T>
+using std_vector=std::vector<T>;
+
 int main()
 {
   urand<double> rnd;
-  graph<double,std::string> g;
-  auto x_prior=std::shared_ptr<node<double> >(new uniform_node<double>(-1000,1000));
-  auto x_likelihood=std::shared_ptr<node<double> >(new likelihood_adapter<double>(new t_node<double>));
-  auto t_mean=std::shared_ptr<node<double> >(new const_node<double>(1.0));
-  auto t_sigma=std::shared_ptr<node<double> >(new const_node<double>(1.0e-7));
-  auto t_dof=std::shared_ptr<node<double> >(new const_node<double>(1.0));
+  graph<double,std::string,std_vector> g;
+  auto x_prior=std::shared_ptr<node<double,std_vector> >(new uniform_node<double,std_vector>(-1000,1000));
+  auto x_likelihood=std::shared_ptr<node<double,std_vector> >(new likelihood_adapter<double,std_vector>(new t_node<double,std_vector>));
+  auto t_mean=std::shared_ptr<node<double,std_vector> >(new const_node<double,std_vector>(1.0));
+  auto t_sigma=std::shared_ptr<node<double,std_vector> >(new const_node<double,std_vector>(1.0e-7));
+  auto t_dof=std::shared_ptr<node<double,std_vector> >(new const_node<double,std_vector>(1.0));
   g.add_node(x_prior,"x_prior");
   g.add_node(t_mean,"t_mean");
   g.add_node(t_sigma,"t_sigma");

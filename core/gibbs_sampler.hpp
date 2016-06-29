@@ -10,8 +10,8 @@
 
 namespace mcmc_utilities
 {
-  template <typename T_p,typename T_var>
-  void gibbs_sample(const probability_density_md<T_p,T_var>& pd,T_var& init_var,base_urand<T_p>& rnd)
+  template <typename T_p,typename T_var,template <typename TE> class T_vector>
+  void gibbs_sample(const probability_density_md<T_p,T_var,T_vector>& pd,T_var& init_var,base_urand<T_p>& rnd)
   {
     size_t idx=0;
     typedef typename element_type_trait<T_var>::element_type T_var1;
@@ -25,16 +25,16 @@ namespace mcmc_utilities
 	//T_var1 x=arms(cpd,xprev,10,rnd);
 	auto var_range=pd.var_range(init_var,idx);
 
-	std::vector<T_var1> xinit(pd.init_points(init_var,idx));
-	if(xinit.size()==0)
+	T_vector<T_var1> xinit(pd.init_points(init_var,idx));
+	if(get_size(xinit)==0)
 	  {
-	    xinit.resize(5);
+	    resize(xinit,5);
 	    T_var1 xl=var_range.first;
 	    T_var1 xr=var_range.second;
 
-	    for(size_t n1=0;n1<xinit.size();++n1)
+	    for(size_t n1=0;n1<get_size(xinit);++n1)
 	      {
-		xinit[n1]= xl+(xr-xl)/(xinit.size()+1)*(n1+1);
+		set_element(xinit,n1, xl+(xr-xl)/(get_size(xinit)+1)*(n1+1));
 	      }
 	  }
 	
@@ -45,7 +45,7 @@ namespace mcmc_utilities
 	      {
 		std::cerr<<"inside gibbs sampler:"<<std::endl;
 		std::cerr<<"x="<<x<<std::endl;
-		std::cerr<<"init_var["<<idx<<"]="<<init_var[idx]<<std::endl;
+		std::cerr<<"init_var["<<idx<<"]="<<get_element(init_var,idx)<<std::endl;
 	      }
 	    return result;
 	  },var_range,xinit,xprev,10,rnd);
@@ -53,8 +53,8 @@ namespace mcmc_utilities
       }
   }
 
-  template <typename T_p,typename T_var,typename T_urand>
-  void gibbs_sample1(const probability_density_md<T_p,T_var>& pd,
+  template <typename T_p,typename T_var,typename T_urand,template <typename TE> class T_vector>
+  void gibbs_sample1(const probability_density_md<T_p,T_var,T_vector>& pd,
 		    T_var& init_var,size_t idx,base_urand<T_p>& rnd)
   {
     for(int i=0;i<get_size(init_var);++i)
@@ -79,18 +79,18 @@ namespace mcmc_utilities
 
     xprev=get_element(init_var,idx);
     auto var_range=pd.var_range(init_var,idx);    
-    std::vector<T_var1> xinit(pd.init_points(init_var,idx));
-    if(xinit.size()==0)
+    T_vector<T_var1> xinit(pd.init_points(init_var,idx));
+    if(get_size(xinit)==0)
       {
-	xinit.resize(5);
+	resize(xinit,5);
 	
 	
 	T_var1 xl=var_range.first;
 	T_var1 xr=var_range.second;
 	
-	for(size_t n1=0;n1<xinit.size();++n1)
+	for(size_t n1=0;n1<get_size(xinit);++n1)
 	  {
-	    xinit[n1]= xl+(xr-xl)/(xinit.size()+1)*(n1+1);
+	    set_element(xinit,n1, xl+(xr-xl)/(get_size(xinit)+1)*(n1+1));
 	  }
       }
 

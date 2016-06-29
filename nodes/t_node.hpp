@@ -9,14 +9,14 @@
 
 namespace mcmc_utilities
 {
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class t_node
-    :public stochastic_node<T>
+    :public stochastic_node<T,T_vector>
   {
   private:
   public:
     t_node()
-      :stochastic_node<T>(3,0)
+      :stochastic_node<T,T_vector>(3,0)
     {}
     
   private:
@@ -69,7 +69,7 @@ namespace mcmc_utilities
       this->set_value(0,this->parent(0));
     }
 
-    std::shared_ptr<node<T> > do_clone()const override
+    std::shared_ptr<node<T,T_vector> > do_clone()const override
     {
       auto p=new t_node;
       for(size_t i=0;i<this->num_of_dims();++i)
@@ -77,48 +77,48 @@ namespace mcmc_utilities
 	  p->set_observed(i,this->is_observed(i));
 	  p->set_value(i,this->value(i));
 	}
-      return std::shared_ptr<node<T> >(p);
+      return std::shared_ptr<node<T,T_vector> >(p);
     }
 
   };
   
   
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class t_vnode
-    :public vnode<T>
+    :public vnode<T,T_vector>
   {
   public:
-    t_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T>&,size_t> >& p)
-      :vnode<T>("t",n,p)
+    t_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T,T_vector>&,size_t> >& p)
+      :vnode<T,T_vector>("t",n,p)
     {
       this->binded=true;
     }
     
-    std::shared_ptr<node<T> > get_node()const override
+    std::shared_ptr<node<T,T_vector> > get_node()const override
     {
-      return std::shared_ptr<node<T> >(new t_node<T>);
+      return std::shared_ptr<node<T,T_vector> >(new t_node<T,T_vector>);
     }
 
-    std::shared_ptr<vnode<T> > clone()const override
+    std::shared_ptr<vnode<T,T_vector> > clone()const override
     {
-      return std::shared_ptr<vnode<T> >(new t_vnode<T>(*this));
+      return std::shared_ptr<vnode<T,T_vector> >(new t_vnode<T,T_vector>(*this));
     }
   };
 
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class t_node_factory
-    :public abstract_node_factory<T>
+    :public abstract_node_factory<T,T_vector>
   {
   public:
     t_node_factory()
-      :abstract_node_factory<T>({"mu","sigma","k"},{"x"},{})
+      :abstract_node_factory<T,T_vector>({"mu","sigma","k"},{"x"},{})
     {}
     
   public:
-    std::shared_ptr<node<T> >
-    do_get_node(const std::vector<T>& hparam)const override
+    std::shared_ptr<node<T,T_vector> >
+    do_get_node(const T_vector<T>& hparam)const override
     {
-      return std::shared_ptr<node<T> >(new t_node<T>);
+      return std::shared_ptr<node<T,T_vector> >(new t_node<T,T_vector>);
     }
 
     std::string do_get_node_type()const override
@@ -128,7 +128,7 @@ namespace mcmc_utilities
 
   };
   
-  using vt=t_vnode<double>;
+  //using vt=t_vnode<double>;
 };
 
 #endif

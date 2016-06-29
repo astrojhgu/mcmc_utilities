@@ -10,14 +10,14 @@
 
 namespace mcmc_utilities
 {
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class probability_density_1d;
 
   //template<typename T_p,typename T_var>
   //T_var find_peak(const probability_density_1d<T_p,T_var>& dist);
 
   
-  template <typename T_p,typename T_var>
+  template <typename T_p,typename T_var,template <typename TE> class T_vector>
   class probability_density_md
   {
   public:
@@ -36,12 +36,12 @@ namespace mcmc_utilities
       return do_var_range(x,ndim);
     }
 
-    std::vector<T_var1> init_points(const T_var& x,size_t ndim)const
+    T_vector<T_var1> init_points(const T_var& x,size_t ndim)const
     {
       return do_init_points(x,ndim);
     }
     
-    std::vector<T_var1> candidate_points(const T_var& x,size_t ndim)const
+    T_vector<T_var1> candidate_points(const T_var& x,size_t ndim)const
     {
       return do_candidate_points(x,ndim);
     }
@@ -49,19 +49,19 @@ namespace mcmc_utilities
   private:
     virtual T_p do_eval_log(const T_var& x,int n)const=0;
     virtual std::pair<T_var1,T_var1> do_var_range(const T_var& x,size_t ndim)const=0;
-    virtual std::vector<T_var1> do_init_points(const T_var& x,size_t ndim)const
+    virtual T_vector<T_var1> do_init_points(const T_var& x,size_t ndim)const
     {
-      return std::vector<T_var1>();
+      return T_vector<T_var1>();
     }
 
-    virtual std::vector<T_var1> do_candidate_points(const T_var& x,size_t ndim)const
+    virtual T_vector<T_var1> do_candidate_points(const T_var& x,size_t ndim)const
     {
-      return std::vector<T_var1>();
+      return T_vector<T_var1>();
     }
     
   };
   
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class probability_density_1d
   {
   public:
@@ -79,12 +79,12 @@ namespace mcmc_utilities
       return do_var_range();
     }
 
-    std::vector<T> init_points()const
+    T_vector<T> init_points()const
     {
       return do_init_points();
     }
 
-    std::vector<T> candidate_points()const
+    T_vector<T> candidate_points()const
     {
       return do_candidate_points();
     }
@@ -92,26 +92,26 @@ namespace mcmc_utilities
   private:
     virtual T do_eval_log(const T& x)const=0;
     virtual std::pair<T,T> do_var_range()const=0;
-    virtual std::vector<T> do_init_points()const
+    virtual T_vector<T> do_init_points()const
     {
-      std::vector<T> result(5);
-      for(size_t n=0;n<result.size();++n)
+      T_vector<T> result(5);
+      for(size_t n=0;n<get_size(result);++n)
 	{
 	  //if(n!=1)
 	    {
 	      std::pair<T,T> xrange(var_range());
 	      T xl=xrange.first,xr=xrange.second;
 	      
-	      result[n]= xl+(xr-xl)/(result.size()+1)*(n+1);
+	      set_element(result,n,xl+(xr-xl)/(get_size(result)+1)*(n+1));
 	    }
 	}
       return result;
     };
 
     //possible values when this distribution is discrete
-    virtual std::vector<T> do_candidate_points()const
+    virtual T_vector<T> do_candidate_points()const
     {
-      return std::vector<T>();
+      return T_vector<T>();
     }
   };
 }

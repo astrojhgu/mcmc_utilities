@@ -1,107 +1,108 @@
 #ifndef COMPOSED_NODE_HPP
 #define COMPOSED_NODE_HPP
 #include "cached_dtm_node.hpp"
+#include "mcmc_traits.hpp"
 #include <memory>
 #include <map>
 
 
 namespace mcmc_utilities
 {
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class forward_node
-    :public cached_dtm_node<T>
+    :public cached_dtm_node<T,T_vector>
   {
   public:
     forward_node()
-      :cached_dtm_node<T>(1,1)
+      :cached_dtm_node<T,T_vector>(1,1)
       {}
 
-    T do_calc(size_t idx,const std::vector<T>& parent)const override
+    T do_calc(size_t idx,const T_vector<T>& parent)const override
     {
-      return parent[0];
+      return get_element(parent,0);
     }
 
-    void do_connect_to_parent(node<T>* rhs,size_t n,size_t idx) override
+    void do_connect_to_parent(node<T,T_vector>* rhs,size_t n,size_t idx) override
     {
-      this->parents.at(n)=std::make_pair(rhs,idx);
+      set_element(this->parents,n,std::make_pair(rhs,idx));
     }
 
-    std::shared_ptr<node<T> > do_clone()const override
+    std::shared_ptr<node<T,T_vector> > do_clone()const override
     {
       throw mcmc_exception("should not be called!");
-      return std::shared_ptr<node<T> >(new forward_node<T>);
+      return std::shared_ptr<node<T,T_vector> >(new forward_node<T,T_vector>);
     }
 
     T do_value(size_t idx)const override
     {
-      return this->parents[0].first->value(idx);
+      return get_element(this->parents,0).first->value(idx);
     }
   };
 
   
   
-  template <typename T,typename T_tag=std::string>
+  template <typename T,typename T_tag,template <typename TE> class T_vector>
   class composed_node
-    :public cached_dtm_node<T>
+    :public cached_dtm_node<T,T_vector>
   {
   protected:
-    std::map<T_tag,std::shared_ptr<deterministic_node<T> > >elements;
-    std::vector<std::shared_ptr<deterministic_node<T> > > param_list;
-    std::vector<std::pair<std::shared_ptr<deterministic_node<T> >,size_t> > return_list;
+    std::map<T_tag,std::shared_ptr<deterministic_node<T,T_vector> > >elements;
+    T_vector<std::shared_ptr<deterministic_node<T,T_vector> > > param_list;
+    T_vector<std::pair<std::shared_ptr<deterministic_node<T,T_vector> >,size_t> > return_list;
   public:
     composed_node(size_t nparents,size_t ndim)
-      :cached_dtm_node<T>(nparents,ndim)
+      :cached_dtm_node<T,T_vector>(nparents,ndim)
     {}
     
   public:
-    void add_node(deterministic_node<T>* pn,
+    void add_node(deterministic_node<T,T_vector>* pn,
 		  const T_tag& tag,
 		  //if the parent tag is not registered, then this node will registed as an input parameter
-		  const std::vector<std::pair<T_tag,size_t> >& parents,
+		  const T_vector<std::pair<T_tag,size_t> >& parents,
 		  //which outputs whill outputed of this node
-		  const std::vector<size_t> rlist
+		  const T_vector<size_t> rlist
 		  )
     {
-      add_node(std::shared_ptr<deterministic_node<T> >(pn),
+      add_node(std::shared_ptr<deterministic_node<T,T_vector> >(pn),
 	       tag,parents,rlist);
     }
     
-    void add_node(const std::shared_ptr<deterministic_node<T> >& pn,
+    void add_node(const std::shared_ptr<deterministic_node<T,T_vector> >& pn,
 		  const T_tag& tag,
-		  const std::vector<std::pair<T_tag,size_t> >& parents,
-		  const std::vector<size_t> rlist
+		  const T_vector<std::pair<T_tag,size_t> >& parents,
+		  const T_vector<size_t> rlist
 		  )
     {
       if (elements.count(tag)!=0)
 	{
 	  throw node_name_already_used();
 	}
-      if(pn->num_of_parents()!=parents.size())
+      if(pn->num_of_parents()!=get_size(parents))
 	{
 	  throw parent_num_mismatch();
 	}
-      for(size_t i=0;i<parents.size();++i)
+      for(size_t i=0;i<get_size(parents);++i)
 	{
-	  auto iter=elements.find(parents[i].first);
+	  auto iter=elements.find(get_element(parents,i).first);
 	  if(iter==elements.end())
 	    {
-	      if(param_list.size()==this->num_of_parents())
+	      if(get_size(param_list)==this->num_of_parents())
 		{
 		  throw parent_num_mismatch();
 		}
 	      //param_list.push_back(make_pair(pn,i));
-	      param_list.push_back(std::shared_ptr<deterministic_node<T> >(new forward_node<T>));
-	      pn->connect_to_parent(param_list.back().get(),i,0);
+	      push_back(param_list,std::shared_ptr<deterministic_node<T,T_vector> >(new forward_node<T,T_vector>));
+	      pn->connect_to_parent(last_element(param_list).get(),i,0);
 	    }
 	  else
 	    {
-	      pn->connect_to_parent(iter->second.get(),i,parents[i].second);
+	      pn->connect_to_parent(iter->second.get(),i,get_element(parents,i).second);
 	    }
 	}
-      elements[tag]=pn;
+      get_element(elements,tag)=pn;
       for(auto& i : rlist)
 	{
-	  if(return_list.size()==this->num_of_dims())
+	  if(get_size(return_list)==this->num_of_dims())
 	    {
 	      throw output_num_mismatch();
 	    }
@@ -109,24 +110,24 @@ namespace mcmc_utilities
 	    {
 	      throw output_num_mismatch();
 	    } 
-	  return_list.push_back({pn,i});
+	  push_back(return_list,std::pair<std::shared_ptr<deterministic_node<T,T_vector> >,size_t>{pn,i});
 	}
     }
 
-    void do_connect_to_parent(node<T>* rhs,size_t n,size_t idx) override
+    void do_connect_to_parent(node<T,T_vector>* rhs,size_t n,size_t idx) override
     {
-      this->parents.at(n)=std::make_pair(rhs,idx);
+      set_element(this->parents,n,std::make_pair(rhs,idx));
       rhs->add_deterministic_child(this);
             
-      param_list[n]->connect_to_parent(rhs,0,idx);
+      get_element(param_list,n)->connect_to_parent(rhs,0,idx);
     }
 
     T do_value(size_t idx)const override
     {
-      return return_list[idx].first->value(return_list[idx].second);
+      return get_element(return_list,idx).first->value(get_element(return_list,idx).second);
     }
 
-    T do_calc(size_t idx,const std::vector<T>& parent)const override
+    T do_calc(size_t idx,const T_vector<T>& parent)const override
     {
       throw mcmc_exception("should never be called!");
     }

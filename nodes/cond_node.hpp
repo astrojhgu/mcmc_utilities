@@ -13,40 +13,40 @@
 
 namespace mcmc_utilities
 {
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class cond_node
-    :public cached_dtm_node<T>
+    :public cached_dtm_node<T,T_vector>
   {
   public:
     cond_node()
-      :cached_dtm_node<T>(3,1)
+      :cached_dtm_node<T,T_vector>(3,1)
     {}
 
-    T do_calc(size_t idx,const std::vector<T>& parent)const override
+    T do_calc(size_t idx,const T_vector<T>& parent)const override
     {
       return parent[0]!=0?parent[1]:parent[2];
     }
 
-    std::shared_ptr<node<T> > do_clone()const override
+    std::shared_ptr<node<T,T_vector> > do_clone()const override
     {
       auto p=new cond_node();
-      return std::shared_ptr<node<T> >(p);
+      return std::shared_ptr<node<T,T_vector> >(p);
     }
   };
 
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class cond_node_factory
-    :public abstract_node_factory<T>
+    :public abstract_node_factory<T,T_vector>
   {
   public:
     cond_node_factory()
-      :abstract_node_factory<T>({"s","in1","in2"},{"result"},{})
+      :abstract_node_factory<T,T_vector>({"s","in1","in2"},{"result"},{})
     {}
     
-    std::shared_ptr<node<T> >
-    do_get_node(const std::vector<T>& hparam)const override
+    std::shared_ptr<node<T,T_vector> >
+    do_get_node(const T_vector<T>& hparam)const override
     {
-      return std::shared_ptr<node<T> >(new cond_node<T>);
+      return std::shared_ptr<node<T,T_vector> >(new cond_node<T,T_vector>);
     }
 
     std::string do_get_node_type()const override

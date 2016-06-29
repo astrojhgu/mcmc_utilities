@@ -8,6 +8,9 @@
 using namespace std;
 using namespace mcmc_utilities;
 
+template <typename T>
+using std_vector=std::vector<T>;
+
 class rnd
   :public base_urand<double>
 {
@@ -22,10 +25,10 @@ private:
 
 int main()
 {
-  auto p_poisson=new poisson_node<double>;
-  auto p_lambda=std::shared_ptr<node<double> >(new const_node<double>(100));
+  auto p_poisson=new poisson_node<double,std_vector>;
+  auto p_lambda=std::shared_ptr<node<double,std_vector> >(new const_node<double,std_vector>(100));
   
-  graph<double,std::string> g;
+  graph<double,std::string,std_vector> g;
 
   g.add_node(p_lambda,"lambda");
   g.add_node(p_poisson,"poisson",{{p_lambda,0}});

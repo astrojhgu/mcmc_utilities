@@ -12,22 +12,22 @@
 
 namespace mcmc_utilities
 {
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class stochastic_node;
 
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class deterministic_node;
   
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class node
   {
     //protected:
   public:
-    std::list<stochastic_node<T>* > stochastic_children;
-    std::list<deterministic_node<T>* > deterministic_children;
-    std::vector<std::pair<node<T>*,size_t> > parents;
+    std::list<stochastic_node<T,T_vector>* > stochastic_children;
+    std::list<deterministic_node<T,T_vector>* > deterministic_children;
+    T_vector<std::pair<node<T,T_vector>*,size_t> > parents;
     size_t ndims;
-    std::vector<int> initialized;
+    T_vector<int> initialized;
     
   public:
     node(size_t nparents,size_t ndim1)
@@ -35,12 +35,12 @@ namespace mcmc_utilities
     {}
     
     node()=delete;
-    node(const node<T>& rhs)=delete;
-    node<T>& operator=(const node<T>& rhs)=delete;
+    node(const node<T,T_vector>& rhs)=delete;
+    node<T,T_vector>& operator=(const node<T,T_vector>& rhs)=delete;
     
     virtual ~node(){}
 
-    std::shared_ptr<node<T> > clone()const
+    std::shared_ptr<node<T,T_vector> > clone()const
     {
       return do_clone();
     }
@@ -48,12 +48,12 @@ namespace mcmc_utilities
   public:
     bool is_initialized(size_t n)const
     {
-      return initialized[n]!=0;
+      return get_element(initialized,n)!=0;
     }
 
     void set_initialized(size_t n,bool i)
     {
-      initialized[n]=i;
+      set_element(initialized,n,i);
     }
 
     void initialize()
@@ -82,18 +82,18 @@ namespace mcmc_utilities
 		}
 	    }
 	  do_initialize(n);
-	  initialized[n]=1;
+	  set_element(initialized,n,1);
 	}
     }
 
     size_t num_of_parents()const
     {
-      return parents.size();
+      return get_size(parents);
     }
 
-    const std::pair<node<T>*,size_t>& get_parent(size_t i)const
+    const std::pair<node<T,T_vector>*,size_t>& get_parent(size_t i)const
     {
-      return parents[i];
+      return get_element(parents,i);
     }
 
     size_t num_of_dims()const
@@ -126,8 +126,8 @@ namespace mcmc_utilities
 	  result+=p->log_prob();
 	}
 
-      std::stack<const deterministic_node<T>*> node_stack;
-      std::stack<typename std::list<deterministic_node<T>* >::const_iterator> current_node_stack;
+      std::stack<const deterministic_node<T,T_vector>*> node_stack;
+      std::stack<typename std::list<deterministic_node<T,T_vector>* >::const_iterator> current_node_stack;
       
       for(auto& p:deterministic_children)
 	{
@@ -159,49 +159,50 @@ namespace mcmc_utilities
 #endif
     }
 
-    void connect_to_parent(node<T>* prhs,size_t n,size_t idx)
+    void connect_to_parent(node<T,T_vector>* prhs,size_t n,size_t idx)
     {
       if(idx>=prhs->num_of_dims())
 	{
 	  throw output_num_mismatch();
 	}
-      if(n>=parents.size())
+      if(n>=get_size(parents))
 	{
 	  throw parent_num_mismatch();
 	}
       do_connect_to_parent(prhs,n,idx);
     }
 
-    void add_stochastic_child(stochastic_node<T>* prhs)
+    void add_stochastic_child(stochastic_node<T,T_vector>* prhs)
     {
-      stochastic_children.push_back(prhs);
+      push_back(stochastic_children,prhs);
     }
 
-    void add_deterministic_child(deterministic_node<T>* prhs)
+    void add_deterministic_child(deterministic_node<T,T_vector>* prhs)
     {
-      deterministic_children.push_back(prhs);
+      push_back(deterministic_children,prhs);
     }
 
     T parent(size_t pid)const
     //pid:parent id
     //obsid:the id in a set of observed values
     {
-      return parents[pid].first->value(parents[pid].second);
+      //return parents[pid].first->value(parents[pid].second);
+      return get_element(parents,pid).first->value(get_element(parents,pid).second);
     }
   private:
     virtual T do_value(size_t idx)const=0;
     
-    virtual void do_connect_to_parent(node<T>* prhs,size_t n,size_t idx)=0;
+    virtual void do_connect_to_parent(node<T,T_vector>* prhs,size_t n,size_t idx)=0;
 
     virtual void do_initialize(size_t n)
     {}
 
-    virtual std::shared_ptr<node<T> > do_clone()const
+    virtual std::shared_ptr<node<T,T_vector> > do_clone()const
     {
       not_implemented e;
       e.attach_message("clone operation not implemented");
       throw e;
-      return std::shared_ptr<node<T> >(nullptr);
+      return std::shared_ptr<node<T,T_vector> >(nullptr);
     }
   };
 }

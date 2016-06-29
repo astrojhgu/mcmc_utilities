@@ -12,31 +12,31 @@
 
 namespace mcmc_utilities
 {
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class func_node
-    :public cached_dtm_node<T>
+    :public cached_dtm_node<T,T_vector>
   {
-    std::function<T (const std::vector<T>&)> func;
+    std::function<T (const T_vector<T>&)> func;
     int n;
   public:
     //template <typename Tf>
-    func_node(T (*f)(const std::vector<T>&),int n1)
-      :cached_dtm_node<T>(n1,1),func(f),n(n1)
+    func_node(T (*f)(const T_vector<T>&),int n1)
+      :cached_dtm_node<T,T_vector>(n1,1),func(f),n(n1)
     {}
 
-    func_node(const func_node<T>& rhs)
-      :cached_dtm_node<T>(rhs.n,1),func(rhs.func),n(rhs.n)
+    func_node(const func_node<T,T_vector>& rhs)
+      :cached_dtm_node<T,T_vector>(rhs.n,1),func(rhs.func),n(rhs.n)
     {}
     
 
-    T do_calc(size_t idx,const std::vector<T>& parent)const override
+    T do_calc(size_t idx,const T_vector<T>& parent)const override
     {
       return func(parent);
     }
 
-    std::shared_ptr<node<T> > do_clone()const override
+    std::shared_ptr<node<T,T_vector> > do_clone()const override
     {
-      return std::shared_ptr<node<T> >(new func_node(*this));
+      return std::shared_ptr<node<T,T_vector> >(new func_node(*this));
     }
   };
 }

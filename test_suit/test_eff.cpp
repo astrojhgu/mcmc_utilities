@@ -8,6 +8,10 @@
 #include <iostream>
 #include <cassert>
 
+
+template <typename T>
+using std_vector=std::vector<T>;
+
 using namespace std;
 using namespace mcmc_utilities;
 const double pi=4*atan(1);
@@ -48,7 +52,7 @@ struct variable
 
 
 class eff_distribution
-  :public probability_density_md<double,variable>
+  :public probability_density_md<double,variable,std_vector>
 {
 private:
   std::vector<double> E;

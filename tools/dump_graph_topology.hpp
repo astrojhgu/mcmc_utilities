@@ -5,27 +5,27 @@
 #include <iostream>
 namespace mcmc_utilities
 {
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class topology_dumper
   {
   private:
-    std::map<tag_t,std::vector<std::pair<tag_t,size_t> > > topology;
+    std::map<tag_t,T_vector<std::pair<tag_t,size_t> > > topology;
   public:
-    topology_dumper(const graph<T,tag_t>& g)
+    topology_dumper(const graph<T,tag_t,T_vector>& g)
       :topology(g.topology())
     {}
 
     void all_to_dot(std::ostream& os)const
     {
-      std::map<std::string,std::vector<std::string> > nodes;
+      std::map<std::string,T_vector<std::string> > nodes;
       for(const auto& i:topology)
 	{
 	  std::string n1=i.first;
-	  std::vector<std::string> plist;
+	  T_vector<std::string> plist;
 	  for(const auto& j: i.second)
 	    {
 	      std::string n2=j.first;
-	      plist.push_back(n2);
+	      push_back(plist,n2);
 	    }
 	  if(nodes.find(n1)==nodes.end())
 	    {
@@ -37,7 +37,7 @@ namespace mcmc_utilities
 	<<"{\n";
       for(const auto& i:nodes)
 	{
-	  const std::vector<std::string> plist=i.second;
+	  const T_vector<std::string> plist=i.second;
 	  const std::string n=i.first;
 	  if(plist.empty())
 	    {
@@ -57,7 +57,7 @@ namespace mcmc_utilities
 
     void to_dot(std::ostream& os)const
     {
-      std::map<std::string,std::vector<std::string> > nodes;
+      std::map<std::string,T_vector<std::string> > nodes;
       for(const auto& i:topology)
 	{
 	  std::string n1=i.first.name();
@@ -65,7 +65,7 @@ namespace mcmc_utilities
 	    {
 	      n1+="_i";
 	    }
-	  std::vector<std::string> plist;
+	  T_vector<std::string> plist;
 	  for(const auto& j: i.second)
 	    {
 	      std::string n2=j.first.name();
@@ -73,7 +73,7 @@ namespace mcmc_utilities
 		{
 		  n2+="_i";
 		}
-	      plist.push_back(n2);
+	      push_back(plist,n2);
 	    }
 	  if(nodes.find(n1)==nodes.end())
 	    {
@@ -85,7 +85,7 @@ namespace mcmc_utilities
 	<<"{\n";
       for(const auto& i:nodes)
 	{
-	  const std::vector<std::string> plist=i.second;
+	  const T_vector<std::string> plist=i.second;
 	  const std::string n=i.first;
 	  if(plist.empty())
 	    {

@@ -69,6 +69,10 @@ namespace mcmc_utilities
   template <typename T_p,typename T_state,typename T_obs,typename T_t>
   class pf_model
   {
+  private:
+    template <typename T>
+    using std_vector=std::vector<T>;
+    
   public:
     typedef typename element_type_trait<T_state>::element_type T_state1;
   private:
@@ -176,7 +180,7 @@ namespace mcmc_utilities
     /**
        initial points used in sampling (especially for the adaptive rejection metropolis sampling algorithm, see arms.hpp)
      */
-    std::vector<T_state1> init_points(const T_t& t,const T_state& prev_state,const T_t& prev_t,size_t ndim)const
+    std_vector<T_state1> init_points(const T_t& t,const T_state& prev_state,const T_t& prev_t,size_t ndim)const
     {
       return do_init_points(t,prev_state,prev_t,ndim);
     }
@@ -187,13 +191,13 @@ namespace mcmc_utilities
        Update the system state with the sequantial important sampling algorithm,
        given the new observed quantity
      */
-    void update_sir(const T_obs& y,const T_t& t,std::vector<particle<T_p,T_state> >& particle_list,T_t& prev_t, base_urand<T_p>& rnd)const
+    void update_sir(const T_obs& y,const T_t& t,std_vector<particle<T_p,T_state> >& particle_list,T_t& prev_t, base_urand<T_p>& rnd)const
     {
       /**
 	 internal class representing the distribution of system state
        */
       class cprob
-	:public probability_density_md<T_p,T_state>
+	:public probability_density_md<T_p,T_state,std_vector>
       {
       public:
 	typedef typename element_type_trait<T_state>::element_type T_var1;
@@ -251,7 +255,7 @@ namespace mcmc_utilities
 	/**
 	   initial points for adaptive rejection metropolis sampling method
 	 */
-	std::vector<T_var1> do_init_points(const T_state& x,size_t ndim)const
+	std_vector<T_var1> do_init_points(const T_state& x,size_t ndim)const
 	{
 	  return ptr_pf_model->init_points(*ptr_t,*ptr_particle,*ptr_prev_t,ndim);
 	}
@@ -261,11 +265,11 @@ namespace mcmc_utilities
       /**
 	 cumulative distribution of particles according to the particle weights
        */
-      std::vector<T_p> weight_cdf(particle_list.size());
+      std_vector<T_p> weight_cdf(particle_list.size());
       
-      std::vector<particle<T_p,T_state> > updated_state(particle_list.size());
+      std_vector<particle<T_p,T_state> > updated_state(particle_list.size());
       
-      std::vector<T_p> log_weight(particle_list.size());
+      std_vector<T_p> log_weight(particle_list.size());
 
       /**
 	 to determine whether the random number generator is parallel
@@ -424,9 +428,9 @@ namespace mcmc_utilities
        initial points, which has an default implement as follows.
        override it if necessary.
      */
-    virtual std::vector<T_state1> do_init_points(const T_t& t,const T_state& prev_state,const T_t& prev_t,size_t ndim)const
+    virtual std_vector<T_state1> do_init_points(const T_t& t,const T_state& prev_state,const T_t& prev_t,size_t ndim)const
     {
-      return std::vector<T_state1>();
+      return std_vector<T_state1>();
     }
   };
 };

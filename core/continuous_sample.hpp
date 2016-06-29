@@ -11,8 +11,8 @@
 
 namespace mcmc_utilities
 {
-  template <typename T,typename TD, typename T_urand>
-  T continuous_sample(const TD& pd,const std::pair<T,T>& xrange, const std::vector<T>& init_x, T& xprev,size_t niter,T_urand& urand)
+  template <typename T,typename TD,typename T_vector,typename T_urand>
+  T continuous_sample(const TD& pd,const std::pair<T,T>& xrange, const T_vector& init_x, T& xprev,size_t niter,T_urand& urand)
   {
     size_t xmchange_count=0;
     try

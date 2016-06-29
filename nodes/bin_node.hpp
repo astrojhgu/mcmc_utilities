@@ -7,13 +7,13 @@
 #include <core/stochastic_node.hpp>
 namespace mcmc_utilities
 {
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class bin_node
-    :public stochastic_node<T>
+    :public stochastic_node<T,T_vector>
   {
   public:
     bin_node()
-      :stochastic_node<T>(2,1)
+      :stochastic_node<T,T_vector>(2,1)
     {}
 
   public:
@@ -45,9 +45,9 @@ namespace mcmc_utilities
       return std::floor(x);
     }
 
-    std::vector<T> do_candidate_points()const override
+    T_vector<T> do_candidate_points()const override
     {
-      std::vector<T> result((int)(this->parent(1))+1);
+      T_vector<T> result((int)(this->parent(1))+1);
       for(unsigned int i=0;i<result.size();++i)
 	{
 	  result[i]=i;
@@ -60,7 +60,7 @@ namespace mcmc_utilities
       this->set_value(0,(this->parent(0))*(this->parent(1)));
     }
 
-    std::shared_ptr<node<T> > do_clone()const override
+    std::shared_ptr<node<T,T_vector> > do_clone()const override
     {
       auto p=new bin_node;
       for(size_t i=0;i<this->num_of_dims();++i)
@@ -68,24 +68,24 @@ namespace mcmc_utilities
 	  p->set_observed(i,this->is_observed(i));
 	  p->set_value(i,this->value(i));
 	}
-      return std::shared_ptr<node<T> >(p);
+      return std::shared_ptr<node<T,T_vector> >(p);
     }
   };
 
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class bin_node_factory
-    :public abstract_node_factory<T>
+    :public abstract_node_factory<T,T_vector>
   {
   public:
     bin_node_factory()
-      :abstract_node_factory<T>({"p","n"},{"x"},{})
+      :abstract_node_factory<T,T_vector>({"p","n"},{"x"},{})
     {}
     
   public:
-    std::shared_ptr<node<T> >
-    do_get_node(const std::vector<T>& hparam)const override
+    std::shared_ptr<node<T,T_vector> >
+    do_get_node(const T_vector<T>& hparam)const override
     {
-      return std::shared_ptr<node<T> >(new bin_node<T>());
+      return std::shared_ptr<node<T,T_vector> >(new bin_node<T,T_vector>());
     }
 
 
@@ -95,43 +95,43 @@ namespace mcmc_utilities
     }
   };
 
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class bin_vnode
-    :public vnode<T>
+    :public vnode<T,T_vector>
   {
   private:
     
   public:
     
     bin_vnode(std::string n,
-		  const std::pair<const vnode<T>&,size_t>& p1,
-		  const std::pair<const vnode<T>&,size_t>& p2)
-      :vnode<T>("bin",n,{p1,p2})
+		  const std::pair<const vnode<T,T_vector>&,size_t>& p1,
+		  const std::pair<const vnode<T,T_vector>&,size_t>& p2)
+      :vnode<T,T_vector>("bin",n,{p1,p2})
     {
       this->binded=true;
     }
 
-    bin_vnode(const std::pair<const vnode<T>&,size_t>& p1,
-	      const std::pair<const vnode<T>&,size_t>& p2)
-      :vnode<T>("bin",std::string("bin")+node_count<bin_vnode<T> >(),{p1,p2})
+    bin_vnode(const std::pair<const vnode<T,T_vector>&,size_t>& p1,
+	      const std::pair<const vnode<T,T_vector>&,size_t>& p2)
+      :vnode<T,T_vector>("bin",std::string("bin")+node_count<bin_vnode<T,T_vector> >(),{p1,p2})
     {
       this->binded=true;
       this->named=false;
     }
     
     
-    std::shared_ptr<node<T> > get_node()const override
+    std::shared_ptr<node<T,T_vector> > get_node()const override
     {
-      return std::shared_ptr<node<T> >(new bin_node<T>());
+      return std::shared_ptr<node<T,T_vector> >(new bin_node<T,T_vector>());
     }
     
-    std::shared_ptr<vnode<T> > clone()const override
+    std::shared_ptr<vnode<T,T_vector> > clone()const override
     {
-      return std::shared_ptr<vnode<T> >(new bin_vnode<T>(*this));
+      return std::shared_ptr<vnode<T,T_vector> >(new bin_vnode<T,T_vector>(*this));
     }
   };
   
-  using vbin=bin_vnode<double>;
+  //using vbin=bin_vnode<double>;
 }
 
 

@@ -7,18 +7,18 @@
 
 namespace mcmc_utilities
 {
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class abstract_node_factory
   {
   public:
-    const std::vector<std::string> input_names;
-    const std::vector<std::string> output_names;
-    const std::vector<std::string> hparam_names;
+    const T_vector<std::string> input_names;
+    const T_vector<std::string> output_names;
+    const T_vector<std::string> hparam_names;
     
   public:
-    abstract_node_factory(const std::vector<std::string>& iname,
-			  const std::vector<std::string>& oname,
-			  const std::vector<std::string>& hname)
+    abstract_node_factory(const T_vector<std::string>& iname,
+			  const T_vector<std::string>& oname,
+			  const T_vector<std::string>& hname)
       :input_names(iname),
        output_names(oname),
        hparam_names(hname)
@@ -26,10 +26,10 @@ namespace mcmc_utilities
 
     virtual ~abstract_node_factory(){}
 
-    std::shared_ptr<node<T> >
-    get_node(const std::vector<T>& hparam)const
+    std::shared_ptr<node<T,T_vector> >
+    get_node(const T_vector<T>& hparam)const
     {
-      if(hparam.size()!=hparam_names.size())
+      if(get_size(hparam)!=get_size(hparam_names))
 	{
 	  throw mcmc_exception("param number mismatch");
 	}
@@ -38,7 +38,7 @@ namespace mcmc_utilities
     }
 
     
-    std::shared_ptr<node<T> >
+    std::shared_ptr<node<T,T_vector> >
     get_node()const
     {
       return get_node({});
@@ -50,30 +50,30 @@ namespace mcmc_utilities
       return do_get_node_type();
     }
 
-    std::vector<std::string> get_hparam_names()const
+    T_vector<std::string> get_hparam_names()const
     {
       return hparam_names;
     }
     
   private:
-    virtual std::shared_ptr<node<T> >
-    do_get_node(const std::vector<T>& hparam)const=0;
+    virtual std::shared_ptr<node<T,T_vector> >
+    do_get_node(const T_vector<T>& hparam)const=0;
 
     virtual std::string do_get_node_type()const=0;
     
   };
 
   
-  template <typename T>
-  std::shared_ptr<stochastic_node<T> > to_stochastic(const std::shared_ptr<node<T> >& sp)
+  template <typename T,template <typename TE> class T_vector>
+  std::shared_ptr<stochastic_node<T,T_vector> > to_stochastic(const std::shared_ptr<node<T,T_vector> >& sp)
   {
-    return std::dynamic_pointer_cast<stochastic_node<T> >(sp);
+    return std::dynamic_pointer_cast<stochastic_node<T,T_vector> >(sp);
   }
 
-  template <typename T>
-  std::shared_ptr<deterministic_node<T> > to_deterministic(const std::shared_ptr<node<T> >& sp)
+  template <typename T,template <typename TE> class T_vector>
+  std::shared_ptr<deterministic_node<T,T_vector> > to_deterministic(const std::shared_ptr<node<T,T_vector> >& sp)
   {
-    return std::dynamic_pointer_cast<deterministic_node<T> >(sp);
+    return std::dynamic_pointer_cast<deterministic_node<T,T_vector> >(sp);
   }
 }
 

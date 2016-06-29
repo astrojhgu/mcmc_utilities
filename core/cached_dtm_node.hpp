@@ -5,38 +5,38 @@
 
 namespace mcmc_utilities
 {
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class cached_dtm_node
-    :public deterministic_node<T>
+    :public deterministic_node<T,T_vector>
   {
   private:
-    std::vector<T> cached_parents;
-    std::vector<T> cached_value;
+    T_vector<T> cached_parents;
+    T_vector<T> cached_value;
     
   public:
     cached_dtm_node(size_t nparents,size_t ndim)
-      :deterministic_node<T>(nparents,ndim),cached_parents(nparents),cached_value(ndim)
+      :deterministic_node<T,T_vector>(nparents,ndim),cached_parents(nparents),cached_value(ndim)
     {}
     
     cached_dtm_node(size_t nparents)
-      :deterministic_node<T>(nparents,1),cached_parents(nparents),cached_value(1)
+      :deterministic_node<T,T_vector>(nparents,1),cached_parents(nparents),cached_value(1)
     {}
     
     cached_dtm_node()=delete;
-    cached_dtm_node(const cached_dtm_node<T>& )=delete;
-    cached_dtm_node<T>& operator=(const cached_dtm_node<T>&)=delete;
+    cached_dtm_node(const cached_dtm_node<T,T_vector>& )=delete;
+    cached_dtm_node<T,T_vector>& operator=(const cached_dtm_node<T,T_vector>&)=delete;
 
     T do_value(size_t idx)const override
     {
-      std::vector<T> p(this->parents.size());
-      bool parents_changed=false||(p.size()==0);
-      for(size_t i=0;i<p.size();++i)
+      T_vector<T> p(get_size(this->parents));
+      bool parents_changed=false||(get_size(p)==0);
+      for(size_t i=0;i<get_size(p);++i)
 	{
-	  p[i]=this->parent(i);
-	  if(p[i]!=cached_parents.at(i))
+	  set_element(p,i,this->parent(i));
+	  if(get_element(p,i)!=get_element(cached_parents,i))
 	    {
 	      parents_changed=true;
-	      const_cast<cached_dtm_node<T>*>(this)->cached_parents.at(i)=p[i];
+	      set_element(const_cast<cached_dtm_node<T,T_vector>*>(this)->cached_parents,i,get_element(p,i));
 	    }
 	  
 	}
@@ -44,12 +44,12 @@ namespace mcmc_utilities
       if(parents_changed)
 	{
 	  double y=this->calc(idx,p);
-	  const_cast<cached_dtm_node<T>*>(this)->cached_value.at(idx)=y;
+	  set_element(const_cast<cached_dtm_node<T,T_vector>*>(this)->cached_value,idx,y);
 	  return y;
 	}
       else
 	{
-	  return cached_value.at(idx);
+	  return get_element(cached_value,idx);
 	}
     }
   };

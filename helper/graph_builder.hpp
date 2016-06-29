@@ -11,19 +11,19 @@ namespace mcmc_utilities
 {
   
   
-  template <typename T>
+  template <typename T,template <typename T> class T_vector>
   class graph_builder
   {
   public:
-    std::map<std::string,std::shared_ptr<vnode<T> > > vnode_map;
+    std::map<std::string,std::shared_ptr<vnode<T,T_vector> > > vnode_map;
     
   public:
-    std::string add_node(const vnode<T>& vn)
+    std::string add_node(const vnode<T,T_vector>& vn)
     {
       return add_node(vn.name,vn);
     }
     
-    std::string add_node(std::string name,const vnode<T>& vn)
+    std::string add_node(std::string name,const vnode<T,T_vector>& vn)
     {
       auto p=vnode_map.find(name);
       if(p!=vnode_map.end())
@@ -86,9 +86,9 @@ namespace mcmc_utilities
 	}
     }
 
-    void add(graph<T,std::string>& g,std::shared_ptr<vnode<T> >& pn)
+    void add(graph<T,std::string>& g,std::shared_ptr<vnode<T,T_vector> >& pn)
     {
-      std::vector<std::pair<std::string,size_t> > parents;
+      T_vector<std::pair<std::string,size_t> > parents;
       for(auto& i:pn->parents)
 	{
 	  if ( !(i.first->added))
@@ -106,9 +106,9 @@ namespace mcmc_utilities
   
   
   template <typename T>
-  std::set<std::shared_ptr<vnode<T> > > enumerate_all_named_parents(const graph_builder<T>& gb,const std::shared_ptr<vnode<T> >& pn)
+  std::set<std::shared_ptr<vnode<T,T_vector> > > enumerate_all_named_parents(const graph_builder<T,T_vector>& gb,const std::shared_ptr<vnode<T,T_vector> >& pn)
   {
-    std::set<std::shared_ptr<vnode<T> > > result;
+    std::set<std::shared_ptr<vnode<T,T_vector> > > result;
     for(auto & i : pn->parents)
       {
 	if(i.first->named==true)
@@ -170,7 +170,7 @@ namespace mcmc_utilities
   }
   
   template <typename T>
-  void graph2dot1(const graph_builder<T>& gb,std::ostream& os)
+  void graph2dot1(const graph_builder<T,T_vector>& gb,std::ostream& os)
   {
     os<<"digraph{"<<std::endl;
     os<<"node [shape=record];"<<std::endl;
@@ -199,7 +199,7 @@ namespace mcmc_utilities
   }
   
   template <typename T>
-  void graph2dot2(const graph_builder<T>& gb,std::ostream& os)
+  void graph2dot2(const graph_builder<T,T_vector>& gb,std::ostream& os)
   {
     os<<"digraph{"<<std::endl;
     

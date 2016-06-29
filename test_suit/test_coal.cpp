@@ -8,8 +8,12 @@
 using namespace std;
 using namespace mcmc_utilities;
 
+template <typename T>
+using std_vector=std::vector<T>;
+
+
 class coal_distribution
-  :public probability_density_md<double,std::vector<double> >
+  :public probability_density_md<double,std::vector<double>,std_vector>
 {
 private:
   std::vector<double> year;

@@ -4,14 +4,15 @@
 #include "error_handler.hpp"
 #include <vector>
 #include <cmath>
+#include "mcmc_traits.hpp"
 #include "slicer.hpp"
 #include <algorithm>
 
 namespace mcmc_utilities
 {
 
-  template <typename T,typename TD,typename T_urand>
-  T discrete_sample(const TD& pd,const std::pair<T,T>& xrange, const std::vector<T>& cp, T& xprev,size_t niter,T_urand& urand)
+  template <typename T,typename TD,typename T_vector,typename T_urand>
+  T discrete_sample(const TD& pd,const std::pair<T,T>& xrange, const T_vector& cp, T& xprev,size_t niter,T_urand& urand)
   {
     if(cp.empty())
       {
@@ -22,15 +23,15 @@ namespace mcmc_utilities
       }
     else
       {
-	std::vector<T> prob(cp.size());
-	prob[0]=std::exp(pd(cp[0]));
-	for(size_t i=1;i<cp.size();++i)
+	T_vector prob(get_size(cp));
+	set_element(prob,0,std::exp(pd(get_element(cp,0))));
+	for(size_t i=1;i<get_size(cp);++i)
 	  {
-	    prob[i]=prob[i-1]+std::exp(pd(cp[i]));
+	    set_element(prob,i,get_element(prob,i-1)+std::exp(pd(get_element(cp,i))));
 	  }
 	
-	T p=urand()*prob.back();
-	return cp[std::min<size_t>(std::distance(prob.begin(),std::upper_bound(prob.begin(),prob.end(),p)),cp.size()-1)];
+	T p=urand()*last_element(prob);
+	return get_element(cp,std::min<size_t>(std::distance(prob.begin(),std::upper_bound(prob.begin(),prob.end(),p)),get_size(cp)-1));
       }
   }
   

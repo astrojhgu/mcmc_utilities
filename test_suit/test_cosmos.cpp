@@ -19,11 +19,14 @@
 using namespace std;
 using namespace mcmc_utilities;
 
+template <typename T>
+using std_vector=std::vector<T>;
+
 
 int main()
 {
   urand<double> rnd;
-  graph<double,tag_t> g;
+  graph<double,tag_t,std_vector> g;
   ifstream ifs("data8.12.1.dat.R");
   auto data=read_jags_data<double>(ifs);
 
@@ -36,23 +39,23 @@ int main()
   auto obsx=data.find("obsx")->second;
   auto errobsx=data.find("errobsx")->second;
 
-  std::shared_ptr<node<double> > pMm(new uniform_node<double>(-20.3,-18.3));
-  std::shared_ptr<node<double> > palpha(new uniform_node<double>(-2,2));
-  std::shared_ptr<node<double> > pbeta(new uniform_node<double>(-4,4));
-  std::shared_ptr<node<double> > pcm(new uniform_node<double>(-3,3));
-  std::shared_ptr<node<double> > pxm(new uniform_node<double>(-10,10));
-  std::shared_ptr<node<double> > plgintrscatM(new uniform_node<double>(-3,0));
-  std::shared_ptr<node<double> > pintrscatM(new str_node<double>("10^x",{"x"}));
-  std::shared_ptr<node<double> > plgintrscatx(new uniform_node<double>(-5,2));
-  std::shared_ptr<node<double> > pintrscatx(new str_node<double>("10^x",{"x"}));
-  std::shared_ptr<node<double> > plgintrscatC(new uniform_node<double>(-5,2));
-  std::shared_ptr<node<double> > pintrscatC(new str_node<double>("10^x",{"x"}));
-  std::shared_ptr<node<double> > pH0_mu(new const_node<double>(72));
-  std::shared_ptr<node<double> > pH0_sigma(new const_node<double>(8.0));
-  std::shared_ptr<node<double> > pH0(new normal_node<double>());
-  std::shared_ptr<node<double> > pOmega_l(new str_node<double>("1-x",{"x"}));
-  std::shared_ptr<node<double> > pOmega_m(new uniform_node<double>(0,1));
-  std::shared_ptr<node<double> > pw(new uniform_node<double>(-4,0));
+  std::shared_ptr<node<double,std_vector> > pMm(new uniform_node<double,std_vector>(-20.3,-18.3));
+  std::shared_ptr<node<double,std_vector> > palpha(new uniform_node<double,std_vector>(-2,2));
+  std::shared_ptr<node<double,std_vector> > pbeta(new uniform_node<double,std_vector>(-4,4));
+  std::shared_ptr<node<double,std_vector> > pcm(new uniform_node<double,std_vector>(-3,3));
+  std::shared_ptr<node<double,std_vector> > pxm(new uniform_node<double,std_vector>(-10,10));
+  std::shared_ptr<node<double,std_vector> > plgintrscatM(new uniform_node<double,std_vector>(-3,0));
+  std::shared_ptr<node<double,std_vector> > pintrscatM(new str_node<double,std_vector>("10^x",{"x"}));
+  std::shared_ptr<node<double,std_vector> > plgintrscatx(new uniform_node<double,std_vector>(-5,2));
+  std::shared_ptr<node<double,std_vector> > pintrscatx(new str_node<double,std_vector>("10^x",{"x"}));
+  std::shared_ptr<node<double,std_vector> > plgintrscatC(new uniform_node<double,std_vector>(-5,2));
+  std::shared_ptr<node<double,std_vector> > pintrscatC(new str_node<double,std_vector>("10^x",{"x"}));
+  std::shared_ptr<node<double,std_vector> > pH0_mu(new const_node<double,std_vector>(72));
+  std::shared_ptr<node<double,std_vector> > pH0_sigma(new const_node<double,std_vector>(8.0));
+  std::shared_ptr<node<double,std_vector> > pH0(new normal_node<double,std_vector>());
+  std::shared_ptr<node<double,std_vector> > pOmega_l(new str_node<double,std_vector>("1-x",{"x"}));
+  std::shared_ptr<node<double,std_vector> > pOmega_m(new uniform_node<double,std_vector>(0,1));
+  std::shared_ptr<node<double,std_vector> > pw(new uniform_node<double,std_vector>(-4,0));
 
   g.add_node(pMm,{"Mm"});
   g.add_node(palpha,{"alpha"});
@@ -78,50 +81,50 @@ int main()
 
   for(int i=0;i<obsz.size();++i)
     {
-      std::shared_ptr<node<double> > pz(new uniform_node<double>(1e-6,2));
+      std::shared_ptr<node<double,std_vector> > pz(new uniform_node<double,std_vector>(1e-6,2));
       g.add_node(pz,{"z",i});
       g.set_value({"z",i},0,obsz[i]);
-      std::shared_ptr<node<double> > perrz(new const_node<double>(errz[i]));
+      std::shared_ptr<node<double,std_vector> > perrz(new const_node<double,std_vector>(errz[i]));
       g.add_node(perrz,{"errz",i});
-      auto pobsz=new normal_node<double>();
+      auto pobsz=new normal_node<double,std_vector>();
       pobsz->set_value(0,obsz[i]);
       pobsz->set_observed(0,true);
       g.add_node(pobsz,{"obsz",i},{{pz,0},{perrz,0}});
 
-      auto pdistmod=std::shared_ptr<node<double> >(new str_node<double>("5*log10(D_L(z,H0,Omega_m,1-Omega_m,0,0,w)/3.0857E16)-5",{"z","H0","Omega_m","w"}));
+      auto pdistmod=std::shared_ptr<node<double,std_vector> >(new str_node<double,std_vector>("5*log10(D_L(z,H0,Omega_m,1-Omega_m,0,0,w)/3.0857E16)-5",{"z","H0","Omega_m","w"}));
 
       g.add_node(pdistmod,{"distmod",i},{{pz,0},{pH0,0},{pOmega_m,0},{pw,0}});
 
-      auto px=shared_ptr<node<double> >(new normal_node<double>());
+      auto px=shared_ptr<node<double,std_vector> >(new normal_node<double,std_vector>());
       g.add_node(px,{"x",i},{{pxm,0},{pintrscatx,0}});
-      auto perrobsx=std::shared_ptr<node<double> >(new const_node<double>(errobsx[i]));
+      auto perrobsx=std::shared_ptr<node<double,std_vector> >(new const_node<double,std_vector>(errobsx[i]));
       g.add_node(perrobsx,{"errobsx",i});
-      auto pobsx=new normal_node<double>();
+      auto pobsx=new normal_node<double,std_vector>();
       pobsx->set_value(0,obsx[i]);
       pobsx->set_observed(0,true);
       g.add_node(pobsx,{"obsx",i},{{px,0},{perrobsx,0}});
 
-      shared_ptr<node<double> > pc(new normal_node<double>);
+      shared_ptr<node<double,std_vector> > pc(new normal_node<double,std_vector>);
       g.add_node(pc,{"c",i},{{pcm,0},{pintrscatC,0}});
 
-      shared_ptr<node<double> > perrobs(new const_node<double>(errobsc[i]));
+      shared_ptr<node<double,std_vector> > perrobs(new const_node<double,std_vector>(errobsc[i]));
       g.add_node(perrobs,{"errobs",i});
-      auto pobsc=new normal_node<double>;
+      auto pobsc=new normal_node<double,std_vector>;
       pobsc->set_value(0,obsc[i]);
       pobsc->set_observed(0,true);
       g.add_node(pobsc,{"obsc",i},{{pc,0},{perrobs,0}});
 
-      shared_ptr<node<double> > pm_mean(new str_node<double>("Mm+distmod-alpha*x+beta*c",{"Mm","distmod","alpha","x","beta","c"}));
+      shared_ptr<node<double,std_vector> > pm_mean(new str_node<double,std_vector>("Mm+distmod-alpha*x+beta*c",{"Mm","distmod","alpha","x","beta","c"}));
       g.add_node(pm_mean,{"pm_mean",i},{{pMm,0},{pdistmod,0},{palpha,0},{px,0},{pbeta,0},{pc,0}});
 
-      std::shared_ptr<node<double> > pm(new normal_node<double>);
+      std::shared_ptr<node<double,std_vector> > pm(new normal_node<double,std_vector>);
       g.add_node(pm,{"m",i},{{pm_mean,0},{pintrscatM,0}});
 
-      std::shared_ptr<node<double> > perrmag(new const_node<double>(errmag[i]));
+      std::shared_ptr<node<double,std_vector> > perrmag(new const_node<double,std_vector>(errmag[i]));
 
       g.add_node(perrmag,{"errmag",i});
 
-      auto pobsm=new normal_node<double>;
+      auto pobsm=new normal_node<double,std_vector>;
       pobsm->set_value(0,obsm[i]);
       pobsm->set_observed(0,true);
       g.add_node(pobsm,{"obsm",i},{{pm,0},{perrmag,0}});
@@ -140,15 +143,15 @@ int main()
   g.set_value({"H0"},0,72);
 
   ofstream ofs_tp("cosmology.dot");
-  topology_dumper<double>(g).to_dot(ofs_tp);
+  topology_dumper<double,std_vector>(g).to_dot(ofs_tp);
   ofs_tp.close();
 
-  auto pdistmod=std::shared_ptr<node<double> >(new str_node<double>("5*log10(D_L(z,H0,Omega_m,1-Omega_m,0,0,w)/3.0858E16)-5",{"z","H0","Omega_m","w"}));
-  //auto pdistmod=std::shared_ptr<node<double> >(new str_node<double>("D_L(z,H0,Omega_m,1-Omega_m,0,0,w)",{"z","H0","Omega_m","w"}));
-  pdistmod->connect_to_parent(new const_node<double>(.5),0,0);
-  pdistmod->connect_to_parent(new const_node<double>(71),1,0);
-  pdistmod->connect_to_parent(new const_node<double>(0.27),2,0);
-  pdistmod->connect_to_parent(new const_node<double>(-1),3,0);
+  auto pdistmod=std::shared_ptr<node<double,std_vector> >(new str_node<double,std_vector>("5*log10(D_L(z,H0,Omega_m,1-Omega_m,0,0,w)/3.0858E16)-5",{"z","H0","Omega_m","w"}));
+  //auto pdistmod=std::shared_ptr<node<double,std_vector> >(new str_node<double,std_vector>("D_L(z,H0,Omega_m,1-Omega_m,0,0,w)",{"z","H0","Omega_m","w"}));
+  pdistmod->connect_to_parent(new const_node<double,std_vector>(.5),0,0);
+  pdistmod->connect_to_parent(new const_node<double,std_vector>(71),1,0);
+  pdistmod->connect_to_parent(new const_node<double,std_vector>(0.27),2,0);
+  pdistmod->connect_to_parent(new const_node<double,std_vector>(-1),3,0);
 
   //cout<<pdistmod->value(0)<<endl;
   //return 0;

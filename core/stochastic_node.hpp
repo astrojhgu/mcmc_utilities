@@ -5,6 +5,7 @@
 #include <numeric>
 #include <map>
 #include "error_handler.hpp"
+#include "mcmc_traits.hpp"
 #include "arms.hpp"
 #include "slicer.hpp"
 #include "base_urand.hpp"
@@ -14,41 +15,44 @@
 
 namespace mcmc_utilities
 {
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class stochastic_node
-    :public node<T>
+    :public node<T,T_vector>
   {
   private:
-    std::vector<T> v;//store current value(s) of this node
-    std::vector<int> observed;
+    T_vector<T> v;//store current value(s) of this node
+    T_vector<int> observed;
     size_t current_idx;
   public:
-    stochastic_node(size_t nparents,const std::vector<T>& v_)
-      :node<T>(nparents,v_.size()),
-      v{v_},observed(v_.size()),current_idx(0)
+    stochastic_node(size_t nparents,const T_vector<T>& v_)
+      :node<T,T_vector>(nparents,get_size(v_)),
+      v{v_},observed(get_size(v_)),current_idx(0)
     {
     }
 
     stochastic_node(size_t nparents,T v_)
-      :node<T>(nparents,1),
-      v(1),observed(v.size()),current_idx(0)
+      :node<T,T_vector>(nparents,1),
+      v(1),observed(get_size(v)),current_idx(0)
     {
-      v[0]=v_;
+      //v[0]=v_;
+      set_element(v,0,v_);
     }
     
 
     stochastic_node()=delete;
-    stochastic_node(const stochastic_node<T>& )=delete;
-    stochastic_node<T>& operator=(const stochastic_node<T>&)=delete;
+    stochastic_node(const stochastic_node<T,T_vector>& )=delete;
+    stochastic_node<T,T_vector>& operator=(const stochastic_node<T,T_vector>&)=delete;
   public:
     bool is_observed(size_t n)const
     {
-      return observed[n]!=0;
+      //return observed[n]!=0;
+      return get_element(observed,n)!=0;
     }
 
     void set_observed(size_t n,bool b)
     {
-      observed[n]=b?1:0;
+      //observed[n]=b?1:0;
+      set_element(observed,n,b?1:0);
     }
 
     size_t num_of_observed()const
@@ -71,7 +75,7 @@ namespace mcmc_utilities
 
     T eval_log(const T& x)const
     {
-      const_cast<stochastic_node*>(this)->v[current_idx]=x;
+      set_element(const_cast<stochastic_node*>(this)->v,current_idx,x);
       return log_posterior_prob();
     }
 
@@ -93,7 +97,7 @@ namespace mcmc_utilities
     void set_value(size_t idx,const T& v_)
     {
       this->set_initialized(idx,true);
-      v[idx]=this->regulate(idx,v_);
+      set_element(v,idx,this->regulate(idx,v_));
     }
 
     T regulate(size_t idx,const T& x)const
@@ -136,12 +140,12 @@ namespace mcmc_utilities
 	  
 	  if(is_continuous(i))
 	    {
-	      std::vector<T> init_x(this->do_init_points());
+	      T_vector<T> init_x(this->do_init_points());
 	      xprev=continuous_sample([&](const T& x){return this->eval_log(x);},xrange,init_x, xprev,1,urand);
 	    }
 	  else
 	    {
-	      std::vector<T> candidate_points(this->do_candidate_points());
+	      T_vector<T> candidate_points(this->do_candidate_points());
 	      xprev=discrete_sample([&](const T& x){return this->eval_log(x);},xrange, candidate_points, xprev,10,urand);
 	    }
 	  
@@ -152,13 +156,14 @@ namespace mcmc_utilities
     virtual T do_log_prob()const=0;
     T do_value(size_t idx)const override final
     {
-      return v[idx];
+      //return v[idx];
+      return get_element(v,idx);
     }
 
     
-    void do_connect_to_parent(node<T>*  rhs,size_t n,size_t idx) override
+    void do_connect_to_parent(node<T,T_vector>*  rhs,size_t n,size_t idx) override
     {
-      this->parents.at(n)=std::make_pair(rhs,idx);
+      set_element(this->parents,n,std::make_pair(rhs,idx));
       rhs->add_stochastic_child(this);
     }
 
@@ -171,21 +176,21 @@ namespace mcmc_utilities
 
     virtual std::pair<T,T> do_var_range()const=0;
 
-    virtual std::vector<T> do_init_points()const
+    virtual T_vector<T> do_init_points()const
     {
-      std::vector<T> result(5);
+      T_vector<T> result(5);
       std::pair<T,T> xrange(do_var_range());
       T xl=xrange.first,xr=xrange.second;
-      for(size_t n=0;n<result.size();++n)
+      for(size_t n=0;n<get_size(result);++n)
 	{	 
-	  result[n]=xl+(xr-xl)/(result.size()+1)*(n+1);
+	  set_element(result,n,xl+(xr-xl)/(get_size(result)+1)*(n+1));
 	}
       return result;
     }
 
-    virtual std::vector<T> do_candidate_points()const
+    virtual T_vector<T> do_candidate_points()const
     {
-      return std::vector<T>();
+      return T_vector<T>();
     }
   };  
 }

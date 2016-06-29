@@ -15,6 +15,8 @@
 using namespace std;
 using namespace mcmc_utilities;
 
+template <typename T>
+using std_vector=std::vector<T>;
 
 class data_loader
 {
@@ -37,26 +39,26 @@ public:
       }
   }
 
-  shared_ptr<node<double> > get_energy(int i)const
+  shared_ptr<node<double,std_vector> > get_energy(int i)const
   {
-    auto p=new const_node<double>(vec_e[i]);
+    auto p=new const_node<double,std_vector>(vec_e[i]);
     //p->set_observed(0,true);
-    return std::shared_ptr<node<double> >(p);
+    return std::shared_ptr<node<double,std_vector> >(p);
   }
 
-  shared_ptr<node<double> > get_ninj(int i)const
+  shared_ptr<node<double,std_vector> > get_ninj(int i)const
   {
-    auto p=new const_node<double>(vec_ninj[i]);
+    auto p=new const_node<double,std_vector>(vec_ninj[i]);
     //p->set_observed(0,true);
-    return std::shared_ptr<node<double> >(p);
+    return std::shared_ptr<node<double,std_vector> >(p);
   }
 
-  shared_ptr<node<double> > get_nrec(int i)const
+  shared_ptr<node<double,std_vector> > get_nrec(int i)const
   {
-    auto p=new bin_node<double>();
+    auto p=new bin_node<double,std_vector>();
     p->set_value(0,vec_nrec[i]);
     p->set_observed(0,true);
-    return shared_ptr<node<double> >(p);
+    return shared_ptr<node<double,std_vector> >(p);
   }
 
   size_t size()const
@@ -77,14 +79,14 @@ private:
 
 int main()
 {
-  graph<double,std::string> g;
+  graph<double,std::string,std_vector> g;
   data_loader dl("eff.txt");
 
-  auto pMu=std::shared_ptr<node<double> >(new const_node<double>(0));
-  auto pSigma=std::shared_ptr<node<double> >(new const_node<double>(1));
-  auto pk=std::shared_ptr<node<double> >(new const_node<double>(1));
-  auto pT1=std::shared_ptr<node<double> >(new t_node<double>());
-  auto pT2=std::shared_ptr<node<double> >(new t_node<double>());
+  auto pMu=std::shared_ptr<node<double,std_vector> >(new const_node<double,std_vector>(0));
+  auto pSigma=std::shared_ptr<node<double,std_vector> >(new const_node<double,std_vector>(1));
+  auto pk=std::shared_ptr<node<double,std_vector> >(new const_node<double,std_vector>(1));
+  auto pT1=std::shared_ptr<node<double,std_vector> >(new t_node<double,std_vector>());
+  auto pT2=std::shared_ptr<node<double,std_vector> >(new t_node<double,std_vector>());
   g.add_node(pMu,"mu");
   g.add_node(pSigma,"sigma");
   g.add_node(pk,"k");

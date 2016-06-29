@@ -8,13 +8,13 @@
 #include <helper/abstract_node_factory.hpp>
 namespace mcmc_utilities
 {
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class poisson_node
-    :public stochastic_node<T>
+    :public stochastic_node<T,T_vector>
   {
   public:
     poisson_node()
-      :stochastic_node<T>(1,1)
+      :stochastic_node<T,T_vector>(1,1)
     {}
 
   public:
@@ -46,17 +46,17 @@ namespace mcmc_utilities
       return std::floor(x);
     }
 
-    std::vector<T> do_candidate_points()const override
+    T_vector<T> do_candidate_points()const override
     {
       /*
-      std::vector<T> result((int)(this->parent(0))*10+1);
+      T_vector<T> result((int)(this->parent(0))*10+1);
       for(int i=0;i<result.size();++i)
 	{
 	  result[i]=i;
 	}
       return result;
       */
-      return std::vector<T>();
+      return T_vector<T>();
     }
 
     void do_initialize(size_t n)override
@@ -64,7 +64,7 @@ namespace mcmc_utilities
       this->set_value(0,this->parent(0));
     }
 
-    std::shared_ptr<node<T> > do_clone()const override
+    std::shared_ptr<node<T,T_vector> > do_clone()const override
     {
       auto p=new poisson_node;
       for(size_t i=0;i<this->num_of_dims();++i)
@@ -72,25 +72,25 @@ namespace mcmc_utilities
 	  p->set_observed(i,this->is_observed(i));
 	  p->set_value(i,this->value(i));
 	}
-      return std::shared_ptr<node<T> >(p);
+      return std::shared_ptr<node<T,T_vector> >(p);
     }
 
   };
 
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class poisson_node_factory
-    :public abstract_node_factory<T>
+    :public abstract_node_factory<T,T_vector>
   {
   public:
     poisson_node_factory()
-      :abstract_node_factory<T>({"lambda"},{"x"},{})
+      :abstract_node_factory<T,T_vector>({"lambda"},{"x"},{})
     {}
     
   public:
-    std::shared_ptr<node<T> >
-    do_get_node(const std::vector<T>& hparam)const override
+    std::shared_ptr<node<T,T_vector> >
+    do_get_node(const T_vector<T>& hparam)const override
     {
-      return std::shared_ptr<node<T> >(new poisson_node<T>());
+      return std::shared_ptr<node<T,T_vector> >(new poisson_node<T,T_vector>());
     }
 
 
@@ -100,43 +100,43 @@ namespace mcmc_utilities
     }
   };
 
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class poisson_vnode
-    :public vnode<T>
+    :public vnode<T,T_vector>
   {
   private:
     
   public:
     
     poisson_vnode(std::string n,
-		  const std::pair<const vnode<T>&,size_t>& p1
+		  const std::pair<const vnode<T,T_vector>&,size_t>& p1
 		  )
-      :vnode<T>("poisson",n,{p1})
+      :vnode<T,T_vector>("poisson",n,{p1})
     {
       this->binded=true;
     }
 
-    poisson_vnode(const std::pair<const vnode<T>&,size_t>& p1
+    poisson_vnode(const std::pair<const vnode<T,T_vector>&,size_t>& p1
 		  )
-      :vnode<T>("poisson",std::string("poisson")+node_count<poisson_vnode<T> >(),{p1})
+      :vnode<T,T_vector>("poisson",std::string("poisson")+node_count<poisson_vnode<T,T_vector> >(),{p1})
     {
       this->binded=true;
       this->named=false;
     }
     
     
-    std::shared_ptr<node<T> > get_node()const override
+    std::shared_ptr<node<T,T_vector> > get_node()const override
     {
-      return std::shared_ptr<node<T> >(new poisson_node<T>());
+      return std::shared_ptr<node<T,T_vector> >(new poisson_node<T,T_vector>());
     }
     
-    std::shared_ptr<vnode<T> > clone()const override
+    std::shared_ptr<vnode<T,T_vector> > clone()const override
     {
-      return std::shared_ptr<vnode<T> >(new poisson_vnode<T>(*this));
+      return std::shared_ptr<vnode<T,T_vector> >(new poisson_vnode<T,T_vector>(*this));
     }
   };
   
-  using vpoisson=poisson_vnode<double>;
+  //using vpoisson=poisson_vnode<double>;
 }
 
 

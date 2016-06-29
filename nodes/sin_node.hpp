@@ -12,65 +12,65 @@
 
 namespace mcmc_utilities
 {
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class sin_node
-    :public cached_dtm_node<T>
+    :public cached_dtm_node<T,T_vector>
   {
   public:
     sin_node()
-      :cached_dtm_node<T>(1,1)
+      :cached_dtm_node<T,T_vector>(1,1)
     {}
 
-    T do_calc(size_t idx,const std::vector<T>& parent)const override
+    T do_calc(size_t idx,const T_vector<T>& parent)const override
     {
       return std::sin(parent[0]);
     }
 
-    std::shared_ptr<node<T> > do_clone()const override
+    std::shared_ptr<node<T,T_vector> > do_clone()const override
     {
       auto p=new sin_node;
-      return std::shared_ptr<node<T> >(p);
+      return std::shared_ptr<node<T,T_vector> >(p);
     }
 
   };
 
 
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class sin_vnode
-    :public vnode<T>
+    :public vnode<T,T_vector>
   {
   public:
     sin_vnode(std::string n,
-	      const std::pair<const vnode<T>&,size_t>& p)
-      :vnode<T>("sin",n,{p})
+	      const std::pair<const vnode<T,T_vector>&,size_t>& p)
+      :vnode<T,T_vector>("sin",n,{p})
     {
       this->binded=true;
     }
 
-    std::shared_ptr<node<T> > get_node()const override
+    std::shared_ptr<node<T,T_vector> > get_node()const override
     {
-      return std::shared_ptr<node<T> >(new sin_node<T>);
+      return std::shared_ptr<node<T,T_vector> >(new sin_node<T,T_vector>);
     }
 
-    std::shared_ptr<vnode<T> > clone()const override
+    std::shared_ptr<vnode<T,T_vector> > clone()const override
     {
-      return std::shared_ptr<vnode<T> >(new sin_vnode<T>(*this));
+      return std::shared_ptr<vnode<T,T_vector> >(new sin_vnode<T,T_vector>(*this));
     }
   };
 
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class sin_node_factory
-    :public abstract_node_factory<T>
+    :public abstract_node_factory<T,T_vector>
   {
   public:
     sin_node_factory()
-      :abstract_node_factory<T>({"x"},{"y"},{})
+      :abstract_node_factory<T,T_vector>({"x"},{"y"},{})
     {}
   public:
-    std::shared_ptr<node<T> >
-    do_get_node(const std::vector<T>& hparam)const override
+    std::shared_ptr<node<T,T_vector> >
+    do_get_node(const T_vector<T>& hparam)const override
     {
-      return std::shared_ptr<node<T> >(new sin_node<T>);
+      return std::shared_ptr<node<T,T_vector> >(new sin_node<T,T_vector>);
     }
 
     std::string do_get_node_type()const override
@@ -79,10 +79,10 @@ namespace mcmc_utilities
     }
   };
 
-  template <typename T>
-  sin_vnode<T> vsin(const vnode<T>& n1)
+  template <typename T,template <typename TE> class T_vector>
+  sin_vnode<T,T_vector> vsin(const vnode<T,T_vector>& n1)
   {
-    auto result= sin_vnode<T>(std::string("sin")+node_count<sin_vnode<T> >(),{n1,(size_t)0});
+    auto result= sin_vnode<T,T_vector>(std::string("sin")+node_count<sin_vnode<T,T_vector> >(),{n1,(size_t)0});
     result.named=false;
     return result;
   }

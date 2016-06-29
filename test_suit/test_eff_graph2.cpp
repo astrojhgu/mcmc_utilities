@@ -16,6 +16,8 @@
 using namespace std;
 using namespace mcmc_utilities;
 
+template <typename T>
+using std_vector=std::vector<T>;
 
 class data_loader
 {
@@ -38,26 +40,26 @@ public:
       }
   }
 
-  shared_ptr<node<double> > get_energy(int i)const
+  shared_ptr<node<double,std_vector> > get_energy(int i)const
   {
-    auto p=new const_node<double>(vec_e[i]);
+    auto p=new const_node<double,std_vector>(vec_e[i]);
     //p->set_observed(0,true);
-    return std::shared_ptr<node<double> >(p);
+    return std::shared_ptr<node<double,std_vector> >(p);
   }
 
-  shared_ptr<node<double> > get_ninj(int i)const
+  shared_ptr<node<double,std_vector> > get_ninj(int i)const
   {
-    auto p=new const_node<double>(vec_ninj[i]);
+    auto p=new const_node<double,std_vector>(vec_ninj[i]);
     //p->set_observed(0,true);
-    return std::shared_ptr<node<double> >(p);
+    return std::shared_ptr<node<double,std_vector> >(p);
   }
 
-  shared_ptr<node<double> > get_nrec(int i)const
+  shared_ptr<node<double,std_vector> > get_nrec(int i)const
   {
-    auto p=new bin_node<double>();
+    auto p=new bin_node<double,std_vector>();
     p->set_value(0,vec_nrec[i]);
     p->set_observed(0,true);
-    return shared_ptr<node<double> >(p);
+    return shared_ptr<node<double,std_vector> >(p);
   }
 
   size_t size()const
@@ -79,13 +81,13 @@ private:
 
 int main()
 {
-  graph<double,tag_t> g;
+  graph<double,tag_t,std_vector> g;
   data_loader dl("eff.txt");
 
-  auto pA=std::shared_ptr<node<double> >(new uniform_node<double>(.001,1-1e-5));
-  auto pB=std::shared_ptr<node<double> >(new uniform_node<double>(.001,1-1e-5));
-  auto pmu=std::shared_ptr<node<double> >(new uniform_node<double>(.001,100-1e-5));
-  auto psigma=std::shared_ptr<node<double> >(new uniform_node<double>(.001,100-1e-5));
+  auto pA=std::shared_ptr<node<double,std_vector> >(new uniform_node<double,std_vector>(.001,1-1e-5));
+  auto pB=std::shared_ptr<node<double,std_vector> >(new uniform_node<double,std_vector>(.001,1-1e-5));
+  auto pmu=std::shared_ptr<node<double,std_vector> >(new uniform_node<double,std_vector>(.001,100-1e-5));
+  auto psigma=std::shared_ptr<node<double,std_vector> >(new uniform_node<double,std_vector>(.001,100-1e-5));
   g.add_node(pA,{"A"});
   g.add_node(pB,{"B"});
   g.add_node(pmu,{"mu"});
@@ -99,8 +101,8 @@ int main()
       g.add_node(dl.get_ninj(i),{"ninj",i});
 
       
-      std::vector<std::pair<std::shared_ptr<node<double> >,size_t> > pp{{pA,0},{pB,0},{pE,0},{pmu,0},{psigma,0}};
-      auto p_eff=new func_node<double>([](const std::vector<double>& p)->double
+      std::vector<std::pair<std::shared_ptr<node<double,std_vector> >,size_t> > pp{{pA,0},{pB,0},{pE,0},{pmu,0},{psigma,0}};
+      auto p_eff=new func_node<double,std_vector>([](const std::vector<double>& p)->double
 	{
 	  double A=p[0];
 	  double B=p[1];
@@ -116,7 +118,7 @@ int main()
 
   std::cerr<<"*********"<<std::endl;
   
-  graph<double,tag_t> g2;
+  graph<double,tag_t,std_vector> g2;
   g2.copy_from(g);
 
   auto A=g2.get_monitor({"A"},0);
@@ -130,7 +132,7 @@ int main()
   g2.initialize();
 
   ofstream ofs("eff_topology.dot");
-  topology_dumper<double>(g2).to_dot(ofs);
+  topology_dumper<double,std_vector>(g2).to_dot(ofs);
   ofs.close();
   
   for(int i=0;i<30000;++i)

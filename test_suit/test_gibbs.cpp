@@ -12,8 +12,11 @@
 using namespace std;
 using namespace mcmc_utilities;
 
+template <typename T>
+using std_vector=std::vector<T>;
+
 class test_distribution
-  :public probability_density_md<double,std::vector<double> >
+  :public probability_density_md<double,std::vector<double>,std_vector>
 {
 public:
   double do_eval_log(const std::vector<double>& x,int n)const

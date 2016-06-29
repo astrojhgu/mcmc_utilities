@@ -14,11 +14,13 @@
 using namespace std;
 using namespace mcmc_utilities;
 
+template <typename T>
+using std_vector=std::vector<T>;
 
 class data_loader
 {
 public:
-  std::vector<double> vec_e,vec_nrec,vec_ninj;
+  std_vector<double> vec_e,vec_nrec,vec_ninj;
   data_loader(const char* fname)
   {
     ifstream ifs(fname);
@@ -36,26 +38,26 @@ public:
       }
   }
 
-  shared_ptr<node<double> > get_energy(int i)const
+  shared_ptr<node<double,std_vector> > get_energy(int i)const
   {
-    auto p=new const_node<double>(vec_e[i]);
+    auto p=new const_node<double,std_vector>(vec_e[i]);
     //p->set_observed(0,true);
-    return std::shared_ptr<node<double> >(p);
+    return std::shared_ptr<node<double,std_vector> >(p);
   }
 
-  shared_ptr<node<double> > get_ninj(int i)const
+  shared_ptr<node<double,std_vector> > get_ninj(int i)const
   {
-    auto p=new const_node<double>(vec_ninj[i]);
+    auto p=new const_node<double,std_vector>(vec_ninj[i]);
     //p->set_observed(0,true);
-    return std::shared_ptr<node<double> >(p);
+    return std::shared_ptr<node<double,std_vector> >(p);
   }
 
-  shared_ptr<node<double> > get_nrec(int i)const
+  shared_ptr<node<double,std_vector> > get_nrec(int i)const
   {
-    auto p=new bin_node<double>();
+    auto p=new bin_node<double,std_vector>();
     p->set_value(0,vec_nrec[i]);
     p->set_observed(0,true);
-    return shared_ptr<node<double> >(p);
+    return shared_ptr<node<double,std_vector> >(p);
   }
 
   size_t size()const
@@ -77,13 +79,13 @@ private:
 
 int main()
 {
-  graph<double,std::string> g;
+  graph<double,std::string,std_vector> g;
   data_loader dl("eff.txt");
 
-  auto pA=std::shared_ptr<node<double> >(new uniform_node<double>(.001,1-1e-5));
-  auto pB=std::shared_ptr<node<double> >(new uniform_node<double>(.001,1-1e-5));
-  auto pmu=std::shared_ptr<node<double> >(new uniform_node<double>(.001,100-1e-5));
-  auto psigma=std::shared_ptr<node<double> >(new uniform_node<double>(.001,100-1e-5));
+  auto pA=std::shared_ptr<node<double,std_vector> >(new uniform_node<double,std_vector>(.001,1-1e-5));
+  auto pB=std::shared_ptr<node<double,std_vector> >(new uniform_node<double,std_vector>(.001,1-1e-5));
+  auto pmu=std::shared_ptr<node<double,std_vector> >(new uniform_node<double,std_vector>(.001,100-1e-5));
+  auto psigma=std::shared_ptr<node<double,std_vector> >(new uniform_node<double,std_vector>(.001,100-1e-5));
   g.add_node(pA,"A");
   g.add_node(pB,"B");
   g.add_node(pmu,"mu");
@@ -105,8 +107,8 @@ int main()
       tag_eff+=std::to_string(i);
 
       //g.add_node(new eff(),tag_eff,{{"A",0},{"B",0},{tag_E,0},{"mu",0},{"sigma",0}});
-      std::vector<std::pair<std::shared_ptr<node<double> >,size_t> > pp{{pA,0},{pB,0},{pE,0},{pmu,0},{psigma,0}};
-      auto p_eff=new str_node<double>("A+(B-A)*phi((E-mu)/sigma)",{"A","B","E","mu","sigma"});
+      std_vector<std::pair<std::shared_ptr<node<double,std_vector> >,size_t> > pp{{pA,0},{pB,0},{pE,0},{pmu,0},{psigma,0}};
+      auto p_eff=new str_node<double,std_vector>("A+(B-A)*phi((E-mu)/sigma)",{"A","B","E","mu","sigma"});
       g.add_node(p_eff,tag_eff,pp);
 
       
@@ -117,7 +119,7 @@ int main()
 
   std::cerr<<"*********"<<std::endl;
   
-  graph<double,std::string> g2;
+  graph<double,std::string,std_vector> g2;
   g2.copy_from(g);
 
   auto topology=g2.topology();
@@ -127,7 +129,7 @@ int main()
   for(auto& p:topology)
     {
       std::string tag=p.first;
-      std::vector<std::pair<std::string,size_t> > parents=p.second;
+      std_vector<std::pair<std::string,size_t> > parents=p.second;
       ofs<<tag;
       for(auto q:parents)
 	{

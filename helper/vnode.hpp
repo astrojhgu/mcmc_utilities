@@ -10,19 +10,19 @@
 
 namespace mcmc_utilities
 {
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class id_vnode;
 
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class id_node;
   
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class vnode
   {
   public:
     std::string type;
     std::string name;
-    std::vector<std::pair<std::shared_ptr<vnode<T> >,size_t> > parents;
+    T_vector<std::pair<std::shared_ptr<vnode<T,T_vector> >,size_t> > parents;
     bool binded;
     bool added;
     bool named;
@@ -35,7 +35,7 @@ namespace mcmc_utilities
       :type(t),name(n),binded(false),added(false),named(true)
     {}
     
-    vnode(const std::string& t,const std::string& n,const std::initializer_list<std::pair<const vnode<T>&,size_t> >& p)
+    vnode(const std::string& t,const std::string& n,const std::initializer_list<std::pair<const vnode<T,T_vector>&,size_t> >& p)
       :type(t),name(n),binded(false),added(false),named(true)
     {
       for (auto & i : p)
@@ -49,16 +49,16 @@ namespace mcmc_utilities
     {}
     
   public:
-    virtual std::shared_ptr<node<T> > get_node()const
+    virtual std::shared_ptr<node<T,T_vector> > get_node()const
     {
       throw mcmc_exception("should never be called");
-      return std::shared_ptr<node<T> >();
+      return std::shared_ptr<node<T,T_vector> >();
     }
 
   public:
-    virtual std::shared_ptr<vnode<T> > clone()const
+    virtual std::shared_ptr<vnode<T,T_vector> > clone()const
     {
-      return std::shared_ptr<vnode<T> >(new vnode<T>(*this));
+      return std::shared_ptr<vnode<T,T_vector> >(new vnode<T,T_vector>(*this));
     }
 
     void set_name(const std::string& n)
@@ -68,44 +68,44 @@ namespace mcmc_utilities
     }
 
   public:
-    id_vnode<T> operator()(size_t n)const
+    id_vnode<T,T_vector> operator()(size_t n)const
     {
-      return id_vnode<T>({*this,n});
+      return id_vnode<T,T_vector>({*this,n});
     }
   };
 
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class id_vnode
-    :public vnode<T>
+    :public vnode<T,T_vector>
   {
   public:
-    id_vnode(const std::pair<const vnode<T>&,size_t>& p)
-      :vnode<T>("eq",std::string("eq")+node_count<id_vnode<T> >(),{p})
+    id_vnode(const std::pair<const vnode<T,T_vector>&,size_t>& p)
+      :vnode<T,T_vector>("eq",std::string("eq")+node_count<id_vnode<T,T_vector> >(),{p})
     {
       this->binded=true;
       this->named=false;
     }
 
   public:
-    std::shared_ptr<node<T> > get_node()const override
+    std::shared_ptr<node<T,T_vector> > get_node()const override
     {
-      return std::shared_ptr<node<T> >(new id_node<T>);
+      return std::shared_ptr<node<T,T_vector> >(new id_node<T,T_vector>);
     }
 
   public:
-    std::shared_ptr<vnode<T> > clone()const override
+    std::shared_ptr<vnode<T,T_vector> > clone()const override
     {
-      return std::shared_ptr<vnode<T> >(new id_vnode<T>(*this));
+      return std::shared_ptr<vnode<T,T_vector> >(new id_vnode<T,T_vector>(*this));
     }
   };
 
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class id_node
-    :public deterministic_node<T>
+    :public deterministic_node<T,T_vector>
   {
   public:
     id_node()
-      :deterministic_node<T>(1,1)
+      :deterministic_node<T,T_vector>(1,1)
       {}
 
     T do_value(size_t idx)const override
@@ -114,8 +114,8 @@ namespace mcmc_utilities
     }
   };
   
- 
-  using vn=vnode<double>;
+  
+  //using vn=vnode<double>;
 }
 
 #endif

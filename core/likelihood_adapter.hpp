@@ -6,22 +6,22 @@
 
 namespace mcmc_utilities
 {
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class likelihood_adapter
-    :public stochastic_node<T>
+    :public stochastic_node<T,T_vector>
   {
   private:
-    std::shared_ptr<stochastic_node<T> > psn;
+    std::shared_ptr<stochastic_node<T,T_vector> > psn;
 
   public:
-    likelihood_adapter(const std::shared_ptr<stochastic_node<T> >& _psn)
-      :stochastic_node<T>(_psn->num_of_parents()+_psn->num_of_dims(),std::vector<T>()),
+    likelihood_adapter(const std::shared_ptr<stochastic_node<T,T_vector> >& _psn)
+      :stochastic_node<T,T_vector>(_psn->num_of_parents()+_psn->num_of_dims(),T_vector<T>()),
       psn(_psn)
     {
     }
 
-    likelihood_adapter(stochastic_node<T>* _psn)
-      :stochastic_node<T>(_psn->num_of_parents()+_psn->num_of_dims(),std::vector<T>()),
+    likelihood_adapter(stochastic_node<T,T_vector>* _psn)
+      :stochastic_node<T,T_vector>(_psn->num_of_parents()+_psn->num_of_dims(),T_vector<T>()),
       psn(_psn)
     {
     }
@@ -36,9 +36,9 @@ namespace mcmc_utilities
       return psn->log_prob();
     }
 
-    void do_connect_to_parent(node<T>* rhs,size_t n,size_t idx) override final
+    void do_connect_to_parent(node<T,T_vector>* rhs,size_t n,size_t idx) override final
     {
-      this->parents.at(n)=std::make_pair(rhs,idx);
+      set_element(this->parents,n,std::make_pair(rhs,idx));
       if(n<psn->num_of_parents())
 	{
 	  psn->connect_to_parent(rhs,n,idx);

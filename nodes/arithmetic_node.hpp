@@ -12,39 +12,39 @@
 namespace mcmc_utilities
 {
   /////add////
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class add_node
-    :public cached_dtm_node<T>
+    :public cached_dtm_node<T,T_vector>
   {
   public:
     add_node()
-      :cached_dtm_node<T>(2,1)
+      :cached_dtm_node<T,T_vector>(2,1)
     {}
     
-    T do_calc(size_t idx,const std::vector<T>& parent)const override
+    T do_calc(size_t idx,const T_vector<T>& parent)const override
     {
       return parent[0]+parent[1];
     }
 
-    std::shared_ptr<node<T> > do_clone()const override
+    std::shared_ptr<node<T,T_vector> > do_clone()const override
     {
-      return std::shared_ptr<node<T> >(new add_node);
+      return std::shared_ptr<node<T,T_vector> >(new add_node);
     }
   };
 
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class add_node_factory
-    :public abstract_node_factory<T>
+    :public abstract_node_factory<T,T_vector>
   {
   public:
     add_node_factory()
-      :abstract_node_factory<T>({"op1","op2"},{"result"},{})
+      :abstract_node_factory<T,T_vector>({"op1","op2"},{"result"},{})
     {}
     
-    std::shared_ptr<node<T> >
-    do_get_node(const std::vector<T>& hparam)const override
+    std::shared_ptr<node<T,T_vector> >
+    do_get_node(const T_vector<T>& hparam)const override
     {
-      return std::shared_ptr<node<T> >(new add_node<T>);
+      return std::shared_ptr<node<T,T_vector> >(new add_node<T,T_vector>);
     }
 
     std::string do_get_node_type()const override
@@ -55,71 +55,71 @@ namespace mcmc_utilities
   };
   
   
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class add_vnode
-    :public vnode<T>
+    :public vnode<T,T_vector>
   {
   public:
-    add_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T>&,size_t> >& p)
-      :vnode<T>("add",n,p)
+    add_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T,T_vector>&,size_t> >& p)
+      :vnode<T,T_vector>("add",n,p)
     {
       this->binded=true;
     }
     
-    std::shared_ptr<node<T> > get_node()const override
+    std::shared_ptr<node<T,T_vector> > get_node()const override
     {
-      return std::shared_ptr<node<T> >(new add_node<T>);
+      return std::shared_ptr<node<T,T_vector> >(new add_node<T,T_vector>);
     }
 
-    std::shared_ptr<vnode<T> > clone()const override
+    std::shared_ptr<vnode<T,T_vector> > clone()const override
     {
-      return std::shared_ptr<vnode<T> >(new add_vnode<T>(*this));
+      return std::shared_ptr<vnode<T,T_vector> >(new add_vnode<T,T_vector>(*this));
     }
   };
   
-  template <typename T>
-  add_vnode<T> operator+(const vnode<T>& n1,
-		 const vnode<T>& n2)
+  template <typename T,template <typename TE> class T_vector>
+  add_vnode<T,T_vector> operator+(const vnode<T,T_vector>& n1,
+		 const vnode<T,T_vector>& n2)
   {
-    auto result= add_vnode<T>(std::string("add")+node_count<add_vnode<T> >(),{{n1,0},{n2,0}});
+    auto result= add_vnode<T,T_vector>(std::string("add")+node_count<add_vnode<T,T_vector> >(),{{n1,0},{n2,0}});
     result.named=false;
     return result;
   }
   
   /////sub////
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class sub_node
-    :public cached_dtm_node<T>
+    :public cached_dtm_node<T,T_vector>
   {
   public:
     sub_node()
-      :cached_dtm_node<T>(2,1)
+      :cached_dtm_node<T,T_vector>(2,1)
     {}
     
-    T do_calc(size_t idx,const std::vector<T>& parent)const override
+    T do_calc(size_t idx,const T_vector<T>& parent)const override
     {
       return parent[0]-parent[1];
     }
 
-    std::shared_ptr<node<T> > do_clone()const override
+    std::shared_ptr<node<T,T_vector> > do_clone()const override
     {
-      return std::shared_ptr<node<T> >(new sub_node);
+      return std::shared_ptr<node<T,T_vector> >(new sub_node);
     }
   };
 
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class sub_node_factory
-    :public abstract_node_factory<T>
+    :public abstract_node_factory<T,T_vector>
   {
   public:
     sub_node_factory()
-      :abstract_node_factory<T>({"op1","op2"},{"result"},{})
+      :abstract_node_factory<T,T_vector>({"op1","op2"},{"result"},{})
     {}
   public:
-    std::shared_ptr<node<T> >
-    do_get_node(const std::vector<T>& hparam)const override
+    std::shared_ptr<node<T,T_vector> >
+    do_get_node(const T_vector<T>& hparam)const override
     {
-      return std::shared_ptr<node<T> >(new sub_node<T>);
+      return std::shared_ptr<node<T,T_vector> >(new sub_node<T,T_vector>);
     }
 
     std::string do_get_node_type()const override
@@ -130,72 +130,72 @@ namespace mcmc_utilities
   };
   
   
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class sub_vnode
-    :public vnode<T>
+    :public vnode<T,T_vector>
   {
   public:
-    sub_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T>&,size_t> >& p)
-      :vnode<T>("sub",n,p)
+    sub_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T,T_vector>&,size_t> >& p)
+      :vnode<T,T_vector>("sub",n,p)
     {
       this->binded=true;
     }
     
-    std::shared_ptr<node<T> > get_node()const override
+    std::shared_ptr<node<T,T_vector> > get_node()const override
     {
-      return std::shared_ptr<node<T> >(new sub_node<T>);
+      return std::shared_ptr<node<T,T_vector> >(new sub_node<T,T_vector>);
     }
 
-    std::shared_ptr<vnode<T> > clone()const override
+    std::shared_ptr<vnode<T,T_vector> > clone()const override
     {
-      return std::shared_ptr<vnode<T> >(new sub_vnode<T>(*this));
+      return std::shared_ptr<vnode<T,T_vector> >(new sub_vnode<T,T_vector>(*this));
     }
   };
   
-  template <typename T>
-  sub_vnode<T> operator-(const vnode<T>& n1,
-		 const vnode<T>& n2)
+  template <typename T,template <typename TE> class T_vector>
+  sub_vnode<T,T_vector> operator-(const vnode<T,T_vector>& n1,
+		 const vnode<T,T_vector>& n2)
   {
-    auto result = sub_vnode<T>(std::string("sub")+node_count<sub_vnode<T> >(),{{n1,0},{n2,0}});
+    auto result = sub_vnode<T,T_vector>(std::string("sub")+node_count<sub_vnode<T,T_vector> >(),{{n1,0},{n2,0}});
     result.named=false;
     return result;
   }
 
   /////neg////
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class neg_node
-    :public cached_dtm_node<T>
+    :public cached_dtm_node<T,T_vector>
   {
   public:
     neg_node()
-      :cached_dtm_node<T>(1,1)
+      :cached_dtm_node<T,T_vector>(1,1)
     {}
     
-    T do_calc(size_t idx,const std::vector<T>& parent)const override
+    T do_calc(size_t idx,const T_vector<T>& parent)const override
     {
       return -parent[0];
     }
 
-    std::shared_ptr<node<T> > do_clone()const override
+    std::shared_ptr<node<T,T_vector> > do_clone()const override
     {
-      return std::shared_ptr<node<T> >(new neg_node);
+      return std::shared_ptr<node<T,T_vector> >(new neg_node);
     }
 
   };
 
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class neg_node_factory
-    :public abstract_node_factory<T>
+    :public abstract_node_factory<T,T_vector>
   {
   public:
     neg_node_factory()
-      :abstract_node_factory<T>({"op1"},{"result"},{})
+      :abstract_node_factory<T,T_vector>({"op1"},{"result"},{})
     {}
   public:
-    std::shared_ptr<node<T> >
-    do_get_node(const std::vector<T>& hparam)const override
+    std::shared_ptr<node<T,T_vector> >
+    do_get_node(const T_vector<T>& hparam)const override
     {
-      return std::shared_ptr<node<T> >(new neg_node<T>);
+      return std::shared_ptr<node<T,T_vector> >(new neg_node<T,T_vector>);
     }
 
     std::string do_get_node_type()const override
@@ -206,63 +206,63 @@ namespace mcmc_utilities
   };
   
   
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class neg_vnode
-    :public vnode<T>
+    :public vnode<T,T_vector>
   {
   public:
-    neg_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T>&,size_t> >& p)
-      :vnode<T>("neg",n,p)
+    neg_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T,T_vector>&,size_t> >& p)
+      :vnode<T,T_vector>("neg",n,p)
     {
       this->binded=true;
     }
     
-    std::shared_ptr<node<T> > get_node()const override
+    std::shared_ptr<node<T,T_vector> > get_node()const override
     {
-      return std::shared_ptr<node<T> >(new neg_node<T>);
+      return std::shared_ptr<node<T,T_vector> >(new neg_node<T,T_vector>);
     }
 
-    std::shared_ptr<vnode<T> > clone()const override
+    std::shared_ptr<vnode<T,T_vector> > clone()const override
     {
-      return std::shared_ptr<vnode<T> >(new neg_vnode<T>(*this));
+      return std::shared_ptr<vnode<T,T_vector> >(new neg_vnode<T,T_vector>(*this));
     }
   };
 
     /////pos////
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class pos_node
-    :public cached_dtm_node<T>
+    :public cached_dtm_node<T,T_vector>
   {
   public:
     pos_node()
-      :cached_dtm_node<T>(1,1)
+      :cached_dtm_node<T,T_vector>(1,1)
     {}
     
-    T do_calc(size_t idx,const std::vector<T>& parent)const override
+    T do_calc(size_t idx,const T_vector<T>& parent)const override
     {
       return parent[0];
     }
 
-    std::shared_ptr<node<T> > do_clone()const override
+    std::shared_ptr<node<T,T_vector> > do_clone()const override
     {
-      return std::shared_ptr<node<T> >(new pos_node);
+      return std::shared_ptr<node<T,T_vector> >(new pos_node);
     }
 
   };
 
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class pos_node_factory
-    :public abstract_node_factory<T>
+    :public abstract_node_factory<T,T_vector>
   {
   public:
     pos_node_factory()
-      :abstract_node_factory<T>({"op1"},{"result"},{})
+      :abstract_node_factory<T,T_vector>({"op1"},{"result"},{})
     {}
   public:
-    std::shared_ptr<node<T> >
-    do_get_node(const std::vector<T>& hparam)const override
+    std::shared_ptr<node<T,T_vector> >
+    do_get_node(const T_vector<T>& hparam)const override
     {
-      return std::shared_ptr<node<T> >(new pos_node<T>);
+      return std::shared_ptr<node<T,T_vector> >(new pos_node<T,T_vector>);
     }
 
     std::string do_get_node_type()const override
@@ -273,65 +273,65 @@ namespace mcmc_utilities
   };
   
   
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class pos_vnode
-    :public vnode<T>
+    :public vnode<T,T_vector>
   {
   public:
-    pos_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T>&,size_t> >& p)
-      :vnode<T>("pos",n,p)
+    pos_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T,T_vector>&,size_t> >& p)
+      :vnode<T,T_vector>("pos",n,p)
     {
       this->binded=true;
     }
     
-    std::shared_ptr<node<T> > get_node()const override
+    std::shared_ptr<node<T,T_vector> > get_node()const override
     {
-      return std::shared_ptr<node<T> >(new pos_node<T>);
+      return std::shared_ptr<node<T,T_vector> >(new pos_node<T,T_vector>);
     }
 
-    std::shared_ptr<vnode<T> > clone()const override
+    std::shared_ptr<vnode<T,T_vector> > clone()const override
     {
-      return std::shared_ptr<vnode<T> >(new pos_vnode<T>(*this));
+      return std::shared_ptr<vnode<T,T_vector> >(new pos_vnode<T,T_vector>(*this));
     }
   };
 
 
   /////mul////
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class mul_node
-    :public cached_dtm_node<T>
+    :public cached_dtm_node<T,T_vector>
   {
   public:
     mul_node()
-      :cached_dtm_node<T>(2,1)
+      :cached_dtm_node<T,T_vector>(2,1)
     {}
     
-    T do_calc(size_t idx,const std::vector<T>& parent)const override
+    T do_calc(size_t idx,const T_vector<T>& parent)const override
     {
       return parent[0]*parent[1];
     }
 
-    std::shared_ptr<node<T> > do_clone()const override
+    std::shared_ptr<node<T,T_vector> > do_clone()const override
     {
-      return std::shared_ptr<node<T> >(new mul_node);
+      return std::shared_ptr<node<T,T_vector> >(new mul_node);
     }
 
   };
   
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class mul_node_factory
-    :public abstract_node_factory<T>
+    :public abstract_node_factory<T,T_vector>
   {
   public:
     mul_node_factory()
-      :abstract_node_factory<T>({"op1","op2"},{"result"},{})
+      :abstract_node_factory<T,T_vector>({"op1","op2"},{"result"},{})
     {}
     
   public:
-    std::shared_ptr<node<T> >
-    do_get_node(const std::vector<T>& hparam)const override
+    std::shared_ptr<node<T,T_vector> >
+    do_get_node(const T_vector<T>& hparam)const override
     {
-      return std::shared_ptr<node<T> >(new mul_node<T>);
+      return std::shared_ptr<node<T,T_vector> >(new mul_node<T,T_vector>);
     }
 
     std::string do_get_node_type()const override
@@ -341,73 +341,73 @@ namespace mcmc_utilities
 
   };
   
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class mul_vnode
-    :public vnode<T>
+    :public vnode<T,T_vector>
   {
   public:
-    mul_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T>&,size_t> >& p)
-      :vnode<T>("mul",n,p)
+    mul_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T,T_vector>&,size_t> >& p)
+      :vnode<T,T_vector>("mul",n,p)
     {
       this->binded=true;
     }
     
-    std::shared_ptr<node<T> > get_node()const override
+    std::shared_ptr<node<T,T_vector> > get_node()const override
     {
-      return std::shared_ptr<node<T> >(new mul_node<T>);
+      return std::shared_ptr<node<T,T_vector> >(new mul_node<T,T_vector>);
     }
 
-    std::shared_ptr<vnode<T> > clone()const override
+    std::shared_ptr<vnode<T,T_vector> > clone()const override
     {
-      return std::shared_ptr<vnode<T> >(new mul_vnode<T>(*this));
+      return std::shared_ptr<vnode<T,T_vector> >(new mul_vnode<T,T_vector>(*this));
     }
   };
   
-  template <typename T>
-  mul_vnode<T> operator*(const vnode<T>& n1,
-		 const vnode<T>& n2)
+  template <typename T,template <typename TE> class T_vector>
+  mul_vnode<T,T_vector> operator*(const vnode<T,T_vector>& n1,
+		 const vnode<T,T_vector>& n2)
   {
-    auto result= mul_vnode<T>(std::string("mul")+node_count<mul_vnode<T> >(),{{n1,0},{n2,0}});
+    auto result= mul_vnode<T,T_vector>(std::string("mul")+node_count<mul_vnode<T,T_vector> >(),{{n1,0},{n2,0}});
     result.named=false;
     return result;
   }
   
   /////div////
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class div_node
-    :public cached_dtm_node<T>
+    :public cached_dtm_node<T,T_vector>
   {
   public:
     div_node()
-      :cached_dtm_node<T>(2,1)
+      :cached_dtm_node<T,T_vector>(2,1)
     {}
     
-    T do_calc(size_t idx,const std::vector<T>& parent)const override
+    T do_calc(size_t idx,const T_vector<T>& parent)const override
     {
       return parent[0]/parent[1];
     }
 
-    std::shared_ptr<node<T> > do_clone()const override
+    std::shared_ptr<node<T,T_vector> > do_clone()const override
     {
-      return std::shared_ptr<node<T> >(new div_node);
+      return std::shared_ptr<node<T,T_vector> >(new div_node);
     }
 
   };
 
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class div_node_factory
-    :public abstract_node_factory<T>
+    :public abstract_node_factory<T,T_vector>
   {
   public:
     div_node_factory()
-      :abstract_node_factory<T>({"op1","op2"},{"result"},{})
+      :abstract_node_factory<T,T_vector>({"op1","op2"},{"result"},{})
     {}
     
   public:
-    std::shared_ptr<node<T> >
-    do_get_node(const std::vector<T>& hparam)const override
+    std::shared_ptr<node<T,T_vector> >
+    do_get_node(const T_vector<T>& hparam)const override
     {
-      return std::shared_ptr<node<T> >(new div_node<T>);
+      return std::shared_ptr<node<T,T_vector> >(new div_node<T,T_vector>);
     }
 
     std::string do_get_node_type()const override
@@ -418,73 +418,73 @@ namespace mcmc_utilities
   };
   
   
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class div_vnode
-    :public vnode<T>
+    :public vnode<T,T_vector>
   {
   public:
-    div_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T>&,size_t> >& p)
-      :vnode<T>("div",n,p)
+    div_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T,T_vector>&,size_t> >& p)
+      :vnode<T,T_vector>("div",n,p)
     {
       this->binded=true;
     }
     
-    std::shared_ptr<node<T> > get_node()const override
+    std::shared_ptr<node<T,T_vector> > get_node()const override
     {
-      return std::shared_ptr<node<T> >(new div_node<T>);
+      return std::shared_ptr<node<T,T_vector> >(new div_node<T,T_vector>);
     }
 
-    std::shared_ptr<vnode<T> > clone()const override
+    std::shared_ptr<vnode<T,T_vector> > clone()const override
     {
-      return std::shared_ptr<vnode<T> >(new div_vnode<T>(*this));
+      return std::shared_ptr<vnode<T,T_vector> >(new div_vnode<T,T_vector>(*this));
     }
   };
   
-  template <typename T>
-  div_vnode<T> operator/(const vnode<T>& n1,
-		 const vnode<T>& n2)
+  template <typename T,template <typename TE> class T_vector>
+  div_vnode<T,T_vector> operator/(const vnode<T,T_vector>& n1,
+		 const vnode<T,T_vector>& n2)
   {
-    auto result= div_vnode<T>(std::string("div")+node_count<div_vnode<T> >(),{{n1,0},{n2,0}});
+    auto result= div_vnode<T,T_vector>(std::string("div")+node_count<div_vnode<T,T_vector> >(),{{n1,0},{n2,0}});
     result.named=false;
     return result;
   }
   
   /////pow////
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class pow_node
-    :public cached_dtm_node<T>
+    :public cached_dtm_node<T,T_vector>
   {
   public:
     pow_node()
-      :cached_dtm_node<T>(2,1)
+      :cached_dtm_node<T,T_vector>(2,1)
     {}
     
-    T do_calc(size_t idx,const std::vector<T>& parent)const override
+    T do_calc(size_t idx,const T_vector<T>& parent)const override
     {
       return std::pow(parent[0],parent[1]);
     }
 
-    std::shared_ptr<node<T> > do_clone()const override
+    std::shared_ptr<node<T,T_vector> > do_clone()const override
     {
-      return std::shared_ptr<node<T> >(new pow_node);
+      return std::shared_ptr<node<T,T_vector> >(new pow_node);
     }
 
   };
 
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class pow_node_factory
-    :public abstract_node_factory<T>
+    :public abstract_node_factory<T,T_vector>
   {
   public:
     pow_node_factory()
-      :abstract_node_factory<T>({"op1","op2"},{"result"},{})
+      :abstract_node_factory<T,T_vector>({"op1","op2"},{"result"},{})
     {}
     
   public:
-    std::shared_ptr<node<T> >
-    do_get_node(const std::vector<T>& hparam)const override
+    std::shared_ptr<node<T,T_vector> >
+    do_get_node(const T_vector<T>& hparam)const override
     {
-      return std::shared_ptr<node<T> >(new pow_node<T>);
+      return std::shared_ptr<node<T,T_vector> >(new pow_node<T,T_vector>);
     }
 
     std::string do_get_node_type()const override
@@ -495,33 +495,33 @@ namespace mcmc_utilities
   };
   
   
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class pow_vnode
-    :public vnode<T>
+    :public vnode<T,T_vector>
   {
   public:
-    pow_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T>&,size_t> >& p)
-      :vnode<T>("pow",n,p)
+    pow_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T,T_vector>&,size_t> >& p)
+      :vnode<T,T_vector>("pow",n,p)
     {
       this->binded=true;
     }
     
-    std::shared_ptr<node<T> > get_node()const override
+    std::shared_ptr<node<T,T_vector> > get_node()const override
     {
-      return std::shared_ptr<node<T> >(new pow_node<T>);
+      return std::shared_ptr<node<T,T_vector> >(new pow_node<T,T_vector>);
     }
 
-    std::shared_ptr<vnode<T> > clone()const override
+    std::shared_ptr<vnode<T,T_vector> > clone()const override
     {
-      return std::shared_ptr<vnode<T> >(new pow_vnode<T>(*this));
+      return std::shared_ptr<vnode<T,T_vector> >(new pow_vnode<T,T_vector>(*this));
     }
   };
   
-  template <typename T>
-  pow_vnode<T> operator/(const vnode<T>& n1,
-		 const vnode<T>& n2)
+  template <typename T,template <typename TE> class T_vector>
+  pow_vnode<T,T_vector> operator/(const vnode<T,T_vector>& n1,
+		 const vnode<T,T_vector>& n2)
   {
-    auto result= pow_vnode<T>(std::string("pow")+node_count<pow_vnode<T> >(),{{n1,0},{n2,0}});
+    auto result= pow_vnode<T,T_vector>(std::string("pow")+node_count<pow_vnode<T,T_vector> >(),{{n1,0},{n2,0}});
     result.named=false;
     return result;
   }
