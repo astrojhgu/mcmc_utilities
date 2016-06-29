@@ -13,16 +13,16 @@
 
 namespace mcmc_utilities
 {
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class switch_node
-    :public cached_dtm_node<T>
+    :public cached_dtm_node<T,T_vector>
   {
   public:
     switch_node(int ninputs)
-      :cached_dtm_node<T>(ninputs+1,1)
+      :cached_dtm_node<T,T_vector>(ninputs+1,1)
     {}
 
-    T do_calc(size_t idx,const std::vector<T>& parent)const override
+    T do_calc(size_t idx,const T_vector<T>& parent)const override
     {
       int n=size_t(parent.back());
       if(n<0||n>=this->num_of_parents()-1)
@@ -32,10 +32,10 @@ namespace mcmc_utilities
       return parent.at(n);
     }
 
-    std::shared_ptr<node<T> > do_clone()const override
+    std::shared_ptr<node<T,T_vector> > do_clone()const override
     {
       auto p=new switch_node(this->num_of_parents()-1);
-      return std::shared_ptr<node<T> >(p);
+      return std::shared_ptr<node<T,T_vector> >(p);
     }
   };
 }

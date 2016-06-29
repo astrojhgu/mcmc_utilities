@@ -9,17 +9,17 @@
 
 namespace mcmc_utilities
 {
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class discrete_uniform_node
-    :public stochastic_node<T>
+    :public stochastic_node<T,T_vector>
   {
   private:
     int a;
     int b;
-    std::vector<T> candidates;
+    T_vector<T> candidates;
   public:
     discrete_uniform_node(int _a,int _b)
-      :stochastic_node<T>(0,round((_a+_b)/2)),a(_a),b(_b),candidates(_b-_a)
+      :stochastic_node<T,T_vector>(0,round((_a+_b)/2)),a(_a),b(_b),candidates(_b-_a)
     {
       for(int i=a;i<b;++i)
 	{
@@ -48,7 +48,7 @@ namespace mcmc_utilities
       this->set_value(0,std::round((a+b)/2));
     }
 #if 0
-    std::vector<T> do_candidate_points()const
+    T_vector<T> do_candidate_points()const
     {
       return candidates;
     }
@@ -59,7 +59,7 @@ namespace mcmc_utilities
       return std::round(x);
     }
 
-    std::shared_ptr<node<T> > do_clone()const override
+    std::shared_ptr<node<T,T_vector> > do_clone()const override
     {
       auto p=new discrete_uniform_node(a,b);
       for(size_t i=0;i<this->num_of_dims();++i)
@@ -67,25 +67,25 @@ namespace mcmc_utilities
 	  p->set_observed(i,this->is_observed(i));
 	  p->set_value(i,this->value(i));
 	}
-      return std::shared_ptr<node<T> >(p);
+      return std::shared_ptr<node<T,T_vector> >(p);
     }
 
   };
 
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class discrete_uniform_node_factory
-    :public abstract_node_factory<T>
+    :public abstract_node_factory<T,T_vector>
   {
   public:
     discrete_uniform_node_factory()
-      :abstract_node_factory<T>({},{"x"},{"a","b"})
+      :abstract_node_factory<T,T_vector>({},{"x"},{"a","b"})
     {}
     
   public:
-    std::shared_ptr<node<T> >
-    do_get_node(const std::vector<T>& hparam)const override
+    std::shared_ptr<node<T,T_vector> >
+    do_get_node(const T_vector<T>& hparam)const override
     {
-      return std::shared_ptr<node<T> >(new discrete_uniform_node<T>(hparam.at(0),hparam.at(1)));
+      return std::shared_ptr<node<T,T_vector> >(new discrete_uniform_node<T,T_vector>(hparam.at(0),hparam.at(1)));
     }
 
     std::string do_get_node_type()const override
@@ -94,31 +94,31 @@ namespace mcmc_utilities
     }
   };
   
-  template <typename T>
+  template <typename T,template <typename TE> class T_vector>
   class discrete_uniform_vnode
-    :public vnode<T>
+    :public vnode<T,T_vector>
   {
     int a;
     int b;
   public:
     discrete_uniform_vnode(std::string n,int _a,int _b)
-      :vnode<T>("discrete_uniform",n),a(_a),b(_b)
+      :vnode<T,T_vector>("discrete_uniform",n),a(_a),b(_b)
     {
       this->binded=true;
     }
     
-    std::shared_ptr<node<T> > get_node()const override
+    std::shared_ptr<node<T,T_vector> > get_node()const override
     {
-      return std::shared_ptr<node<T> >(new discrete_uniform_node<T>(a,b));
+      return std::shared_ptr<node<T,T_vector> >(new discrete_uniform_node<T,T_vector>(a,b));
     }
     
-    std::shared_ptr<vnode<T> > clone()const override
+    std::shared_ptr<vnode<T,T_vector> > clone()const override
     {
-      return std::shared_ptr<vnode<T> >(new discrete_uniform_vnode<T>(*this));
+      return std::shared_ptr<vnode<T,T_vector> >(new discrete_uniform_vnode<T,T_vector>(*this));
     }
   };
 
-  using vdiscrete_uniform=discrete_uniform_vnode<double>;
+  //using vdiscrete_uniform=discrete_uniform_vnode<double>;
 };
 
 #endif
