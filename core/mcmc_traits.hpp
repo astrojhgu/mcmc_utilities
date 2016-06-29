@@ -107,6 +107,12 @@ namespace mcmc_utilities
     x.resize(s);
   }
 
+  template <typename T>
+  inline void reserve(T& x,size_t s)
+  {
+    x.reserve(s);
+  }
+
 
   /**
      Assignment operator of two array objects
