@@ -59,7 +59,7 @@ namespace mcmc_utilities
       return T_vector<T>();
     }
 
-    void do_initialize(size_t n)override
+    void do_init_value(size_t n) override
     {
       this->set_value(0,this->parent(0));
     }

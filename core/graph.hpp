@@ -26,10 +26,11 @@ namespace mcmc_utilities
     //std::map<std::shared_ptr<node<T,T_vector> > ,T_tag, std::owner_less<std::shared_ptr<node<T,T_vector> > > > tag_map;
     std::map<std::shared_ptr<node<T,T_vector> > ,T_tag > tag_map;
     bool shuffled_sampling;
+    bool topology_frozen;
     int verbose_level;
   public:
     graph()
-      :shuffled_sampling(false),verbose_level(0)
+      :shuffled_sampling(false),topology_frozen(false),verbose_level(0)
     {}
 
     graph(const graph<T,T_tag,T_vector>&)=delete;
@@ -105,8 +106,31 @@ namespace mcmc_utilities
       shuffled_sampling=s;
     }
 
+    void freeze_topology()
+    {
+      for(auto& p:stochastic_node_list)
+	{
+	  p->freeze_topology();
+	}
+      for(auto& p:deterministic_node_list)
+	{
+	  p->freeze_topology();
+	}
+      topology_frozen=true;
+    }
+
+    void topology_changed()
+    {
+      topology_frozen=false;
+    }
+
     void sample(base_urand<T>& rnd)
     {
+      if(!topology_frozen)
+	{
+	  freeze_topology();
+	}
+      
       stochastic_node<T,T_vector>* p_current=nullptr;
       int n=0;
       T_vector<stochastic_node<T,T_vector>*> stochastic_node_vector;
@@ -117,7 +141,7 @@ namespace mcmc_utilities
 		    );
       if(shuffled_sampling)
 	{
-	  std::random_shuffle(stochastic_node_vector.begin(),stochastic_node_vector.end(),
+	  std::random_shuffle(std::begin(stochastic_node_vector),std::end(stochastic_node_vector),
 			      [&](size_t i)->size_t {
 				for(;;)
 				  {
@@ -174,7 +198,7 @@ namespace mcmc_utilities
     {
       for(auto& p:stochastic_node_list)
 	{
-	  p->initialize();
+	  p->init_value();
 	}
     }
 
@@ -312,6 +336,7 @@ namespace mcmc_utilities
 		  const T_vector<std::pair<T_tag,size_t> >& parents
 		  )
     {
+      topology_changed();
 #if 0
       std::cerr<<"added "<<tag;
       std::cerr<<" with parents:";

@@ -60,7 +60,7 @@ namespace mcmc_utilities
 	    {
 	      T_vector<T> p(get_size(node_stack.top().first->parents));
 	      
-	      for(auto i=p.rbegin();i!=p.rend();++i)
+	      for(auto i=std::rbegin(p);i!=std::rend(p);++i)
 		{
 		  (*i)=operand_stack.top();
 		  operand_stack.pop();

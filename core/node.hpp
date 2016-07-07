@@ -56,18 +56,23 @@ namespace mcmc_utilities
       set_element(initialized,n,i);
     }
 
-    void initialize()
+    void freeze_topology()
+    {
+      do_freeze_topology();
+    }
+
+    void init_value()
     {
       for(size_t i=0;i<ndims;++i)
 	{
 	  if(!is_initialized(i))
 	    {
-	      initialize(i);
+	      init_value(i);
 	    }
 	}
     }
 
-    void initialize(size_t n)
+    void init_value(size_t n)
     {
       if(n<ndims)
 	{
@@ -77,11 +82,11 @@ namespace mcmc_utilities
 		{
 		  if(!p.first->is_initialized(i))
 		    {
-		      p.first->initialize(i);
+		      p.first->init_value(i);
 		    }
 		}
 	    }
-	  do_initialize(n);
+	  do_init_value(n);
 	  set_element(initialized,n,1);
 	}
     }
@@ -194,7 +199,10 @@ namespace mcmc_utilities
     
     virtual void do_connect_to_parent(node<T,T_vector>* prhs,size_t n,size_t idx)=0;
 
-    virtual void do_initialize(size_t n)
+    virtual void do_init_value(size_t n)
+    {}
+
+    virtual void do_freeze_topology()
     {}
 
     virtual std::shared_ptr<node<T,T_vector> > do_clone()const

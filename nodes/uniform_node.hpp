@@ -37,7 +37,7 @@ namespace mcmc_utilities
       //return make_pair(-10,10);
     }
 
-    void do_initialize(size_t n)override
+    void do_init_value(size_t n) override
     {
       this->set_value(0,(a+b)/2);
     }

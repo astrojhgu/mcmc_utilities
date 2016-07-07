@@ -58,7 +58,7 @@ namespace mcmc_utilities
 	}
     }
 
-    void do_initialize(size_t n) override
+    void do_init_value(size_t n) override
     {
       this->set_value(n,this->parent(n));
     }

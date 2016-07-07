@@ -57,8 +57,8 @@ namespace mcmc_utilities
 
     size_t num_of_observed()const
     {
-      return std::accumulate(observed.begin(),
-			     observed.end(),
+      return std::accumulate(std::begin(observed),
+			     std::end(observed),
 			     0,
 			     [](int x1,int x2){return x1+x2;});
     }
@@ -132,7 +132,7 @@ namespace mcmc_utilities
 	  
 	  if(xprev<xrange.first||xprev>xrange.second)
 	    {
-	      this->initialize(i);
+	      this->init_value(i);
 	      xprev=this->value(i);
 	    }
 	  
