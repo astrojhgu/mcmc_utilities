@@ -1,7 +1,7 @@
 #ifndef LT_NODE_HPP
 #define LT_NODE_HPP
 
-#include <core/cached_dtm_node.hpp>
+#include <core/tp_aware_dtm_node.hpp>
 #include <core/error_handler.hpp>
 #include <math/functions.hpp>
 #include <helper/node_counter.hpp>
@@ -15,11 +15,11 @@ namespace mcmc_utilities
 {
   template <typename T,template <typename TE> class T_vector>
   class lt_node
-    :public cached_dtm_node<T,T_vector>
+    :public tp_aware_dtm_node<T,T_vector>
   {
   public:
     lt_node()
-      :cached_dtm_node<T,T_vector>(2,1)
+      :tp_aware_dtm_node<T,T_vector>(2,1)
     {}
 
     T do_calc(size_t idx,const T_vector<T>& parent)const override
@@ -57,11 +57,11 @@ namespace mcmc_utilities
 
   template <typename T,template <typename TE> class T_vector>
   class le_node
-    :public cached_dtm_node<T,T_vector>
+    :public tp_aware_dtm_node<T,T_vector>
   {
   public:
     le_node()
-      :cached_dtm_node<T,T_vector>(2,1)
+      :tp_aware_dtm_node<T,T_vector>(2,1)
     {}
 
     T do_calc(size_t idx,const T_vector<T>& parent)const override
@@ -100,11 +100,11 @@ namespace mcmc_utilities
 
   template <typename T,template <typename TE> class T_vector>
   class gt_node
-    :public cached_dtm_node<T,T_vector>
+    :public tp_aware_dtm_node<T,T_vector>
   {
   public:
     gt_node()
-      :cached_dtm_node<T,T_vector>(2,1)
+      :tp_aware_dtm_node<T,T_vector>(2,1)
     {}
 
     T do_calc(size_t idx,const T_vector<T>& parent)const override
@@ -143,11 +143,11 @@ namespace mcmc_utilities
 
   template <typename T,template <typename TE> class T_vector>
   class ge_node
-    :public cached_dtm_node<T,T_vector>
+    :public tp_aware_dtm_node<T,T_vector>
   {
   public:
     ge_node()
-      :cached_dtm_node<T,T_vector>(2,1)
+      :tp_aware_dtm_node<T,T_vector>(2,1)
     {}
 
     T do_calc(size_t idx,const T_vector<T>& parent)const override
@@ -185,11 +185,11 @@ namespace mcmc_utilities
 
   template <typename T,template <typename TE> class T_vector>
   class eq_node
-    :public cached_dtm_node<T,T_vector>
+    :public tp_aware_dtm_node<T,T_vector>
   {
   public:
     eq_node()
-      :cached_dtm_node<T,T_vector>(2,1)
+      :tp_aware_dtm_node<T,T_vector>(2,1)
     {}
 
     T do_calc(size_t idx,const T_vector<T>& parent)const override

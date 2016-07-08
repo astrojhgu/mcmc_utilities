@@ -1,7 +1,7 @@
 #ifndef LOG10_NODE_HPP
 #define LOG10_NODE_HPP
 
-#include <core/cached_dtm_node.hpp>
+#include <core/tp_aware_dtm_node.hpp>
 #include <math/functions.hpp>
 #include <helper/node_counter.hpp>
 #include <memory>
@@ -14,11 +14,11 @@ namespace mcmc_utilities
 {
   template <typename T,template <typename TE> class T_vector>
   class log10_node
-    :public cached_dtm_node<T,T_vector>
+    :public tp_aware_dtm_node<T,T_vector>
   {
   public:
     log10_node()
-      :cached_dtm_node<T,T_vector>(1,1)
+      :tp_aware_dtm_node<T,T_vector>(1,1)
     {}
 
     T do_calc(size_t idx,const T_vector<T>& parent)const override

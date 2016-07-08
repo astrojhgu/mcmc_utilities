@@ -7,6 +7,7 @@
 #include <stack>
 #include <memory>
 #include <vector>
+#include <set>
 #include <list>
 #include <map>
 
@@ -21,10 +22,11 @@ namespace mcmc_utilities
   template <typename T,template <typename TE> class T_vector>
   class node
   {
-    //protected:
-  public:
+  protected:
+    //public:
     std::list<stochastic_node<T,T_vector>* > stochastic_children;
     std::list<deterministic_node<T,T_vector>* > deterministic_children;
+    std::set<stochastic_node<T,T_vector>* > reduced_stochastic_children;
     T_vector<std::pair<node<T,T_vector>*,size_t> > parents;
     size_t ndims;
     T_vector<int> initialized;
@@ -32,7 +34,10 @@ namespace mcmc_utilities
   public:
     node(size_t nparents,size_t ndim1)
       :parents(nparents),ndims(ndim1),initialized(ndim1)
-    {}
+    {
+      std::fill(std::begin(parents),std::end(parents),
+		std::pair<node<T,T_vector>*,size_t>(nullptr,0));
+    }
     
     node()=delete;
     node(const node<T,T_vector>& rhs)=delete;
@@ -56,8 +61,57 @@ namespace mcmc_utilities
       set_element(initialized,n,i);
     }
 
+    std::set<stochastic_node<T,T_vector>* > enumerate_stochastic_children()const
+    {
+#if 0
+      std::set<stochastic_node<T,T_vector>* > result;
+      result.insert(this->stochastic_children.begin(),this->stochastic_children.end());
+      for(auto& p:this->deterministic_children)
+	{
+	  auto c=p->enumerate_stochastic_children();
+	  result.insert(c.begin(),c.end());
+	}
+      return result;
+#else
+      std::set<stochastic_node<T,T_vector>* > result;
+      result.insert(this->stochastic_children.begin(),this->stochastic_children.end());
+      
+      std::stack<const deterministic_node<T,T_vector>*> node_stack;
+      std::stack<typename std::list<deterministic_node<T,T_vector>* >::const_iterator> current_node_stack;
+      
+      for(auto& p:deterministic_children)
+	{
+	  node_stack.push(p);
+	  current_node_stack.push(node_stack.top()->deterministic_children.begin());
+	  for(;;)
+	    {
+	      if(current_node_stack.top()==node_stack.top()->deterministic_children.end())
+		{
+		  for(auto& p : node_stack.top()->stochastic_children)
+		    {
+		      result.insert(p);
+		    }
+		  node_stack.pop();
+		  current_node_stack.pop();
+		  if(node_stack.empty())
+		    {
+		      break;
+		    }
+		}
+	      else
+		{
+		  node_stack.push(*(current_node_stack.top()++));
+		  current_node_stack.push(node_stack.top()->deterministic_children.begin());
+		}
+	    }
+	}
+      return result;
+#endif
+    }
+    
     void freeze_topology()
     {
+      reduced_stochastic_children=enumerate_stochastic_children();
       do_freeze_topology();
     }
 
@@ -113,55 +167,13 @@ namespace mcmc_utilities
 
     T log_likelihood()const
     {
-#ifndef USE_NON_RECURSIVE
       T result=static_cast<T>(0);
-      for(auto& p : stochastic_children)
+      for(auto& p : reduced_stochastic_children)
 	{
 	  result+=p->log_prob();
 	}
-      for(auto& p:deterministic_children)
-	{
-	  result+=p->log_likelihood();
-	}
-      return result;
-#else
-      T result=static_cast<T>(0);
-      for(auto& p : stochastic_children)
-	{
-	  result+=p->log_prob();
-	}
-
-      std::stack<const deterministic_node<T,T_vector>*> node_stack;
-      std::stack<typename std::list<deterministic_node<T,T_vector>* >::const_iterator> current_node_stack;
       
-      for(auto& p:deterministic_children)
-	{
-	  node_stack.push(p);
-	  current_node_stack.push(node_stack.top()->deterministic_children.begin());
-	  for(;;)
-	    {
-	      if(current_node_stack.top()==node_stack.top()->deterministic_children.end())
-		{
-		  for(auto& p : node_stack.top()->stochastic_children)
-		    {
-		      result+=p->log_prob();
-		    }
-		  node_stack.pop();
-		  current_node_stack.pop();
-		  if(node_stack.empty())
-		    {
-		      break;
-		    }
-		}
-	      else
-		{
-		  node_stack.push(*(current_node_stack.top()++));
-		  current_node_stack.push(node_stack.top()->deterministic_children.begin());
-		}
-	    }
-	}
       return result;
-#endif
     }
 
     void connect_to_parent(node<T,T_vector>* prhs,size_t n,size_t idx)
@@ -174,7 +186,14 @@ namespace mcmc_utilities
 	{
 	  throw parent_num_mismatch();
 	}
-      do_connect_to_parent(prhs,n,idx);
+      if(get_element(parents,n).first==nullptr)
+	{
+	  do_connect_to_parent(prhs,n,idx);
+	}
+      else
+	{
+	  throw parent_already_connected();
+	}
     }
 
     void add_stochastic_child(stochastic_node<T,T_vector>* prhs)

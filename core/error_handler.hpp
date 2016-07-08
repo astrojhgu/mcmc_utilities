@@ -145,6 +145,14 @@ namespace mcmc_utilities
     {}    
   };
 
+  class parent_already_connected
+    :public mcmc_exception
+  {
+  public:
+    parent_already_connected()
+      :mcmc_exception("parent alread connected")
+    {}
+  };
 
   class parent_num_mismatch
     :public mcmc_exception

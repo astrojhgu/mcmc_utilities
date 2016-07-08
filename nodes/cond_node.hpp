@@ -1,7 +1,7 @@
 #ifndef COND_NODE_HPP
 #define COND_NODE_HPP
 
-#include <core/cached_dtm_node.hpp>
+#include <core/tp_aware_dtm_node.hpp>
 #include <core/error_handler.hpp>
 #include <math/functions.hpp>
 #include <helper/node_counter.hpp>
@@ -15,11 +15,11 @@ namespace mcmc_utilities
 {
   template <typename T,template <typename TE> class T_vector>
   class cond_node
-    :public cached_dtm_node<T,T_vector>
+    :public tp_aware_dtm_node<T,T_vector>
   {
   public:
     cond_node()
-      :cached_dtm_node<T,T_vector>(3,1)
+      :tp_aware_dtm_node<T,T_vector>(3,1)
     {}
 
     T do_calc(size_t idx,const T_vector<T>& parent)const override

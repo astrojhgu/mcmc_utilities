@@ -1,6 +1,6 @@
 #ifndef ARITHMETIC_NODE
 #define ARITHMETIC_NODE
-#include <core/cached_dtm_node.hpp>
+#include <core/tp_aware_dtm_node.hpp>
 #include <helper/node_counter.hpp>
 #include <helper/vnode.hpp>
 #include <memory>
@@ -14,11 +14,11 @@ namespace mcmc_utilities
   /////add////
   template <typename T,template <typename TE> class T_vector>
   class add_node
-    :public cached_dtm_node<T,T_vector>
+    :public tp_aware_dtm_node<T,T_vector>
   {
   public:
     add_node()
-      :cached_dtm_node<T,T_vector>(2,1)
+      :tp_aware_dtm_node<T,T_vector>(2,1)
     {}
     
     T do_calc(size_t idx,const T_vector<T>& parent)const override
@@ -89,11 +89,11 @@ namespace mcmc_utilities
   /////sub////
   template <typename T,template <typename TE> class T_vector>
   class sub_node
-    :public cached_dtm_node<T,T_vector>
+    :public tp_aware_dtm_node<T,T_vector>
   {
   public:
     sub_node()
-      :cached_dtm_node<T,T_vector>(2,1)
+      :tp_aware_dtm_node<T,T_vector>(2,1)
     {}
     
     T do_calc(size_t idx,const T_vector<T>& parent)const override
@@ -164,11 +164,11 @@ namespace mcmc_utilities
   /////neg////
   template <typename T,template <typename TE> class T_vector>
   class neg_node
-    :public cached_dtm_node<T,T_vector>
+    :public tp_aware_dtm_node<T,T_vector>
   {
   public:
     neg_node()
-      :cached_dtm_node<T,T_vector>(1,1)
+      :tp_aware_dtm_node<T,T_vector>(1,1)
     {}
     
     T do_calc(size_t idx,const T_vector<T>& parent)const override
@@ -231,11 +231,11 @@ namespace mcmc_utilities
     /////pos////
   template <typename T,template <typename TE> class T_vector>
   class pos_node
-    :public cached_dtm_node<T,T_vector>
+    :public tp_aware_dtm_node<T,T_vector>
   {
   public:
     pos_node()
-      :cached_dtm_node<T,T_vector>(1,1)
+      :tp_aware_dtm_node<T,T_vector>(1,1)
     {}
     
     T do_calc(size_t idx,const T_vector<T>& parent)const override
@@ -299,11 +299,11 @@ namespace mcmc_utilities
   /////mul////
   template <typename T,template <typename TE> class T_vector>
   class mul_node
-    :public cached_dtm_node<T,T_vector>
+    :public tp_aware_dtm_node<T,T_vector>
   {
   public:
     mul_node()
-      :cached_dtm_node<T,T_vector>(2,1)
+      :tp_aware_dtm_node<T,T_vector>(2,1)
     {}
     
     T do_calc(size_t idx,const T_vector<T>& parent)const override
@@ -375,11 +375,11 @@ namespace mcmc_utilities
   /////div////
   template <typename T,template <typename TE> class T_vector>
   class div_node
-    :public cached_dtm_node<T,T_vector>
+    :public tp_aware_dtm_node<T,T_vector>
   {
   public:
     div_node()
-      :cached_dtm_node<T,T_vector>(2,1)
+      :tp_aware_dtm_node<T,T_vector>(2,1)
     {}
     
     T do_calc(size_t idx,const T_vector<T>& parent)const override
@@ -452,11 +452,11 @@ namespace mcmc_utilities
   /////pow////
   template <typename T,template <typename TE> class T_vector>
   class pow_node
-    :public cached_dtm_node<T,T_vector>
+    :public tp_aware_dtm_node<T,T_vector>
   {
   public:
     pow_node()
-      :cached_dtm_node<T,T_vector>(2,1)
+      :tp_aware_dtm_node<T,T_vector>(2,1)
     {}
     
     T do_calc(size_t idx,const T_vector<T>& parent)const override

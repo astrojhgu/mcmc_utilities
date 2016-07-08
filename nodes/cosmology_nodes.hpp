@@ -1,7 +1,7 @@
 #ifndef COSMOLOGY_NODE_HPP
 #define COSMOLOGY_NODE_HPP
 
-#include <core/cached_dtm_node.hpp>
+#include <core/tp_aware_dtm_node.hpp>
 #include <math/functions.hpp>
 #include <helper/node_counter.hpp>
 #include <memory>
@@ -16,7 +16,7 @@ namespace mcmc_utilities
   ///////////luminosity distance node//////////////
   template <typename T,template <typename TE> class T_vector>
   class luminosity_distance_node
-    :public cached_dtm_node<T,T_vector>
+    :public tp_aware_dtm_node<T,T_vector>
   {
   private:
     struct parent_value_cache_t
@@ -39,7 +39,7 @@ namespace mcmc_utilities
     T value_cache;
   public:
     luminosity_distance_node()
-      :cached_dtm_node<T,T_vector>(7,1),parent_value_cache{},value_cache{}
+      :tp_aware_dtm_node<T,T_vector>(7,1),parent_value_cache{},value_cache{}
     {}
 
     T do_calc(size_t idx,const T_vector<T>& parent)const override
@@ -143,7 +143,7 @@ namespace mcmc_utilities
   ///////////asize distance node//////////////
   template <typename T,template <typename TE> class T_vector>
   class asize_distance_node
-    :public cached_dtm_node<T,T_vector>
+    :public tp_aware_dtm_node<T,T_vector>
   {
   private:
     struct parent_value_cache_t
@@ -167,7 +167,7 @@ namespace mcmc_utilities
 
   public:
     asize_distance_node()
-      :cached_dtm_node<T,T_vector>(7,1),parent_value_cache{},value_cache{}
+      :tp_aware_dtm_node<T,T_vector>(7,1),parent_value_cache{},value_cache{}
     {}
 
     T do_calc(size_t idx,const T_vector<T>& parent)const override

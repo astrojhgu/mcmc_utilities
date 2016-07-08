@@ -1,7 +1,7 @@
 #ifndef UNARY_NODE_HPP
 #define UNARY_NODE_HPP
 
-#include <core/cached_dtm_node.hpp>
+#include <core/tp_aware_dtm_node.hpp>
 #include <helper/node_counter.hpp>
 #include <memory>
 #include <utility>
@@ -13,13 +13,13 @@ namespace mcmc_utilities
 {
   template <typename T,template <typename TE> class T_vector>
   class unary_node
-    :public cached_dtm_node<T,T_vector>
+    :public tp_aware_dtm_node<T,T_vector>
   {
   private:
     std::function<T (const T&)> func;
   public:
     unary_node(const std::function<T (const T&)>& f)
-      :cached_dtm_node<T,T_vector>(1,1),func(f)
+      :tp_aware_dtm_node<T,T_vector>(1,1),func(f)
     {}
 
     T do_calc(size_t idx,const T_vector<T>& parent)const override

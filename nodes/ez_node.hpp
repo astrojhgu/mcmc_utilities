@@ -1,7 +1,7 @@
 #ifndef EZ_NODE_HPP
 #define EZ_NODE_HPP
 
-#include <core/cached_dtm_node.hpp>
+#include <core/tp_aware_dtm_node.hpp>
 #include <math/functions.hpp>
 #include <helper/node_counter.hpp>
 #include <memory>
@@ -14,11 +14,11 @@ namespace mcmc_utilities
 {
   template <typename T,template <typename TE> class T_vector>
   class ez_node
-    :public cached_dtm_node<T,T_vector>
+    :public tp_aware_dtm_node<T,T_vector>
   {
   public:
     ez_node()
-      :cached_dtm_node<T,T_vector>(6,1)
+      :tp_aware_dtm_node<T,T_vector>(6,1)
     {}
 
     T E(T z,T Omega_m,T Omega_l,T Omega_k,T Omega_rad,T w)const
