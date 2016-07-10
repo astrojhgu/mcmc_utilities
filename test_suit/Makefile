@@ -3,7 +3,8 @@ targets=test_arms.out test_coal.out  test_eff.out  test_gibbs.out  test_pf.out t
 all:$(targets)
 
 #CXX=clang++
-CXXFLAGS=-I ../ -std=c++11 -g -I ../../east/include -I ../../coscalcpp/include/ -I ../rng -O2 #-DUSE_NON_RECURSIVE
+#c++14 for std::rbegin and std::rend
+CXXFLAGS=-I ../ -std=c++14 -g -I ../../east/include -I ../../coscalcpp/include/ -I ../rng -O2
 LDFLAGS=-L ../../east/lib -least -L ../../coscalcpp/lib/ -lcoscalcpp -O2
 
 %.out :	%.o

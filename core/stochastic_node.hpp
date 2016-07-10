@@ -23,6 +23,7 @@ namespace mcmc_utilities
     T_vector<T> v;//store current value(s) of this node
     T_vector<int> observed;
     size_t current_idx;
+    
   public:
     stochastic_node(size_t nparents,const T_vector<T>& v_)
       :node<T,T_vector>(nparents,get_size(v_)),
@@ -87,6 +88,17 @@ namespace mcmc_utilities
     size_t get_current_idx()const
     {
       return current_idx;
+    }
+
+    T log_likelihood()const
+    {
+      T result=static_cast<T>(0);
+      for(auto& p : this->reduced_stochastic_children)
+	{
+	  result+=p->log_prob();
+	}
+      
+      return result;
     }
     
     T log_prob()const

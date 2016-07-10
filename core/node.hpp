@@ -26,11 +26,10 @@ namespace mcmc_utilities
     //public:
     std::list<stochastic_node<T,T_vector>* > stochastic_children;
     std::list<deterministic_node<T,T_vector>* > deterministic_children;
-    std::set<stochastic_node<T,T_vector>* > reduced_stochastic_children;
     T_vector<std::pair<node<T,T_vector>*,size_t> > parents;
     size_t ndims;
     T_vector<int> initialized;
-    
+    std::set<stochastic_node<T,T_vector>* > reduced_stochastic_children;
   public:
     node(size_t nparents,size_t ndim1)
       :parents(nparents),ndims(ndim1),initialized(ndim1)
@@ -87,10 +86,14 @@ namespace mcmc_utilities
 	    {
 	      if(current_node_stack.top()==node_stack.top()->deterministic_children.end())
 		{
+		  result.insert(std::begin(node_stack.top()->stochastic_children),
+				std::end(node_stack.top()->stochastic_children));
+#if 0
 		  for(auto& p : node_stack.top()->stochastic_children)
 		    {
 		      result.insert(p);
 		    }
+#endif
 		  node_stack.pop();
 		  current_node_stack.pop();
 		  if(node_stack.empty())
@@ -163,17 +166,6 @@ namespace mcmc_utilities
     T value(size_t idx)const
     {
       return this->do_value(idx);
-    }
-
-    T log_likelihood()const
-    {
-      T result=static_cast<T>(0);
-      for(auto& p : reduced_stochastic_children)
-	{
-	  result+=p->log_prob();
-	}
-      
-      return result;
     }
 
     void connect_to_parent(node<T,T_vector>* prhs,size_t n,size_t idx)
