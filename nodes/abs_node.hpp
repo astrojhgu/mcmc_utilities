@@ -33,6 +33,21 @@ namespace mcmc_utilities
       return std::shared_ptr<node<T,T_vector> >(new abs_node);
     }
 
+    order do_get_order(const node<T,T_vector>* pn,int n)const override
+    {
+      order o=this->get_parent_order(0,pn,n);
+      //return order{0,false,false};
+      if(o.n!=0||
+	 !o.poly)
+	{
+	  return order{0,false,false};
+	}
+      else
+	{
+	  return order{0,true,true};
+	}
+    }
+
   };
 
 

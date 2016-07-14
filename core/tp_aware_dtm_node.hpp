@@ -6,6 +6,45 @@
 
 namespace mcmc_utilities
 {
+  struct order
+  {
+    int n{0};
+    bool homo{true};
+    bool poly{true};
+    order(int _n,bool _homo,bool _poly)
+      :n(_n),
+       homo(_homo),
+       poly(_poly)
+    {}
+
+  public:
+    int get_n()const
+    {
+      return n;
+    }
+
+    bool is_homo()const
+    {
+      return homo;
+    }
+
+    bool is_poly()const
+    {
+      return poly;
+    }
+  };
+
+  std::ostream& operator<<(std::ostream& os,const order& o)
+  {
+    os<<"("
+      <<o.n
+      <<","
+      <<(o.is_homo()?std::string("homo"):std::string("non-homo"))
+      <<","
+      <<(o.is_poly()?std::string("poly"):std::string("non-poly"))<<")";
+    return os;
+  }
+
   template <typename T,template <typename TE> class T_vector>
   class tp_aware_dtm_node
     :public cached_dtm_node<T,T_vector>
@@ -26,6 +65,31 @@ namespace mcmc_utilities
     tp_aware_dtm_node<T,T_vector>& operator=(const tp_aware_dtm_node<T,T_vector>&)=delete;
 
 
+  public:
+    order get_order(const node<T,T_vector>* pn,int n)const
+    {
+      return do_get_order(pn,n);
+    }
+
+    order get_parent_order(int m,const node<T,T_vector>* pn,int n)const
+    {
+      auto p=get_element(this->parents,m).first;
+      if(p==pn)
+	{
+	  return order{get_element(this->parents,m).second==n?1:0,true,true};
+	}
+      
+      auto x= dynamic_cast<const tp_aware_dtm_node<T,T_vector>*>(get_element(this->parents,m).first);
+      if(x==nullptr)
+	{
+	  return order{0,true,true};
+	}
+      else
+	{
+	  return x->get_order(pn,n);
+	}
+    }
+    
   protected:
     std::set<std::pair<stochastic_node<T,T_vector>*,size_t> > enumerate_stochastic_parents()const
     {
@@ -51,6 +115,9 @@ namespace mcmc_utilities
 	}
       return result;
     }
+
+  private:
+    virtual order do_get_order(const node<T,T_vector>* pn,int n)const=0;
   };
 }
 

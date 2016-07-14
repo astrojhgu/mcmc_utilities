@@ -453,20 +453,18 @@ namespace mcmc_utilities
       return result;
     }
 
-    const node<T,T_vector>* get_node(const T_tag& t)const
+    //const node<T,T_vector>* get_node(const T_tag& t)const
+    std::weak_ptr<node<T,T_vector> > get_node(const T_tag& t)const
     {
       auto i=node_map.find(t);
       if(i==node_map.end())
 	{
-	  return nullptr;
+	  std::ostringstream oss;
+	  oss<<t;
+	  throw node_not_found(oss.str());
 	}
-      else
-	{
-	  return i->second.get();
-	}
+      return std::weak_ptr<node<T,T_vector> >(i->second);
     }
-      
-
   };
 }
 

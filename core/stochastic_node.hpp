@@ -125,10 +125,9 @@ namespace mcmc_utilities
       do_sample(urand);
     }
 
-  private:
-    virtual void do_sample(base_urand<T>& urand)
+  public:
+    void default_sample(base_urand<T>& urand)
     {
-      //constexpr size_t nsamp=10;
       for(size_t i=0;i<this->num_of_dims();++i)
 	{
 	  if(is_observed(i))
@@ -163,6 +162,12 @@ namespace mcmc_utilities
 	  
 	  this->set_value(i,xprev);
 	}
+    }
+    
+  private:
+    virtual void do_sample(base_urand<T>& urand)
+    {
+      default_sample(urand);
     }
     
     virtual T do_log_prob()const=0;

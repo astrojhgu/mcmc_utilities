@@ -93,6 +93,21 @@ namespace mcmc_utilities
     {
       return std::shared_ptr<node<T,T_vector> >(new luminosity_distance_node);
     }
+
+    order do_get_order(const node<T,T_vector>* pn,int n)const override
+    {
+      for (int i=0;i<this->num_of_parents();++i)
+	{
+	  order o=this->get_parent_order(i,pn,n);
+	  if(o.n!=0||
+	     !o.poly)
+	    {
+	      return order{0,false,false};
+	    }
+	}
+      return order{0,true,true};
+    }
+
   };
 
 
@@ -211,6 +226,21 @@ namespace mcmc_utilities
     {
       return std::shared_ptr<node<T,T_vector> >(new asize_distance_node);
     }
+
+    order do_get_order(const node<T,T_vector>* pn,int n)const override
+    {
+      for (int i=0;i<this->num_of_parents();++i)
+	{
+	  order o=this->get_parent_order(i,pn,n);
+	  if(o.n!=0||
+	     !o.poly)
+	    {
+	      return order{0,false,false};
+	    }
+	}
+      return order{0,true,true};
+    }
+
 
   };
 

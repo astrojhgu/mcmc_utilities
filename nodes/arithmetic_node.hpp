@@ -30,6 +30,20 @@ namespace mcmc_utilities
     {
       return std::shared_ptr<node<T,T_vector> >(new add_node);
     }
+    
+    order do_get_order(const node<T,T_vector>* pn,int n)const override
+    {
+      order o1=this->get_parent_order(0,pn,n);
+      order o2=this->get_parent_order(1,pn,n);
+      if(o1.n>1||o1.n<0||
+	 !o1.poly||
+	 o2.n>1||o1.n<0||
+	 !o2.poly)
+	{
+	  return order{0,false,false};
+	}
+      return order{std::max(o1.n,o2.n),(o1.n==o2.n&&o1.homo&&o2.homo),true};
+    }
   };
 
   template <typename T,template <typename TE> class T_vector>
@@ -105,6 +119,21 @@ namespace mcmc_utilities
     {
       return std::shared_ptr<node<T,T_vector> >(new sub_node);
     }
+
+    order do_get_order(const node<T,T_vector>* pn,int n)const override
+    {
+      order o1=this->get_parent_order(0,pn,n);
+      order o2=this->get_parent_order(1,pn,n);
+      if(o1.n>1||o1.n<0||
+	 !o1.poly||
+	 o2.n>1||o1.n<0||
+	 !o2.poly)
+	{
+	  return order{0,false,false};
+	}
+      return order{std::max(o1.n,o2.n),(o1.n==o2.n&&o1.homo&&o2.homo),true};
+    }
+
   };
 
   template <typename T,template <typename TE> class T_vector>
@@ -181,6 +210,11 @@ namespace mcmc_utilities
       return std::shared_ptr<node<T,T_vector> >(new neg_node);
     }
 
+    order do_get_order(const node<T,T_vector>* pn,int n)const override
+    {
+      order o=this->get_parent_order(0,pn,n);
+      return o;
+    }
   };
 
   template <typename T,template <typename TE> class T_vector>
@@ -246,6 +280,12 @@ namespace mcmc_utilities
     std::shared_ptr<node<T,T_vector> > do_clone()const override
     {
       return std::shared_ptr<node<T,T_vector> >(new pos_node);
+    }
+
+    order do_get_order(const node<T,T_vector>* pn,int n)const override
+    {
+      order o=this->get_parent_order(0,pn,n);
+      return o;
     }
 
   };
@@ -316,6 +356,18 @@ namespace mcmc_utilities
       return std::shared_ptr<node<T,T_vector> >(new mul_node);
     }
 
+    order do_get_order(const node<T,T_vector>* pn,int n)const override
+    {
+      order o1=this->get_parent_order(0,pn,n);
+      order o2=this->get_parent_order(1,pn,n);
+      
+      if(!o1.poly||!o2.poly)
+	{
+	  return order{0,false,false};
+	}
+
+      return order{o1.n+o2.n,(o1.homo&&o2.homo),true};
+    }
   };
   
   template <typename T,template <typename TE> class T_vector>
@@ -392,6 +444,25 @@ namespace mcmc_utilities
       return std::shared_ptr<node<T,T_vector> >(new div_node);
     }
 
+    order do_get_order(const node<T,T_vector>* pn,int n)const override
+    {
+      order o1=this->get_parent_order(0,pn,n);
+      order o2=this->get_parent_order(1,pn,n);
+      
+      if(!o1.poly||!o2.poly)
+	{
+	  return order{0,false,false};
+	}
+
+      if(o1.homo&&o2.homo)
+	{
+	  return order{o1.n-o2.n,true,true};
+	}
+      else
+	{
+	  return order{o1.n-o2.n,false,false};
+	}
+    }
   };
 
   template <typename T,template <typename TE> class T_vector>
@@ -469,6 +540,19 @@ namespace mcmc_utilities
       return std::shared_ptr<node<T,T_vector> >(new pow_node);
     }
 
+    order do_get_order(const node<T,T_vector>* pn,int n)const override
+    {
+      order o1=this->get_parent_order(0,pn,n);
+      order o2=this->get_parent_order(1,pn,n);
+      
+      if(!o1.poly||o1.n!=0||
+	 !o2.poly||o2.n!=0)
+	{
+	  return order{0,false,false};
+	}
+      return order{0,true,true};
+    }
+    
   };
 
   template <typename T,template <typename TE> class T_vector>
@@ -491,7 +575,6 @@ namespace mcmc_utilities
     {
       return std::string("deterministic");
     }
-
   };
   
   

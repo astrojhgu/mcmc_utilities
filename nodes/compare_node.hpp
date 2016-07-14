@@ -32,6 +32,19 @@ namespace mcmc_utilities
       auto p=new lt_node();
       return std::shared_ptr<node<T,T_vector> >(p);
     }
+
+    order do_get_order(const node<T,T_vector>* pn,int n)const override
+    {
+      order o1=this->get_parent_order(0,pn,n);
+      order o2=this->get_parent_order(1,pn,n);
+      
+      if(!o1.poly||o1.n!=0||
+	 !o2.poly||o2.n!=0)
+	{
+	  return order{0,false,false};
+	}
+      return order{0,true,true};
+    }
   };
 
   template <typename T,template <typename TE> class T_vector>
@@ -73,6 +86,19 @@ namespace mcmc_utilities
     {
       auto p=new le_node();
       return std::shared_ptr<node<T,T_vector> >(p);
+    }
+
+    order do_get_order(const node<T,T_vector>* pn,int n)const override
+    {
+      order o1=this->get_parent_order(0,pn,n);
+      order o2=this->get_parent_order(1,pn,n);
+      
+      if(!o1.poly||o1.n!=0||
+	 !o2.poly||o2.n!=0)
+	{
+	  return order{0,false,false};
+	}
+      return order{0,true,true};
     }
   };
 
@@ -117,6 +143,19 @@ namespace mcmc_utilities
       auto p=new gt_node();
       return std::shared_ptr<node<T,T_vector> >(p);
     }
+
+    order do_get_order(const node<T,T_vector>* pn,int n)const override
+    {
+      order o1=this->get_parent_order(0,pn,n);
+      order o2=this->get_parent_order(1,pn,n);
+      
+      if(!o1.poly||o1.n!=0||
+	 !o2.poly||o2.n!=0)
+	{
+	  return order{0,false,false};
+	}
+      return order{0,true,true};
+    }
   };
 
 
@@ -160,6 +199,19 @@ namespace mcmc_utilities
       auto p=new ge_node();
       return std::shared_ptr<node<T,T_vector> >(p);
     }
+
+    order do_get_order(const node<T,T_vector>* pn,int n)const override
+    {
+      order o1=this->get_parent_order(0,pn,n);
+      order o2=this->get_parent_order(1,pn,n);
+      
+      if(!o1.poly||o1.n!=0||
+	 !o2.poly||o2.n!=0)
+	{
+	  return order{0,false,false};
+	}
+      return order{0,true,true};
+    }
   };
 
   template <typename T,template <typename TE> class T_vector>
@@ -201,6 +253,19 @@ namespace mcmc_utilities
     {
       auto p=new eq_node();
       return std::shared_ptr<node<T,T_vector> >(p);
+    }
+
+    order do_get_order(const node<T,T_vector>* pn,int n)const override
+    {
+      order o1=this->get_parent_order(0,pn,n);
+      order o2=this->get_parent_order(1,pn,n);
+      
+      if(!o1.poly||o1.n!=0||
+	 !o2.poly||o2.n!=0)
+	{
+	  return order{0,false,false};
+	}
+      return order{0,true,true};
     }
   };
 

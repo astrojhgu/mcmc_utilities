@@ -32,6 +32,23 @@ namespace mcmc_utilities
       auto p=new cond_node();
       return std::shared_ptr<node<T,T_vector> >(p);
     }
+
+    order do_get_order(const node<T,T_vector>* pn,int n)const override
+    {
+      order o=this->get_parent_order(0,pn,n);
+      
+      //return order{0,false,false};
+      if(o.n!=0||
+	 !o.poly)
+	{
+	  return order{0,false,false};
+	}
+      else
+	{
+	  return order{0,true,true};
+	}
+    }
+
   };
 
   template <typename T,template <typename TE> class T_vector>
