@@ -38,7 +38,7 @@ namespace mcmc_utilities
 
     void do_connect_to_parent(node<T,T_vector>* rhs,size_t n,size_t idx) override final
     {
-      set_element(this->parents,n,std::make_pair(rhs,idx));
+      this->set_parent(n,std::make_pair(rhs,idx));
       if(n<psn->num_of_parents())
 	{
 	  psn->connect_to_parent(rhs,n,idx);

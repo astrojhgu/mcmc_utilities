@@ -22,7 +22,7 @@ namespace mcmc_utilities
   template <typename T,template <typename TE> class T_vector>
   class node
   {
-  protected:
+  private:
     //public:
     std::list<stochastic_node<T,T_vector>* > stochastic_children;
     std::list<deterministic_node<T,T_vector>* > deterministic_children;
@@ -118,6 +118,16 @@ namespace mcmc_utilities
       do_freeze_topology();
     }
 
+    auto get_stochastic_children_iterator()const
+    {
+      //std::shared_ptr<typename std::set<stochastic_node<T,T_vector>* >::iterator> p;
+      auto p=std::make_shared<typename std::set<stochastic_node<T,T_vector>* >::const_iterator>();
+      *p=const_cast<std::set<stochastic_node<T,T_vector>* >&>(reduced_stochastic_children).begin();
+      
+      return [p,this]()->stochastic_node<T,T_vector>* {
+	return (*p)==this->reduced_stochastic_children.end()?nullptr:*((*p)++);};
+    }
+
     void init_value()
     {
       for(size_t i=0;i<ndims;++i)
@@ -188,6 +198,11 @@ namespace mcmc_utilities
 	}
     }
 
+    void set_parent(size_t n,const std::pair<node<T,T_vector>*,size_t>& p)
+    {
+      set_element(this->parents,n,p);
+    }
+    
     void add_stochastic_child(stochastic_node<T,T_vector>* prhs)
     {
       push_back(stochastic_children,prhs);

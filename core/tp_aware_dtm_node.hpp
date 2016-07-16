@@ -73,13 +73,14 @@ namespace mcmc_utilities
 
     order get_parent_order(int m,const node<T,T_vector>* pn,int n)const
     {
-      auto p=get_element(this->parents,m).first;
+      //auto p=get_element(this->parents,m).first;
+      auto p=this->get_parent(m).first;
       if(p==pn)
 	{
-	  return order{get_element(this->parents,m).second==n?1:0,true,true};
+	  return order{this->get_parent(m).second==n?1:0,true,true};
 	}
       
-      auto x= dynamic_cast<const tp_aware_dtm_node<T,T_vector>*>(get_element(this->parents,m).first);
+      auto x= dynamic_cast<const tp_aware_dtm_node<T,T_vector>*>(this->get_parent(m).first);
       if(x==nullptr)
 	{
 	  return order{0,true,true};
@@ -94,8 +95,10 @@ namespace mcmc_utilities
     std::set<std::pair<stochastic_node<T,T_vector>*,size_t> > enumerate_stochastic_parents()const
     {
       std::set<std::pair<stochastic_node<T,T_vector>*,size_t> > result;
-      for(auto& p:this->parents)
+      for(size_t i=0;i<this->num_of_parents;++i)
+      //for(auto& p:this->parents)
 	{
+	  auto& p=this->get_parent(i).first;
 	  auto ps=dynamic_cast<stochastic_node<T,T_vector>*>(p.first);
 	  auto pd=dynamic_cast<deterministic_node<T,T_vector>*>(p.first);
 	  

@@ -24,7 +24,8 @@ namespace mcmc_utilities
 
     void do_connect_to_parent(node<T,T_vector>* rhs,size_t n,size_t idx) override
     {
-      set_element(this->parents,n,std::make_pair(rhs,idx));
+      //set_element(this->parents,n,std::make_pair(rhs,idx));
+      this->set_parent(n,std::make_pair(rhs,idx));
     }
 
     std::shared_ptr<node<T,T_vector> > do_clone()const override
@@ -35,7 +36,7 @@ namespace mcmc_utilities
 
     T do_value(size_t idx)const override
     {
-      return get_element(this->parents,0).first->value(idx);
+      return this->get_parent(0).first->value(idx);
     }
   };
 
@@ -77,13 +78,13 @@ namespace mcmc_utilities
 	{
 	  throw node_name_already_used();
 	}
-      if(pn->num_of_parents()!=get_size(parents))
+      if(pn->num_of_parents()!=this->num_of_parents())
 	{
 	  throw parent_num_mismatch();
 	}
-      for(size_t i=0;i<get_size(parents);++i)
+      for(size_t i=0;i<this->num_of_parents();++i)
 	{
-	  auto iter=elements.find(get_element(parents,i).first);
+	  auto iter=elements.find(this->get_parent(i).first);
 	  if(iter==elements.end())
 	    {
 	      if(get_size(param_list)==this->num_of_parents())
@@ -96,7 +97,7 @@ namespace mcmc_utilities
 	    }
 	  else
 	    {
-	      pn->connect_to_parent(iter->second.get(),i,get_element(parents,i).second);
+	      pn->connect_to_parent(iter->second.get(),i,this->get_parent(i).second);
 	    }
 	}
       get_element(elements,tag)=pn;
@@ -116,7 +117,7 @@ namespace mcmc_utilities
 
     void do_connect_to_parent(node<T,T_vector>* rhs,size_t n,size_t idx) override
     {
-      set_element(this->parents,n,std::make_pair(rhs,idx));
+      this->set_parent(n,std::make_pair(rhs,idx));
       rhs->add_deterministic_child(this);
             
       get_element(param_list,n)->connect_to_parent(rhs,0,idx);

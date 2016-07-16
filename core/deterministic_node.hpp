@@ -43,7 +43,7 @@ namespace mcmc_utilities
   private:
     void do_connect_to_parent(node<T,T_vector>*  rhs,size_t n,size_t idx) override
     {
-      set_element(this->parents,n,std::make_pair(rhs,idx));
+      this->set_parent(n,std::make_pair(rhs,idx));
       rhs->add_deterministic_child(this);
     }
 
@@ -53,7 +53,7 @@ namespace mcmc_utilities
     {
       if(use_system_stack())
 	{
-	  T_vector<T> p(get_size(this->parents));
+	  T_vector<T> p(this->num_of_parents());
 	  for(size_t i=0;i<get_size(p);++i)
 	    {
 	      set_element(p,i,this->parent(i));
@@ -70,10 +70,10 @@ namespace mcmc_utilities
 	  leaf_num_stack.push(0);
 	  for(;;)
 	    {
-	      size_t nparents=get_size(node_stack.top().first->parents);
+	      size_t nparents=node_stack.top().first->num_of_parents();
 	      if(leaf_num_stack.top()==nparents)
 		{
-		  T_vector<T> p(get_size(node_stack.top().first->parents));
+		  T_vector<T> p(node_stack.top().first->num_of_parents());
 		  
 		  for(auto i=std::rbegin(p);i!=std::rend(p);++i)
 		    {
@@ -93,8 +93,9 @@ namespace mcmc_utilities
 		}
 	      else
 		{
-		  auto ptr_leaf=get_element(node_stack.top().first->parents,leaf_num_stack.top()).first;
-		  size_t n=get_element(node_stack.top().first->parents,leaf_num_stack.top()).second;
+		  //auto ptr_leaf=get_element(node_stack.top().first->parents,leaf_num_stack.top()).first;
+		  auto ptr_leaf=(node_stack.top().first->get_parent(leaf_num_stack.top())).first;
+		  size_t n=(node_stack.top().first->get_parent(leaf_num_stack.top())).second;
 		  auto ptr_det_leaf=dynamic_cast<const deterministic_node<T,T_vector>*>(ptr_leaf);
 		  ++leaf_num_stack.top();
 		  if(ptr_det_leaf!=nullptr)

@@ -93,7 +93,10 @@ namespace mcmc_utilities
     T log_likelihood()const
     {
       T result=static_cast<T>(0);
-      for(auto& p : this->reduced_stochastic_children)
+      auto iter=this->get_stochastic_children_iterator();
+      //for(auto& p : this->reduced_stochastic_children)
+      //stochastic_node<T,T_vector>* p;
+      while(auto p=iter())
 	{
 	  result+=p->log_prob();
 	}
@@ -180,7 +183,8 @@ namespace mcmc_utilities
     
     void do_connect_to_parent(node<T,T_vector>*  rhs,size_t n,size_t idx) override
     {
-      set_element(this->parents,n,std::make_pair(rhs,idx));
+      //set_element(this->parents,n,std::make_pair(rhs,idx));
+      this->set_parent(n,std::make_pair(rhs,idx));
       rhs->add_stochastic_child(this);
     }
 

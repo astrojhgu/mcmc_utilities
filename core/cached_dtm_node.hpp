@@ -28,7 +28,7 @@ namespace mcmc_utilities
 
     T do_value(size_t idx)const override
     {
-      T_vector<T> p(get_size(this->parents));
+      T_vector<T> p(this->num_of_parents());
       bool parents_changed=false||(get_size(p)==0);
       for(size_t i=0;i<get_size(p);++i)
 	{
