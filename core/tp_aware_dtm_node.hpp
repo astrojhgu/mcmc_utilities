@@ -34,7 +34,7 @@ namespace mcmc_utilities
     }
   };
 
-  std::ostream& operator<<(std::ostream& os,const order& o)
+  static std::ostream& operator<<(std::ostream& os,const order& o)
   {
     os<<"("
       <<o.n
