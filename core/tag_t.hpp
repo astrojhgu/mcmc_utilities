@@ -119,7 +119,7 @@ namespace mcmc_utilities
 
   
 
-  std::ostream& operator<<(std::ostream& os,const tag_t& t)
+  static std::ostream& operator<<(std::ostream& os,const tag_t& t)
   {
     os<<t.name();
     if(t.is_array())
