@@ -1,6 +1,7 @@
 #ifndef MCMC_TRAITS
 #define MCMC_TRAITS
 #define MCMC_HEADER
+#include <cmath>
 #include <cstddef>
 namespace mcmc_utilities
 {
@@ -126,6 +127,30 @@ namespace mcmc_utilities
   inline Tl& mcmc_assign(Tl& lhs,const Tr& rhs)
   {
     return (lhs=rhs);
+  }
+
+  template <typename T>
+  constexpr T C_ONE()
+  {
+    return static_cast<T>(1);
+  }
+
+  template <typename T>
+  constexpr T C_ZERO()
+  {
+    return static_cast<T>(0);
+  }
+
+  template <typename T,unsigned int N>
+  constexpr T C_N2T()
+  {
+    return static_cast<T>(N);
+  }
+  
+  template <typename T>
+  constexpr T C_NAN()
+  {
+    return static_cast<T>(std::nan(""));
   }
 }
 

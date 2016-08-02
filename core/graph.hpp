@@ -164,7 +164,7 @@ namespace mcmc_utilities
 		  if(verbose_level>=1)
 		    {		  
 		      std::cerr<<"sampling "<<n+1<<"-th node "<<get_tag(p)<<std::endl;
-		  }
+		    }
 		  p_current=p;
 		  p->sample(rnd);
 		  ++n;

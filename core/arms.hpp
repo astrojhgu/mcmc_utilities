@@ -63,7 +63,7 @@ namespace mcmc_utilities
     const T& y1=p1.second;
     const T& y2=p2.second;
     //std::cerr<<x1<<" "<<y1<<" "<<x2<<" "<<y2<<std::endl;
-    T result=static_cast<T>(0);
+    T result=C_ZERO<T>();
     if(x1==x2)
       {
 	//result=0;
@@ -71,13 +71,13 @@ namespace mcmc_utilities
     else if(!std::isinf(y1)&&!std::isinf(y2))
       {
 	const T k=(y2-y1)/(x2-x1);
-	if(k==static_cast<T>(0))
+	if(k==C_ZERO<T>())
 	  {
 	    result=std::exp(y1)*(x-x1);
 	  }
 	else
 	  {
-	    result=(std::exp(k*(x-x1))-static_cast<T>(1))*std::exp(y1)/k;
+	    result=(std::exp(k*(x-x1))-C_ONE<T>())*std::exp(y1)/k;
 	    if(std::isnan(result))
 	      {
 		result=(std::exp(k*(x-x1)+y1)-std::exp(y1))/k;
@@ -97,7 +97,7 @@ namespace mcmc_utilities
       }
     else
       {
-	result=static_cast<T>(0);
+	result=C_ZERO<T>();
       }
     
     if(std::isnan(result))
@@ -128,7 +128,7 @@ namespace mcmc_utilities
 	    assert(0);
 	    throw nan_or_inf();
 	  }
-	result=std::max(static_cast<T>(0),result);
+	result=std::max(C_ZERO<T>(),result);
 	assert(!std::isnan(result));
 	//assert(!std::isinf(result));
 	return result;
@@ -154,15 +154,15 @@ namespace mcmc_utilities
     const T& y1=p1.second;
     const T& y2=p2.second;
     
-    T result=static_cast<T>(0);
+    T result=C_ZERO<T>();
     T k=(y2-y1)/(x2-x1);
-    if(x1==x2||Z==static_cast<T>(0))
+    if(x1==x2||Z==C_ZERO<T>())
       {
 	result=x1;
       }
     else
       {	
-	if(k==static_cast<T>(0))
+	if(k==C_ZERO<T>())
 	  {
 	    result= x1+Z*std::exp(-y1);
 	    if(std::isinf(result))
@@ -172,13 +172,13 @@ namespace mcmc_utilities
 	  }
 	else
 	  {
-	    T U=static_cast<T>(1)+k*Z*std::exp(-y1);
+	    T U=C_ONE<T>()+k*Z*std::exp(-y1);
 	    
 	    
 	    if(!std::isinf(U))
 	      {
-		T logU=static_cast<T>(0);
-		if(U<=static_cast<T>(0))
+		T logU=C_ZERO<T>();
+		if(U<=C_ZERO<T>())
 		  {
 		    logU=std::log((std::exp(y1)+k*Z))-y1;
 		  }
@@ -429,12 +429,12 @@ namespace mcmc_utilities
     
   public:
     section()
-      :_x_l(static_cast<T>(std::nan(""))),_x_u(static_cast<T>(std::nan(""))),_x_i(static_cast<T>(std::nan(""))),
-       _y_l(static_cast<T>(std::nan(""))),_y_u(static_cast<T>(std::nan(""))),_y_i(static_cast<T>(std::nan(""))),
-       _int_exp_y_l(static_cast<T>(std::nan(""))),
-       _int_exp_y_u(static_cast<T>(std::nan(""))),
-       _cum_int_exp_y_l(static_cast<T>(std::nan(""))),
-       _cum_int_exp_y_u(static_cast<T>(std::nan("")))
+      :_x_l(C_NAN<T>()),_x_u(C_NAN<T>()),_x_i(C_NAN<T>()),
+       _y_l(C_NAN<T>()),_y_u(C_NAN<T>()),_y_i(C_NAN<T>()),
+       _int_exp_y_l(C_NAN<T>()),
+       _int_exp_y_u(C_NAN<T>()),
+       _cum_int_exp_y_l(C_NAN<T>()),
+       _cum_int_exp_y_u(C_NAN<T>())
     {}
     
   public:
@@ -447,7 +447,7 @@ namespace mcmc_utilities
     {
       if(_x_i==_x_l)
 	{
-	  _int_exp_y_l=static_cast<T>(0);
+	  _int_exp_y_l=C_ZERO<T>();
 	}
       else
 	{
@@ -554,7 +554,7 @@ namespace mcmc_utilities
     var_out_of_range e;
     e.attach_message("#3");
     throw e;
-    return static_cast<T>(0);
+    return C_ZERO<T>();
   }
 
   template <typename T>
@@ -586,7 +586,7 @@ namespace mcmc_utilities
     
 
     T x_i,y_i;
-
+    constexpr T C_TWO=C_ONE<T>()+C_ONE<T>();
     if(std::isinf(y2))
       {
 	x_i=x1;
@@ -594,8 +594,8 @@ namespace mcmc_utilities
 
 	if(y_i<y1)
 	  {
-	    x_i=(s.x_l()+s.x_u())/static_cast<T>(2);
-	    y_i=(s.y_l()+s.y_u())/static_cast<T>(2);
+	    x_i=(s.x_l()+s.x_u())/C_TWO;
+	    y_i=(s.y_l()+s.y_u())/C_TWO;
 	  }
 	//assert(!std::isinf(y_i));
       }
@@ -606,29 +606,27 @@ namespace mcmc_utilities
 
 	if(y_i<y3)
 	  {
-	    x_i=(s.x_l()+s.x_u())/2;
-	    y_i=(s.y_l()+s.y_u())/2;
+	    x_i=(s.x_l()+s.x_u())/C_TWO;
+	    y_i=(s.y_l()+s.y_u())/C_TWO;
 	  }
 	//assert(!std::isinf(y_i));
       }
     else
       {
-
-    
-	x_i=-((-(x3 - x4) * (x2 * y1 - x1 * y2) + (x1 - x2) * (x4 * y3 -  x3 * y4))/(-(x3 - x4) * (-y1 + y2) + (x1 - x2) * (-y3 + y4)));
+    	x_i=-((-(x3 - x4) * (x2 * y1 - x1 * y2) + (x1 - x2) * (x4 * y3 -  x3 * y4))/(-(x3 - x4) * (-y1 + y2) + (x1 - x2) * (-y3 + y4)));
 	y_i=-(x2 * y1 * y3 - x4 * y1 * y3 - x1 * y2 * y3 + x4 * y2 * y3 - x2 * y1 * y4 + x3 * y1 * y4 +  x1 * y2 * y4 - x3 * y2 * y4)/(-x3 * y1 + x4 * y1 + x3 * y2 - x4 * y2 + x1 * y3 - x2 * y3 - x1 * y4 + x2 * y4);
 
 	if(((y3-y1)*(x2-x1)==(y2-y1)*(x3-x1)&&
 	    (y4-y1)*(x2-x1)==(y2-y1)*(x4-x1))||(y2-y1)*(x4-x3)==(x2-x1)*(y4-y3)||!std::isfinite(y_i))
 	  {
-	    x_i=(s.x_l()+s.x_u())/static_cast<T>(2);
-	    y_i=(s.y_l()+s.y_u())/static_cast<T>(2);
+	    x_i=(s.x_l()+s.x_u())/C_TWO;
+	    y_i=(s.y_l()+s.y_u())/C_TWO;
 	  }
 	
 	if((x_i<=s.x_l())||(x_i>=s.x_u())||y_i<(y2+(x_i-x2)/(x3-x2)*(y3-y2)))
 	  {
-	    x_i=(s.x_l()+s.x_u())/static_cast<T>(2);
-	    y_i=(s.y_l()+s.y_u())/static_cast<T>(2);
+	    x_i=(s.x_l()+s.x_u())/C_TWO;
+	    y_i=(s.y_l()+s.y_u())/C_TWO;
 	  }
 #ifdef DEBUG
 	assert(!std::isinf(y_i)||y_i<0);
@@ -656,7 +654,7 @@ namespace mcmc_utilities
   void calc_cum_int_exp_y(std::list<section<T> >& section_list,typename std::list<section<T> >::iterator& i)
   {
     i->calc_int_exp_y();
-    T cum_from=static_cast<T>(0);
+    T cum_from=C_ZERO<T>();
     if(i!=section_list.begin())
       {
 	auto i_prev=i;
@@ -681,7 +679,7 @@ namespace mcmc_utilities
 	throw e;
       }
 
-    if(i->cum_int_exp_y_u()<static_cast<T>(0))
+    if(i->cum_int_exp_y_u()<C_ZERO<T>())
       {
 	cum_lt_zero e;
 	e.attach_message("#6");
@@ -825,7 +823,7 @@ namespace mcmc_utilities
 		 [&scale](const section<T>& s){scale=std::max(scale,std::max(s.y_l(),s.y_u()));});
     if(std::isinf(scale))
       {
-	if(scale < static_cast<T>(0))
+	if(scale < C_ZERO<T>())
 	  {
 	    throw ill_conditioned_distribution("maybe all values are zero 7");
 	  }
@@ -873,6 +871,7 @@ namespace mcmc_utilities
   template <typename T,typename TD,typename T_vector>
   void init(const TD& pd,const std::pair<T,T>& xrange, const T_vector& init_x1, std::list<section<T> >& section_list,T& scale)
   {
+    constexpr T C_TWO=C_ONE<T>()+C_ONE<T>();
     if(get_size(init_x1)<3)
       {
 	throw too_few_init_points();
@@ -888,7 +887,7 @@ namespace mcmc_utilities
     T_vector init_x{xrange.first};
     for(auto& x:init_x1)
       {
-	if(std::abs(x-last_element(init_x))<std::numeric_limits<T>::epsilon()*static_cast<T>(10)||
+	if(std::abs(x-last_element(init_x))<std::numeric_limits<T>::epsilon()*C_N2T<T,10>()||
 	   x<=last_element(init_x))
 	  {
 	    continue;
@@ -910,8 +909,8 @@ namespace mcmc_utilities
 	
 	s.set_x_l(get_element(init_x,i));
 	s.set_x_u(get_element(init_x,i+1));
-	s.set_y_l(eval_log(pd,get_element(init_x,i),static_cast<T>(0)));
-	s.set_y_u(eval_log(pd,get_element(init_x,i+1),static_cast<T>(0)));
+	s.set_y_l(eval_log(pd,get_element(init_x,i),C_ZERO<T>()));
+	s.set_y_u(eval_log(pd,get_element(init_x,i+1),C_ZERO<T>()));
 	if(!(xrange.first<=s.x_l()&&s.x_l()<=s.x_u()&&s.x_u()<=xrange.second))
 	  {
 	    data_not_in_order e;
@@ -969,7 +968,7 @@ namespace mcmc_utilities
 	    if(std::isinf(iter->cum_int_exp_y_u()))
 	      {
 		has_inf=true;
-		T x=(iter->x_l()+iter->x_u())/static_cast<T>(2);
+		T x=(iter->x_l()+iter->x_u())/C_TWO;
 
 		insert_point(pd,section_list,x,scale);
 		update_scale(section_list,scale);
@@ -1021,7 +1020,7 @@ namespace mcmc_utilities
 #else
     auto iter=lower_bound(section_list.begin(),section_list.end(),x,[](const section<T>& x,const T& y)
 		       {
-			 if( (x.x_l()-y)*(x.x_u()-y)<=static_cast<T>(0)  )
+			 if( (x.x_l()-y)*(x.x_u()-y)<=C_ZERO<T>()  )
 			   {
 			     return false;
 			   }
@@ -1034,13 +1033,13 @@ namespace mcmc_utilities
 	return insertion_result::SEARCH_FAILED;
       }
 #if 0
-    if(std::abs(iter->x_l()-x)<std::numeric_limits<T>::epsilon()*static_cast<T>(10)||std::abs(iter->x_u()-x)<std::numeric_limits<T>::epsilon()*static_cast<T>(10))
+    if(std::abs(iter->x_l()-x)<std::numeric_limits<T>::epsilon()*C_N2T<T,10>()||std::abs(iter->x_u()-x)<std::numeric_limits<T>::epsilon()*C_N2T<T,10>())
       {
 	return insertion_result::POINT_OVERLAPPED;
       }
 
     
-    if(std::abs(x-iter->x_l())<std::numeric_limits<T>::epsilon()*static_cast<T>(10)||std::abs(x-iter->x_u())<std::numeric_limits<T>::epsilon()*static_cast<T>(10))
+    if(std::abs(x-iter->x_l())<std::numeric_limits<T>::epsilon()*C_N2T<T,10>()||std::abs(x-iter->x_u())<std::numeric_limits<T>::epsilon()*C_N2T<T,10>())
       {
 	return insertion_result::POINT_OVERLAPPED;
       }
@@ -1105,7 +1104,7 @@ namespace mcmc_utilities
 	assert(0);
       }
     */
-    if(section_list.back().cum_int_exp_y_u()==static_cast<T>(0))
+    if(section_list.back().cum_int_exp_y_u()==C_ZERO<T>())
       {
 	throw ill_conditioned_distribution("maybe all values are zero #1059");
       }
@@ -1159,6 +1158,7 @@ namespace mcmc_utilities
   template <typename T,typename TD>
   void check_range(const TD& pd,std::list<section<T> >& section_list,T& scale)
   {
+    constexpr T C_TWO=C_ONE<T>()+C_ONE<T>();
     for(size_t i=0;;++i)
       {
 	bool has_inf=false;
@@ -1168,7 +1168,7 @@ namespace mcmc_utilities
 	    if(std::isinf(iter->cum_int_exp_y_l()))
 	      {
 		has_inf=true;
-		T x=(iter->x_l()+iter->x_i())/static_cast<T>(2);
+		T x=(iter->x_l()+iter->x_i())/C_TWO;
 		if(insert_point(pd,section_list,x,scale)==insertion_result::SUCCEEDED)
 		  {
 		    update_scale(section_list,scale);
@@ -1182,7 +1182,7 @@ namespace mcmc_utilities
 	    else if(std::isinf(iter->cum_int_exp_y_u()))
 	      {
 		has_inf=true;
-		T x=(iter->x_i()+iter->x_u())/static_cast<T>(2);
+		T x=(iter->x_i()+iter->x_u())/C_TWO;
 		
 		if(insert_point(pd,section_list,x,scale)==insertion_result::SUCCEEDED)
 		  {
@@ -1207,7 +1207,7 @@ namespace mcmc_utilities
   template <typename T,typename T_urand,typename TD>
   T sample(const std::list<section<T> >& section_list,T_urand& rnd,const TD& pd,T scale)
   {
-    T result=static_cast<T>(0);
+    T result=C_ZERO<T>();
 
 #if 0
     static int n=0;
@@ -1228,7 +1228,7 @@ namespace mcmc_utilities
     for(size_t i=0;i<10;++i)
       {
 	p=rnd();
-	if(p>=static_cast<T>(0)&&p<static_cast<T>(1))
+	if(p>=C_ZERO<T>()&&p<C_ONE<T>())
 	  {
 	    break;
 	  }
@@ -1287,7 +1287,7 @@ namespace mcmc_utilities
 	  }
 	else
 	  {
-	    ybase = static_cast<T>(0);
+	    ybase = C_ZERO<T>();
 	  }
 	
 	x1 = iter -> x_l();
@@ -1344,6 +1344,7 @@ namespace mcmc_utilities
   T arms(const TD& pd,const std::pair<T,T>& xrange,
 	 const T_vector& init_x,T xcur,size_t n,T_urand& rnd,size_t& xmchange_count)
   {
+    constexpr T C_TWO=C_ONE<T>()+C_ONE<T>();
     if(xrange.second<xrange.first+std::numeric_limits<T>::epsilon()*std::abs(xrange.first))
       {
 	throw too_small_var_range();
@@ -1360,11 +1361,11 @@ namespace mcmc_utilities
 
     std::list<section<T> > section_list;
     
-    T scale=static_cast<T>(0);
+    T scale=C_ZERO<T>();
 
     init(pd,xrange,init_x,section_list,scale);
     
-    T xm=static_cast<T>(-1);
+    T xm=-C_N2T<T,1>();
     //bool xmchanged=false;
     //size_t xmchange_count=0;
     //assert(xcur>=xrange.first&&xcur<=xrange.second);
@@ -1372,7 +1373,7 @@ namespace mcmc_utilities
     
     for(size_t i=0,cnt=0;i<n;)
       {
-	T x=static_cast<T>(0);
+	T x=C_ZERO<T>();
 	for(size_t j=0;;++j)
 	  {
 	    
@@ -1407,7 +1408,7 @@ namespace mcmc_utilities
 			break;
 		      }
 		  }
-		x1=(x1+x)/static_cast<T>(2);
+		x1=(x1+x)/C_TWO;
 		insert_point(pd,section_list,x1,scale);
 		update_scale(section_list,scale);
 		if(std::isinf(section_list.back().cum_int_exp_y_u()))
@@ -1432,7 +1433,7 @@ namespace mcmc_utilities
 			break;
 		      }
 		  }
-		x1=(x1+x)/static_cast<T>(2);
+		x1=(x1+x)/C_TWO;
 		insert_point(pd,section_list,x1,scale);
 		update_scale(section_list,scale);
 		
@@ -1447,7 +1448,7 @@ namespace mcmc_utilities
 	  }
 	
 	T u=rnd();
-	T xa=static_cast<T>(0);
+	T xa=C_ZERO<T>();
 	if(std::log(u)+eval(x,section_list)>eval_log(pd,x,scale))
 	  {
 	    insert_point(pd,section_list,x,scale);
@@ -1501,7 +1502,7 @@ namespace mcmc_utilities
 	  }
 	u=rnd();
 	
-	if(std::log(u)>std::min(static_cast<T>(0),eval_log(pd,xa,scale)-eval_log(pd,xcur,scale)+std::min(eval_log(pd,xcur,scale),eval(xcur,section_list))-std::min(eval_log(pd,xa,scale),eval(xa,section_list))))
+	if(std::log(u)>std::min(C_ZERO<T>(),eval_log(pd,xa,scale)-eval_log(pd,xcur,scale)+std::min(eval_log(pd,xcur,scale),eval(xcur,section_list))-std::min(eval_log(pd,xa,scale),eval(xa,section_list))))
 	  {
 	    xm=xcur;
 	    ++i;
