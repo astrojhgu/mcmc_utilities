@@ -150,7 +150,8 @@ namespace mcmc_utilities
   template <typename T>
   constexpr T C_NAN()
   {
-    return static_cast<T>(std::nan(""));
+    //return static_cast<T>(std::nan(""));
+    return static_cast<T>(NAN);
   }
 }
 
