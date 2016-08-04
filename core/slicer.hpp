@@ -57,9 +57,10 @@ namespace mcmc_utilities
 		const T& lower, const T& upper)const
     {
       bool d = false;
-      while ((R - L) > static_cast<T>(1.1) * width)
+      constexpr T one_and_tenth=C_ONE<T>()+C_ONE<T>()/C_N2T<T,10>();
+      while ((R - L) > one_and_tenth * width)
 	{
-	  T M = (L + R)/2;
+	  T M = (L + R)/(C_N2T<T,2>());
 	  if ((xold < M && xnew >= M) || (xold >= M && xnew < M))
 	    d = true;
 	  if (xnew < M)
@@ -135,7 +136,7 @@ namespace mcmc_utilities
       // Doubling 
       bool left_ok = false, right_ok = false;
       for (size_t i = 0; i < nmax; ++i) {
-	if (rng() < static_cast<T>(0.5))
+	if (rng() < C_ONE<T>()/C_N2T<T,2>())
 	  {
 	    if (L >= lower)
 	      {

@@ -17,12 +17,12 @@ namespace mcmc_utilities
   public:
     T max()const
     {
-      return static_cast<T>(1);
+      return T(1);
     }
 
     T min()const
     {
-      return static_cast<T>(0);
+      return T(0);
     }
 
     bool is_parallel()const

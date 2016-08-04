@@ -129,29 +129,43 @@ namespace mcmc_utilities
     return (lhs=rhs);
   }
 
+  template <typename T,unsigned int n>
+  struct T_CONSTANT
+  {
+    static constexpr T N=T(1)+T_CONSTANT<T,n-1>::N;
+  };
+
+  template <typename T>
+  struct T_CONSTANT<T,0>
+  {
+    static constexpr T N=0;
+  };
+
+
   template <typename T>
   constexpr T C_ONE()
   {
-    return static_cast<T>(1);
+    return T(1);
   }
 
   template <typename T>
   constexpr T C_ZERO()
   {
-    return static_cast<T>(0);
+    return T(0);
   }
 
   template <typename T,unsigned int N>
   constexpr T C_N2T()
   {
-    return static_cast<T>(N);
+    //return static_cast<T>(N);
+    return T_CONSTANT<T,N>::N;
   }
   
   template <typename T>
   constexpr T C_NAN()
   {
     //return static_cast<T>(std::nan(""));
-    return static_cast<T>(NAN);
+    return T(NAN);
   }
 }
 
