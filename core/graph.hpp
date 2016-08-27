@@ -397,9 +397,8 @@ namespace mcmc_utilities
 		  const T_tag& tag,
 		  const T_vector<std::pair<std::shared_ptr<node<T,T_vector> >,size_t> >& parents)
     {
-      T_vector<std::pair<node<T,T_vector>*,size_t> > parents1;
       add_node(std::shared_ptr<node<T,T_vector> >(pn),tag,parents);
-      }
+    }
     
     void add_node(const std::shared_ptr<node<T,T_vector> >& pn,
 		  const T_tag& tag,
