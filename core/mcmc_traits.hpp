@@ -27,7 +27,7 @@ namespace mcmc_utilities
     /**
        Default definition of element_type
      */
-    typedef typename T::value_type element_type;
+    using element_type=typename T::value_type;
   };
 
   
@@ -38,9 +38,9 @@ namespace mcmc_utilities
   class return_type_trait
   {
   public:
-    typedef T value_type;
-    typedef T& reference_type;
-    typedef const T& const_reference_type;
+    using value_type=T;
+    using reference_type=T&;
+    using const_reference_type=const T&;
   };
   
 

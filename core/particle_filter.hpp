@@ -74,7 +74,7 @@ namespace mcmc_utilities
     using std_vector=std::vector<T>;
     
   public:
-    typedef typename element_type_trait<T_state>::element_type T_state1;
+    using T_state1=typename element_type_trait<T_state>::element_type;
   private:
     /**
        A parameter affects the important sampling
@@ -82,8 +82,8 @@ namespace mcmc_utilities
     T_p alpha;
     
   public:
-    typedef typename element_type_trait<T_state>::element_type stat_element_type;
-    typedef typename element_type_trait<T_obs>::element_type obs_element_type;
+    using stat_element_type=typename element_type_trait<T_state>::element_type;
+    using obs_element_type=typename element_type_trait<T_obs>::element_type;
     
     
   public:
@@ -200,7 +200,7 @@ namespace mcmc_utilities
 	:public probability_density_md<T_p,T_state,std_vector>
       {
       public:
-	typedef typename element_type_trait<T_state>::element_type T_var1;
+	using T_var1=typename element_type_trait<T_state>::element_type;
       private:
 	const pf_model<T_p,T_state,T_obs,T_t>*  ptr_pf_model;
 	/*

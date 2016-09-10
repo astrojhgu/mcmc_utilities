@@ -1,15 +1,19 @@
 #include "mcmc.hpp"
 #include <core/urand.hpp>
+#include <cstdint>
 namespace mcmc_utilities
 {
   using plist_t=std::vector<std::pair<const node<double,std_vector>*,size_t> >;
   gtype* new_graph()
   {
-    return new gtype();
+    gtype* p=new gtype();
+    std::cerr<<"new graph created @"<<(int64_t)p<<std::endl;
+    return p;
   }
 
   void delete_graph(gtype* pg)
   {
+    std::cerr<<"graph @"<<(int64_t)pg<<"destroied"<<std::endl;
     delete pg;
   }
 
@@ -17,6 +21,11 @@ namespace mcmc_utilities
   {
     static urand<double> rnd;
     pg->sample(rnd);
+  }
+
+  void initialize(gtype* pg)
+  {
+    pg->initialize();
   }
 
   double get_value(const node<double,std_vector>* pn,int idx)

@@ -14,7 +14,7 @@ namespace mcmc_utilities
   void gibbs_sample(const probability_density_md<T_p,T_var,T_vector>& pd,T_var& init_var,base_urand<T_p>& rnd)
   {
     size_t idx=0;
-    typedef typename element_type_trait<T_var>::element_type T_var1;
+    using T_var1=typename element_type_trait<T_var>::element_type;
     
     T_var1 xprev=0.;
     for(idx=0;idx<get_size(init_var);++idx)
@@ -72,7 +72,7 @@ namespace mcmc_utilities
       {
 	throw index_out_of_range();
       }
-    typedef typename element_type_trait<T_var>::element_type T_var1;
+    using T_var1=typename element_type_trait<T_var>::element_type;
     
     T_var1 xprev=0.;
 

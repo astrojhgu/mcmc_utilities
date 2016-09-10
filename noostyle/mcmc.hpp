@@ -55,6 +55,8 @@ namespace mcmc_utilities
 						  gtype* pg);
 
   void sample(gtype* p);
+
+  void initialize(gtype* p);
 }
 
 #endif

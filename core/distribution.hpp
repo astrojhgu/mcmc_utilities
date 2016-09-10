@@ -21,7 +21,7 @@ namespace mcmc_utilities
   class probability_density_md
   {
   public:
-    typedef typename element_type_trait<T_var>::element_type T_var1;
+    using T_var1=typename element_type_trait<T_var>::element_type;
   public:
     T_p eval_log(const T_var& x,int n=-1)const
     {
