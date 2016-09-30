@@ -278,6 +278,39 @@ namespace mcmc_utilities
       ps->set_value(idx,v);
     }
 
+    bool is_observed(const T_tag& tag,size_t idx)
+    {
+      if(node_map.count(tag)==0)
+	{
+	  std::ostringstream oss;
+	  oss<<tag;
+	  throw node_not_found(oss.str());
+	}
+      stochastic_node<T,T_vector>* ps=dynamic_cast<stochastic_node<T,T_vector>* >(node_map[tag].get());
+      if(ps==nullptr)
+	{
+	  throw invalid_node_type();
+	}
+      return ps->is_observed(idx);
+    }
+
+    void set_observed(const T_tag& tag,size_t idx,bool b)
+    {
+      if(node_map.count(tag)==0)
+	{
+	  std::ostringstream oss;
+	  oss<<tag;
+	  throw node_not_found(oss.str());
+	}
+      
+      stochastic_node<T,T_vector>* ps=dynamic_cast<stochastic_node<T,T_vector>* >(node_map[tag].get());
+      if(ps==nullptr)
+	{
+	  throw invalid_node_type();
+	}
+      ps->set_observed(idx,b);
+    }
+
     T log_likelihood(const T_tag& tag)const
     {
       auto i=node_map.find(tag);
