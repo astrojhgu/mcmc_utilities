@@ -27,6 +27,8 @@ namespace mcmc_utilities
       int n=size_t(parent.back());
       if(n<0||n>=this->num_of_parents()-1)
 	{
+	  std::cerr<<"n="<<n<<std::endl;
+	  std::cerr<<"nswitch="<<(this->num_of_parents()-1)<<std::endl;
 	  throw var_out_of_range();
 	}
       return parent.at(n);
