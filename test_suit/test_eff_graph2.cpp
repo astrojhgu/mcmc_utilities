@@ -89,10 +89,6 @@ int main()
   auto pmu=std::shared_ptr<node<double,std_vector> >(new uniform_node<double,std_vector>(.001,100-1e-5));
   auto psigma=std::shared_ptr<node<double,std_vector> >(new uniform_node<double,std_vector>(.001,100-1e-5));
 
-  dynamic_pointer_cast<stochastic_node<double,std_vector> >(pA)->use_parallel(true);
-  dynamic_pointer_cast<stochastic_node<double,std_vector> >(pB)->use_parallel(true);
-  dynamic_pointer_cast<stochastic_node<double,std_vector> >(pmu)->use_parallel(true);
-  dynamic_pointer_cast<stochastic_node<double,std_vector> >(psigma)->use_parallel(true);
   g.add_node(pA,{"A"});
   g.add_node(pB,{"B"});
   g.add_node(pmu,{"mu"});
@@ -123,26 +119,26 @@ int main()
 
   std::cerr<<"*********"<<std::endl;
   
-  //graph<double,tag_t,std_vector> g;
-  //g.copy_from(g);
+  graph<double,tag_t,std_vector> g2;
+  g2.copy_from(g);
 
-  auto A=g.get_monitor({"A"},0);
-  auto B=g.get_monitor({"B"},0);
-  auto mu=g.get_monitor({"mu"},0);
-  auto sigma=g.get_monitor({"sigma"},0);
-  g.set_value({"A"},0,.01);
-  g.set_value({"B"},0,.999506);
-  g.set_value({"mu"},0,13);
-  g.set_value({"sigma"},0,17);
-  g.initialize();
+  auto A=g2.get_monitor({"A"},0);
+  auto B=g2.get_monitor({"B"},0);
+  auto mu=g2.get_monitor({"mu"},0);
+  auto sigma=g2.get_monitor({"sigma"},0);
+  g2.set_value({"A"},0,.01);
+  g2.set_value({"B"},0,.999506);
+  g2.set_value({"mu"},0,13);
+  g2.set_value({"sigma"},0,17);
+  g2.initialize();
 
   ofstream ofs("eff_topology.dot");
-  topology_dumper<double,std_vector>(g).to_dot(ofs);
+  topology_dumper<double,std_vector>(g2).to_dot(ofs);
   ofs.close();
   
   for(int i=0;i<30000;++i)
     {
-      g.sample(rnd1);
+      g2.sample(rnd1);
       cout<<A()<<" "<<B()<<" "<<mu()<<" "<<sigma()<<endl;
     }
 }

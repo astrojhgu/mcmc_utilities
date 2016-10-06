@@ -23,19 +23,16 @@ namespace mcmc_utilities
     T_vector<T> v;//store current value(s) of this node
     T_vector<int> observed;
     size_t current_idx;
-    bool _use_parallel;
   public:
     stochastic_node(size_t nparents,const T_vector<T>& v_)
       :node<T,T_vector>(nparents,get_size(v_)),
-      v{v_},observed(get_size(v_)),current_idx(0),
-      _use_parallel(false)
+      v{v_},observed(get_size(v_)),current_idx(0)
     {
     }
 
     stochastic_node(size_t nparents,T v_)
       :node<T,T_vector>(nparents,1),
-      v(1),observed(get_size(v)),current_idx(0),
-      _use_parallel(false)
+      v(1),observed(get_size(v)),current_idx(0)
     {
       //v[0]=v_;
       set_element(v,0,v_);
@@ -46,13 +43,6 @@ namespace mcmc_utilities
     stochastic_node(const stochastic_node<T,T_vector>& )=delete;
     stochastic_node<T,T_vector>& operator=(const stochastic_node<T,T_vector>&)=delete;
   public:
-    void use_parallel(bool b)
-    {
-      _use_parallel=b;
-      std::cerr<<"set parallel to "<<_use_parallel<<std::endl;
-
-    }
-    
     bool is_observed(size_t n)const
     {
       //return observed[n]!=0;
@@ -103,29 +93,11 @@ namespace mcmc_utilities
     {
       T result=static_cast<T>(0);
       auto iter=this->get_stochastic_children_iterator();
-      if(_use_parallel)
+      while(auto p=iter())
 	{
-	  std::vector<decltype(iter())> probs;
-	  while(auto p=iter())
-	    {
-	      probs.push_back(p);
-	      //result+=p->log_prob();
-	    }
-	  std::vector<T> results(probs.size());
-#pragma omp parallel for
-	  for(int i=0;i<probs.size();++i)
-	    {
-	      results[i]=probs[i]->log_prob();
-	    }
-	  result=std::accumulate(results.begin(),results.end(),static_cast<T>(0));
+	  result+=p->log_prob();
 	}
-      else
-	{
-	  while(auto p=iter())
-	    {
-	      result+=p->log_prob();
-	    }
-	}
+      
       return result;
     }
     
