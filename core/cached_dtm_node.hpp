@@ -2,7 +2,7 @@
 #define CACHED_DTM_NODE_HPP
 #include "deterministic_node.hpp"
 #include <stack>
-
+#include <mutex>
 namespace mcmc_utilities
 {
   template <typename T,template <typename TE> class T_vector>
@@ -12,7 +12,7 @@ namespace mcmc_utilities
   private:
     T_vector<T> cached_parents;
     T_vector<T> cached_value;
-    
+    std::mutex mtx;
   public:
     cached_dtm_node(size_t nparents,size_t ndim)
       :deterministic_node<T,T_vector>(nparents,ndim),cached_parents(nparents),cached_value(ndim)
@@ -28,6 +28,7 @@ namespace mcmc_utilities
 
     T do_value(size_t idx)const override
     {
+      const_cast<std::mutex&>(mtx).lock();
       T_vector<T> p(this->num_of_parents());
       bool parents_changed=false||(get_size(p)==0);
       for(size_t i=0;i<get_size(p);++i)
@@ -40,17 +41,19 @@ namespace mcmc_utilities
 	    }
 	  
 	}
-      
+
+      T y=static_cast<T>(0);
       if(parents_changed)
 	{
-	  double y=this->calc(idx,p);
+	  y=this->calc(idx,p);
 	  set_element(const_cast<cached_dtm_node<T,T_vector>*>(this)->cached_value,idx,y);
-	  return y;
 	}
       else
 	{
-	  return get_element(cached_value,idx);
+	  y=get_element(cached_value,idx);
 	}
+      const_cast<std::mutex&>(mtx).unlock();
+      return y;
     }
   };
 }

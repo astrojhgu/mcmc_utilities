@@ -88,6 +88,12 @@ int main()
   auto pB=std::shared_ptr<node<double,std_vector> >(new uniform_node<double,std_vector>(.001,1-1e-5));
   auto pmu=std::shared_ptr<node<double,std_vector> >(new uniform_node<double,std_vector>(.001,100-1e-5));
   auto psigma=std::shared_ptr<node<double,std_vector> >(new uniform_node<double,std_vector>(.001,100-1e-5));
+
+  dynamic_pointer_cast<stochastic_node<double,std_vector> >(pA)->use_parallel(true);
+  dynamic_pointer_cast<stochastic_node<double,std_vector> >(pB)->use_parallel(true);
+  dynamic_pointer_cast<stochastic_node<double,std_vector> >(pmu)->use_parallel(true);
+  dynamic_pointer_cast<stochastic_node<double,std_vector> >(psigma)->use_parallel(true);
+  
   g.add_node(pA,{"A"});
   g.add_node(pB,{"B"});
   g.add_node(pmu,{"mu"});
