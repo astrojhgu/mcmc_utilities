@@ -49,6 +49,8 @@ namespace mcmc_utilities
     void use_parallel(bool b)
     {
       _use_parallel=b;
+      std::cerr<<"set parallel to "<<_use_parallel<<std::endl;
+
     }
     
     bool is_observed(size_t n)const
@@ -101,7 +103,6 @@ namespace mcmc_utilities
     {
       T result=static_cast<T>(0);
       auto iter=this->get_stochastic_children_iterator();
-
       if(_use_parallel)
 	{
 	  std::vector<decltype(iter())> probs;
