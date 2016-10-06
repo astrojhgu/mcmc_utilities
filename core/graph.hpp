@@ -396,6 +396,7 @@ namespace mcmc_utilities
 	{
 	  if(node_map.count(p.first)==0)
 	    {
+	      std::cerr<<"parent to be added:"<<p.first<<std::endl;
 	      throw parents_not_exist();
 	    }
 	}
