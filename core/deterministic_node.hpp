@@ -48,16 +48,20 @@ namespace mcmc_utilities
     }
 
     virtual T do_calc(size_t idx,const T_vector<T>& parents)const=0;
-
+    
     T do_value(size_t idx)const override
     {
+      
       if(use_system_stack())
 	{
-	  T_vector<T> p(this->num_of_parents());
-	  for(size_t i=0;i<get_size(p);++i)
+	  /*
+	    T_vector<T> p(this->num_of_parents());
+	    for(size_t i=0;i<get_size(p);++i)
 	    {
-	      set_element(p,i,this->parent(i));
+	    set_element(p,i,this->parent(i));
 	    }
+	  */
+	  auto p=this->parent_values();
 	  return do_calc(idx,p);
 	}
       else
@@ -74,12 +78,14 @@ namespace mcmc_utilities
 	      if(leaf_num_stack.top()==nparents)
 		{
 		  T_vector<T> p(node_stack.top().first->num_of_parents());
-		  
+		  /*
 		  for(auto i=std::rbegin(p);i!=std::rend(p);++i)
 		    {
 		      (*i)=operand_stack.top();
 		      operand_stack.pop();
 		    }
+		  */
+		  for_each(std::rbegin(p),std::rend(p),[&operand_stack](auto& x){x=operand_stack.top();operand_stack.pop();});
 		  
 		  operand_stack.push(node_stack.top().first->do_calc(node_stack.top().second, p));
 		  node_stack.pop();

@@ -29,19 +29,23 @@ namespace mcmc_utilities
     T do_value(size_t idx)const override
     {
       const_cast<std::mutex&>(mtx).lock();
-      T_vector<T> p(this->num_of_parents());
+      //T_vector<T> p(this->num_of_parents());
+      T_vector<T> p(this->parent_values());
       bool parents_changed=false||(get_size(p)==0);
+      
       for(size_t i=0;i<get_size(p);++i)
 	{
-	  set_element(p,i,this->parent(i));
+	  ///set_element(p,i,this->parent(i));
 	  if(get_element(p,i)!=get_element(cached_parents,i))
 	    {
 	      parents_changed=true;
+	      
 	      set_element(const_cast<cached_dtm_node<T,T_vector>*>(this)->cached_parents,i,get_element(p,i));
+	      
 	    }
-	  
 	}
-
+      
+      
       T y=static_cast<T>(0);
       if(parents_changed)
 	{

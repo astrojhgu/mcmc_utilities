@@ -40,7 +40,7 @@ namespace mcmc_utilities
     void copy_from(const graph& rhs)
     {
       std::map<node<T,T_vector>*,T_tag> tag_map1;
-      for(auto i=rhs.tag_map.begin();i!=rhs.tag_map.end();++i)
+      for(auto i=std::begin(rhs.tag_map);i!=std::end(rhs.tag_map);++i)
 	{
 	  tag_map1[i->first.get()]=i->second;
 	}
@@ -48,7 +48,7 @@ namespace mcmc_utilities
       std::stack<std::shared_ptr<node<T,T_vector> > > node_stack;
       std::stack<size_t> parent_id_stack;
       
-      for(auto i=rhs.node_map.begin();i!=rhs.node_map.end();++i)
+      for(auto i=std::begin(rhs.node_map);i!=std::end(rhs.node_map);++i)
 	{
 	  if(this->node_map.count(i->first)!=0)
 	    {
@@ -135,8 +135,8 @@ namespace mcmc_utilities
       int n=0;
       T_vector<stochastic_node<T,T_vector>*> stochastic_node_vector;
       reserve(stochastic_node_vector,get_size(stochastic_node_list));
-      std::for_each(stochastic_node_list.begin(),
-		    stochastic_node_list.end(),
+      std::for_each(std::begin(stochastic_node_list),
+		    std::end(stochastic_node_list),
 		    [&](stochastic_node<T,T_vector>* p){push_back(stochastic_node_vector,p);}
 		    );
       if(shuffled_sampling)
@@ -206,8 +206,8 @@ namespace mcmc_utilities
     {
       T_vector<T> result;
       size_t n=0;
-      for(auto p=stochastic_node_list.begin();
-	  p!=stochastic_node_list.end();++p,++n)
+      for(auto p=std::begin(stochastic_node_list);
+	  p!=std::end(stochastic_node_list);++p,++n)
 	{
 	  for(size_t i=0;i<(*p)->num_of_dims();++i)
 	    {
@@ -220,7 +220,7 @@ namespace mcmc_utilities
     std::function<T()> get_monitor(const T_tag& tag,size_t n)const
     {
       auto iter=node_map.find(tag);
-      if(iter==node_map.end())
+      if(iter==std::end(node_map))
 	{
 	  std::ostringstream oss;
 	  oss<<tag;
@@ -314,7 +314,7 @@ namespace mcmc_utilities
     T log_likelihood(const T_tag& tag)const
     {
       auto i=node_map.find(tag);
-      if(i==node_map.end())
+      if(i==std::end(node_map))
 	{
 	  std::ostringstream oss;
 	  oss<<tag;
@@ -326,7 +326,7 @@ namespace mcmc_utilities
     T log_posterior_prob(const T_tag& tag)const
     {
       auto i=node_map.find(tag);
-      if(i==node_map.end())
+      if(i==std::end(node_map))
 	{
 	  std::ostringstream oss;
 	  oss<<tag;
@@ -454,7 +454,7 @@ namespace mcmc_utilities
     T_tag get_tag(const std::shared_ptr<node<T,T_vector> >& p)const
     {
       auto result= tag_map.find(p);
-      if(result==tag_map.end())
+      if(result==std::end(tag_map))
 	{
 	  throw node_not_found();
 	}
@@ -490,7 +490,7 @@ namespace mcmc_utilities
     std::weak_ptr<node<T,T_vector> > get_node(const T_tag& t)const
     {
       auto i=node_map.find(t);
-      if(i==node_map.end())
+      if(i==std::end(node_map))
 	{
 	  std::ostringstream oss;
 	  oss<<t;

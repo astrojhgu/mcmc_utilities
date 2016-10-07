@@ -19,7 +19,9 @@ namespace mcmc_utilities
   public:
     T do_log_prob()const override
     {
-      T result=logdbin(this->value(0),this->parent(0),this->parent(1));
+      auto pv=this->parent_values();
+      //T result=logdbin(this->value(0),this->parent(0),this->parent(1));
+      T result=logdbin(this->value(0),pv[0],pv[1]);
       return result;
     }
 

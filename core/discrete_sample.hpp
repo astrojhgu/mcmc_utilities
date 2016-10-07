@@ -31,7 +31,7 @@ namespace mcmc_utilities
 	  }
 	
 	T p=urand()*last_element(prob);
-	return get_element(cp,std::min<size_t>(std::distance(prob.begin(),std::upper_bound(prob.begin(),prob.end(),p)),get_size(cp)-1));
+	return get_element(cp,std::min<size_t>(std::distance(std::begin(prob),std::upper_bound(begin(prob),std::end(prob),p)),get_size(cp)-1));
       }
   }
   

@@ -29,7 +29,8 @@ namespace mcmc_utilities
     T_vector<std::pair<node<T,T_vector>*,size_t> > parents;
     size_t ndims;
     T_vector<int> initialized;
-    std::set<stochastic_node<T,T_vector>* > reduced_stochastic_children;
+    //std::set<stochastic_node<T,T_vector>* > reduced_stochastic_children;
+    T_vector<stochastic_node<T,T_vector>* > reduced_stochastic_children;
   public:
     node(size_t nparents,size_t ndim1)
       :parents(nparents),ndims(ndim1),initialized(ndim1)
@@ -64,16 +65,16 @@ namespace mcmc_utilities
     {
 #if 0
       std::set<stochastic_node<T,T_vector>* > result;
-      result.insert(this->stochastic_children.begin(),this->stochastic_children.end());
+      result.insert(std::begin(this->stochastic_children),std::end(this->stochastic_children));
       for(auto& p:this->deterministic_children)
 	{
 	  auto c=p->enumerate_stochastic_children();
-	  result.insert(c.begin(),c.end());
+	  result.insert(std::begin(c),std::end(c));
 	}
       return result;
 #else
       std::set<stochastic_node<T,T_vector>* > result;
-      result.insert(this->stochastic_children.begin(),this->stochastic_children.end());
+      result.insert(std::begin(this->stochastic_children),std::end(this->stochastic_children));
       
       std::stack<const deterministic_node<T,T_vector>*> node_stack;
       std::stack<typename std::list<deterministic_node<T,T_vector>* >::const_iterator> current_node_stack;
@@ -81,7 +82,7 @@ namespace mcmc_utilities
       for(auto& p:deterministic_children)
 	{
 	  node_stack.push(p);
-	  current_node_stack.push(node_stack.top()->deterministic_children.begin());
+	  current_node_stack.push(std::begin(node_stack.top()->deterministic_children));
 	  for(;;)
 	    {
 	      if(current_node_stack.top()==node_stack.top()->deterministic_children.end())
@@ -104,7 +105,7 @@ namespace mcmc_utilities
 	      else
 		{
 		  node_stack.push(*(current_node_stack.top()++));
-		  current_node_stack.push(node_stack.top()->deterministic_children.begin());
+		  current_node_stack.push(std::begin(node_stack.top()->deterministic_children));
 		}
 	    }
 	}
@@ -114,18 +115,14 @@ namespace mcmc_utilities
     
     void freeze_topology()
     {
-      reduced_stochastic_children=enumerate_stochastic_children();
+      auto ss=enumerate_stochastic_children();
+      std::for_each(std::begin(ss),end(ss),[this](auto i){this->reduced_stochastic_children.push_back(i);});
       do_freeze_topology();
     }
 
-    auto get_stochastic_children_iterator()const
+    const auto& get_all_stochastic_children()const
     {
-      //std::shared_ptr<typename std::set<stochastic_node<T,T_vector>* >::iterator> p;
-      auto p=std::make_shared<typename std::set<stochastic_node<T,T_vector>* >::const_iterator>();
-      *p=const_cast<std::set<stochastic_node<T,T_vector>* >&>(reduced_stochastic_children).begin();
-      
-      return [p,this]()->stochastic_node<T,T_vector>* {
-	return (*p)==this->reduced_stochastic_children.end()?nullptr:*((*p)++);};
+      return this->reduced_stochastic_children;
     }
 
     void init_value()
@@ -219,6 +216,15 @@ namespace mcmc_utilities
     {
       //return parents[pid].first->value(parents[pid].second);
       return get_element(parents,pid).first->value(get_element(parents,pid).second);
+    }
+
+    T_vector<T> parent_values()const
+    {
+      T_vector<T> result;
+      resize(result,get_size(parents));
+      std::transform(std::begin(parents),std::end(parents),
+		     std::begin(result),[](const auto& p){return p.first->value(p.second);});
+      return result;
     }
   private:
     virtual T do_value(size_t idx)const=0;

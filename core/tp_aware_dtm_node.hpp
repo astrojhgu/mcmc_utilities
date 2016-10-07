@@ -105,7 +105,7 @@ namespace mcmc_utilities
 	  if(ps==nullptr&&pd!=nullptr)
 	    {
 	      auto s=pd->enumerate_stochastic_parents();
-	      result.insert(s.begin(),s.end());
+	      result.insert(std::begin(s),std::end(s));
 	    }
 	  else if(ps!=nullptr&&pd==nullptr)
 	    {

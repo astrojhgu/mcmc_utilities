@@ -92,12 +92,10 @@ namespace mcmc_utilities
     T log_likelihood()const
     {
       T result=static_cast<T>(0);
-      auto iter=this->get_stochastic_children_iterator();
-      while(auto p=iter())
-	{
-	  result+=p->log_prob();
-	}
-      
+      auto& ss=this->get_all_stochastic_children();
+      T_vector<T> results(get_size(ss));
+      std::transform(std::begin(ss),std::end(ss),std::begin(results),[](const auto& p){return p->log_prob();});
+      result=std::accumulate(std::begin(results),std::end(results),static_cast<T>(0));
       return result;
     }
     
