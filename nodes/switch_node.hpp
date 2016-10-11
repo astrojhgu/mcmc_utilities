@@ -24,8 +24,8 @@ namespace mcmc_utilities
 
     T do_calc(size_t idx,const T_vector<T>& parent)const override
     {
-      int n=size_t(parent.back());
-      if(n<0||n>=this->num_of_parents()-1)
+      size_t n=size_t(parent.back());
+      if(n+1>=this->num_of_parents())
 	{
 	  std::cerr<<"n="<<n<<std::endl;
 	  std::cerr<<"nswitch="<<(this->num_of_parents()-1)<<std::endl;
@@ -42,7 +42,7 @@ namespace mcmc_utilities
 
     order do_get_order(const node<T,T_vector>* pn,int n)const override
     {
-      for(int i=0;i<this->num_of_parents();++i)
+      for(size_t i=0;i<this->num_of_parents();++i)
 	{
 	  order o=this->get_parent_order(0,pn,n);
 	  //return order{0,false,false};

@@ -33,7 +33,7 @@ namespace mcmc_utilities
 
     order do_get_order(const node<T,T_vector>* pn,int n)const override
     {
-      for (int i=0;i<this->num_of_parents();++i)
+      for (size_t i=0;i<this->num_of_parents();++i)
 	{
 	  order o=this->get_parent_order(i,pn,n);
 	  if(o.n!=0||

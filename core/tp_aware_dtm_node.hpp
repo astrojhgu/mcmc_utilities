@@ -71,7 +71,7 @@ namespace mcmc_utilities
       return do_get_order(pn,n);
     }
 
-    order get_parent_order(int m,const node<T,T_vector>* pn,int n)const
+    order get_parent_order(int m,const node<T,T_vector>* pn,size_t n)const
     {
       //auto p=get_element(this->parents,m).first;
       auto p=this->get_parent(m).first;

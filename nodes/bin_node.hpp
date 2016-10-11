@@ -50,7 +50,7 @@ namespace mcmc_utilities
     T_vector<T> do_candidate_points()const override
     {
       T_vector<T> result((int)(this->parent(1))+1);
-      for(unsigned int i=0;i<result.size();++i)
+      for(size_t i=0;i<result.size();++i)
 	{
 	  result[i]=i;
 	}

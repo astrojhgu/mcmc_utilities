@@ -92,7 +92,7 @@ namespace mcmc_utilities
     void count_input(const east::expression_node& en,
 		std::set<std::string>& tags)
     {
-      for(int i=0;i<en.get_num_of_parents();++i)
+      for(size_t i=0;i<en.get_num_of_parents();++i)
 	{
 	  count_input(en.get_parent(i),tags);
 	}
@@ -145,7 +145,7 @@ namespace mcmc_utilities
 	    {
 	      throw mcmc_exception("maybe not a deterministic node");
 	    }
-	  for(int i=0;i<en.get_num_of_parents();++i)
+	  for(size_t i=0;i<en.get_num_of_parents();++i)
 	    {
 	      auto p1=add_node(en.get_parent(i),n);
 	      p->connect_to_parent(p1.get(),i,0);
@@ -179,7 +179,7 @@ namespace mcmc_utilities
 	      throw std::logic_error("input names mismatch");
 	    }
 	}
-      for(unsigned int i=0;i<input_names.size();++i)
+      for(size_t i=0;i<input_names.size();++i)
 	{
 	  std::shared_ptr<deterministic_node<T,T_vector> > pn(new forward_node<T,T_vector>);
 	  this->elements.insert(std::make_pair(input_names[i],pn));
