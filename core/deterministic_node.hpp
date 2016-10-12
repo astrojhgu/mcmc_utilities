@@ -51,7 +51,6 @@ namespace mcmc_utilities
     
     T do_value(size_t idx)const override
     {
-      
       if(use_system_stack())
 	{
 	  /*
@@ -85,7 +84,13 @@ namespace mcmc_utilities
 		      operand_stack.pop();
 		    }
 		  */
-		  for_each(std::rbegin(p),std::rend(p),[&operand_stack](auto& x){x=operand_stack.top();operand_stack.pop();});
+		  //for_each(std::rbegin(p),std::rend(p),[&operand_stack](auto& x){x=operand_stack.top();operand_stack.pop();});
+		  auto size_of_p=get_size(p);
+		  for(size_t i=0;i<size_of_p;++i)
+		    {
+		      set_element(p,size_of_p-i-1,operand_stack.top());
+		      operand_stack.pop();
+		    }
 		  
 		  operand_stack.push(node_stack.top().first->do_calc(node_stack.top().second, p));
 		  node_stack.pop();

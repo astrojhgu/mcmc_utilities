@@ -97,12 +97,12 @@ namespace mcmc_utilities
       T_vector<T> results(get_size(ss));
 #if 1
       ////followings are the current implementation of computing the log likelihood
-      std::transform(std::begin(ss),std::end(ss),std::begin(results),[](const auto& p){return p->log_prob();});
+      std::transform(std::begin(ss),std::end(ss),std::begin(results),[](const stochastic_node<T,T_vector>* const& p){return p->log_prob();});
       result=std::accumulate(std::begin(results),std::end(results),static_cast<T>(0));
 #else
       T_vector<std::future<T> > futures(get_size(ss));
       ///followings are the async parallelized version of implementation, but the performance is rather rather poor
-      std::transform(std::begin(ss),std::end(ss),std::begin(futures),[](const auto& p){return std::async([p](){return p->log_prob();});});
+      std::transform(std::begin(ss),std::end(ss),std::begin(futures),[](const stochastic_node<T,T_vector>* const& p){return std::async([p](){return p->log_prob();});});
       for(auto& i:futures)
 	{
 	  result+=i.get();

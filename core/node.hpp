@@ -116,11 +116,11 @@ namespace mcmc_utilities
     void freeze_topology()
     {
       auto ss=enumerate_stochastic_children();
-      std::for_each(std::begin(ss),end(ss),[this](auto i){this->reduced_stochastic_children.push_back(i);});
+      std::for_each(std::begin(ss),std::end(ss),[this](stochastic_node<T,T_vector>* i){this->reduced_stochastic_children.push_back(i);});
       do_freeze_topology();
     }
 
-    const auto& get_all_stochastic_children()const
+    const T_vector<stochastic_node<T,T_vector>* >& get_all_stochastic_children()const
     {
       return this->reduced_stochastic_children;
     }
@@ -223,7 +223,7 @@ namespace mcmc_utilities
       T_vector<T> result;
       resize(result,get_size(parents));
       std::transform(std::begin(parents),std::end(parents),
-		     std::begin(result),[](const auto& p){return p.first->value(p.second);});
+		     std::begin(result),[](const std::pair<node<T,T_vector>*,size_t>& p){return p.first->value(p.second);});
       return result;
     }
   private:

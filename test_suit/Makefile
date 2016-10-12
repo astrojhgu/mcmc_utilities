@@ -4,7 +4,7 @@ all:$(targets)
 
 #CXX=clang++
 #c++14 for std::rbegin and std::rend
-CXXFLAGS=-I ../ -std=c++14 -g -I ../../east/include -I ../../coscalcpp/include/ -I ../rng -O2 -pthread
+CXXFLAGS=-I ../ -std=c++11 -g -I ../../east/include -I ../../coscalcpp/include/ -I ../rng -O2 -pthread
 LDFLAGS=-pthread -L ../../east/lib -least -L ../../coscalcpp/lib/ -lcoscalcpp -O2
 
 %.out :	%.o

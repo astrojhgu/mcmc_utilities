@@ -1,6 +1,7 @@
 #ifndef CONST_NODE_HPP
 #define CONST_NODE_HPP
 #include <core/deterministic_node.hpp>
+#include <core/tp_aware_dtm_node.hpp>
 #include <helper/vnode.hpp>
 #include <helper/node_counter.hpp>
 #include <helper/abstract_node_factory.hpp>
@@ -10,13 +11,13 @@ namespace mcmc_utilities
 {
   template <typename T,template <typename TE> class T_vector>
   class const_node
-    :public deterministic_node<T,T_vector>
+    :public tp_aware_dtm_node<T,T_vector>
   {
   private:
     T v;
   public:
     const_node(T v1)
-      :deterministic_node<T,T_vector>(0,1),v(v1)
+      :tp_aware_dtm_node<T,T_vector>(0,1),v(v1)
     {
     }
     
@@ -25,6 +26,11 @@ namespace mcmc_utilities
       return v;
     }
 
+    order do_get_order(const node<T,T_vector>* pn,int n)const
+    {
+      return order{0,true,true};
+    }
+    
     std::shared_ptr<node<T,T_vector> > do_clone()const override
     {
       return std::shared_ptr<node<T,T_vector> >(new const_node(v));
