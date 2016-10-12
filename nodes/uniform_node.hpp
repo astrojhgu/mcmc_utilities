@@ -102,6 +102,6 @@ namespace mcmc_utilities
   };
 
   //using vuniform=uniform_vnode<double>;
-};
+}
 
 #endif

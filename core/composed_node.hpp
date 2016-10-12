@@ -52,7 +52,10 @@ namespace mcmc_utilities
     T_vector<std::pair<std::shared_ptr<deterministic_node<T,T_vector> >,size_t> > return_list;
   public:
     composed_node(size_t nparents,size_t ndim)
-      :cached_dtm_node<T,T_vector>(nparents,ndim)
+      :cached_dtm_node<T,T_vector>(nparents,ndim),
+      elements(),
+      param_list(),
+      return_list()
     {}
     
   public:

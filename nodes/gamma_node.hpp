@@ -103,6 +103,6 @@ namespace mcmc_utilities
   };
   
   //using vgamma=gamma_vnode<double>;
-};
+}
 
 #endif

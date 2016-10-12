@@ -129,6 +129,6 @@ namespace mcmc_utilities
     return os;
   }
 
-};
+}
 
 #endif

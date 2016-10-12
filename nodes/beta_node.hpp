@@ -104,6 +104,6 @@ namespace mcmc_utilities
   };
   
   //using vbeta=beta_vnode<double>;
-};
+}
 
 #endif

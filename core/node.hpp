@@ -26,14 +26,18 @@ namespace mcmc_utilities
     //public:
     std::list<stochastic_node<T,T_vector>* > stochastic_children;
     std::list<deterministic_node<T,T_vector>* > deterministic_children;
+    //std::set<stochastic_node<T,T_vector>* > reduced_stochastic_children;
+    T_vector<stochastic_node<T,T_vector>* > reduced_stochastic_children;
     T_vector<std::pair<node<T,T_vector>*,size_t> > parents;
     size_t ndims;
     T_vector<int> initialized;
-    //std::set<stochastic_node<T,T_vector>* > reduced_stochastic_children;
-    T_vector<stochastic_node<T,T_vector>* > reduced_stochastic_children;
+    
   public:
     node(size_t nparents,size_t ndim1)
-      :parents(nparents),ndims(ndim1),initialized(ndim1)
+      :stochastic_children(),
+       deterministic_children(),
+       reduced_stochastic_children(),
+       parents(nparents),ndims(ndim1),initialized(ndim1)
     {
       std::fill(std::begin(parents),std::end(parents),
 		std::pair<node<T,T_vector>*,size_t>(nullptr,0));

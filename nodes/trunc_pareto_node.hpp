@@ -109,6 +109,6 @@ namespace mcmc_utilities
   };
   
   //using vtrunc_pareto=trunc_pareto_vnode<double>;
-};
+}
 
 #endif

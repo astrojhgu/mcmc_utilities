@@ -60,6 +60,7 @@ private:
   std::vector<int> ninj;
 public:
   eff_distribution()
+    :E(),nrec(),ninj()
   {
     ifstream ifs("eff.txt");
     for(;;)

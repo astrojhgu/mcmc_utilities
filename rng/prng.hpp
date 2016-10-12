@@ -16,11 +16,11 @@ namespace mcmc_utilities
     std::vector<sitmo::prng_engine> eng_array;
   public:
     prng()
-      :nused(0),eng_array(1)
+      :nused(0),mtx(),eng_array(1)
     {}
     
     prng(int n)
-      :nused(0),eng_array(n)
+      :nused(0),mtx(),eng_array(n)
     {
       for(int i=0;i<eng_array.size();++i)
 	{

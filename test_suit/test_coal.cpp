@@ -20,6 +20,7 @@ private:
   std::vector<double> n_accident;
 public:
   coal_distribution()
+    :year(),n_accident()
   {
     ifstream ifs("coal.dat");
     for(;;)

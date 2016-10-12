@@ -104,6 +104,6 @@ namespace mcmc_utilities
     }
   };
 
-};
+}
 
 #endif

@@ -72,6 +72,11 @@ public:
   typedef std::vector<double> T_obs;
   typedef double T_t;
   std::vector<double> xl,xr;
+public:
+  target_model()
+    :xl(),xr()
+  {}
+
 private:
   T_p do_evol_log_prob(const T_state& x,const T_t& t,const T_state& prev_stat,const T_t& prev_t,int n)const
   {

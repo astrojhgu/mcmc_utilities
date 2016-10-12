@@ -29,6 +29,7 @@ namespace mcmc_utilities
        Default constructor
      */
     particle()
+      :state(),weight()
     {}
 
     /**
@@ -222,6 +223,16 @@ namespace mcmc_utilities
 	
 	friend class pf_model<T_p,T_state,T_obs,T_t>;
       public:
+	cprob()
+	  :ptr_pf_model(nullptr),
+	   ptr_obs_vec(nullptr),
+	   ptr_particle(nullptr),
+	   ptr_prev_t(nullptr),
+	   ptr_t(nullptr)
+	{}
+
+	cprob(const cprob&)=delete;
+	cprob& operator=(const cprob&)=delete;
 	/**
 	   joint distribution of the system state
 	 */
@@ -433,4 +444,4 @@ namespace mcmc_utilities
       return std_vector<T_state1>();
     }
   };
-};
+}

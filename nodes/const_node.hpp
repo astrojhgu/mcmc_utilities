@@ -90,6 +90,6 @@ namespace mcmc_utilities
   };
   
   //using vconst=const_vnode<double>;
-};
+}
 
 #endif

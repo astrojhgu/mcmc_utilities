@@ -15,11 +15,11 @@ namespace mcmc_utilities
     std::mutex mtx;
   public:
     cached_dtm_node(size_t nparents,size_t ndim)
-      :deterministic_node<T,T_vector>(nparents,ndim),cached_parents(nparents),cached_value(ndim)
+      :deterministic_node<T,T_vector>(nparents,ndim),cached_parents(nparents),cached_value(ndim),mtx()
     {}
     
     cached_dtm_node(size_t nparents)
-      :deterministic_node<T,T_vector>(nparents,1),cached_parents(nparents),cached_value(1)
+      :deterministic_node<T,T_vector>(nparents,1),cached_parents(nparents),cached_value(1),mtx()
     {}
     
     cached_dtm_node()=delete;

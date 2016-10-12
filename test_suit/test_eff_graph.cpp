@@ -22,6 +22,9 @@ class data_loader
 public:
   std_vector<double> vec_e,vec_nrec,vec_ninj;
   data_loader(const char* fname)
+    :vec_e(),
+     vec_nrec(),
+     vec_ninj()
   {
     ifstream ifs(fname);
     for(;;)

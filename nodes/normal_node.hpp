@@ -107,6 +107,6 @@ namespace mcmc_utilities
   };
   
   //using vnormal=normal_vnode<double>;
-};
+}
 
 #endif

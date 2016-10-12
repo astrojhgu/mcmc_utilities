@@ -122,6 +122,6 @@ namespace mcmc_utilities
   };
   
   //using vbvnormal=bvnormal_vnode<double>;
-};
+}
 
 #endif

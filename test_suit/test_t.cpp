@@ -18,54 +18,6 @@ using namespace mcmc_utilities;
 template <typename T>
 using std_vector=std::vector<T>;
 
-class data_loader
-{
-public:
-  std::vector<double> vec_e,vec_nrec,vec_ninj;
-  data_loader(const char* fname)
-  {
-    ifstream ifs(fname);
-    for(;;)
-      {
-	double e,nrec,ninj;
-	ifs>>e>>nrec>>ninj;
-	if(!ifs.good())
-	  {
-	    break;
-	  }
-	vec_e.push_back(e);
-	vec_nrec.push_back(nrec);
-	vec_ninj.push_back(ninj);
-      }
-  }
-
-  shared_ptr<node<double,std_vector> > get_energy(int i)const
-  {
-    auto p=new const_node<double,std_vector>(vec_e[i]);
-    //p->set_observed(0,true);
-    return std::shared_ptr<node<double,std_vector> >(p);
-  }
-
-  shared_ptr<node<double,std_vector> > get_ninj(int i)const
-  {
-    auto p=new const_node<double,std_vector>(vec_ninj[i]);
-    //p->set_observed(0,true);
-    return std::shared_ptr<node<double,std_vector> >(p);
-  }
-
-  shared_ptr<node<double,std_vector> > get_nrec(int i)const
-  {
-    auto p=new bin_node<double,std_vector>();
-    p->set_value(0,vec_nrec[i]);
-    p->set_observed(0,true);
-    return shared_ptr<node<double,std_vector> >(p);
-  }
-
-  size_t size()const
-  {
-    return vec_e.size();
-  }
-};
 
 class rnd
   :public base_urand<double>
@@ -80,8 +32,6 @@ private:
 int main()
 {
   graph<double,std::string,std_vector> g;
-  data_loader dl("eff.txt");
-
   auto pMu=std::shared_ptr<node<double,std_vector> >(new const_node<double,std_vector>(0));
   auto pSigma=std::shared_ptr<node<double,std_vector> >(new const_node<double,std_vector>(1));
   auto pk=std::shared_ptr<node<double,std_vector> >(new const_node<double,std_vector>(1));

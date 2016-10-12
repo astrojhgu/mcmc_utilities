@@ -30,7 +30,11 @@ namespace mcmc_utilities
     int verbose_level;
   public:
     graph()
-      :shuffled_sampling(false),topology_frozen(false),verbose_level(0)
+      :stochastic_node_list(),
+       deterministic_node_list(),
+       node_map(),
+       tag_map(),
+       shuffled_sampling(false),topology_frozen(false),verbose_level(0)
     {}
 
     graph(const graph<T,T_tag,T_vector>&)=delete;

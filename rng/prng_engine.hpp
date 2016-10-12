@@ -77,7 +77,7 @@ namespace sitmo {
   template<typename T>
   struct has_generate_template
   {
-    typedef char (&Two)[2];;
+    typedef char (&Two)[2];
     template<typename F, void (F::*)(int *, int *)> struct helper {};
     template<typename C> static char test(helper<C, &C::template generate<int*> >*);
     template<typename C> static Two test(...);
@@ -106,7 +106,8 @@ namespace sitmo {
     // req: 26.5.1.4 Random number engine requirements, p.907 table 117, row 1
     // Creates an engine with the same initial state as all other
     // default-constructed engines of type E.
-    prng_engine() 
+    prng_engine()
+      :_o_counter()
     {
       seed();
     }
@@ -114,19 +115,21 @@ namespace sitmo {
     // req: 26.5.1.4 Random number engine requirements, p.907 table 117, row 2
     // Creates an engine that compares equal to x.
     prng_engine(const prng_engine& x)
+      :_o_counter(x._o_counter)
     {
       for (unsigned short i=0; i<4; ++i) {
 	_s[i] = x._s[i];
 	_k[i] = x._k[i];
 	_o[i] = x._o[i];
       }
-      _o_counter = x._o_counter;
+      //_o_counter = x._o_counter;
     }
     
     
     // req: 26.5.1.4 Random number engine requirements, p.907 table 117, row 3
     // Creates an engine with initial O(size of state) state determined by s.
-    prng_engine(uint32_t s) 
+    prng_engine(uint32_t s)
+      :_o_counter()
     {
       seed(s);
     }

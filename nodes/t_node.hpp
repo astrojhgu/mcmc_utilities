@@ -129,6 +129,6 @@ namespace mcmc_utilities
   };
   
   //using vt=t_vnode<double>;
-};
+}
 
 #endif

@@ -102,6 +102,6 @@ namespace mcmc_utilities
     set_element(init_var,idx,x);
   }
   
-};
+}
 
 #endif
