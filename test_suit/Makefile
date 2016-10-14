@@ -4,8 +4,8 @@ all:$(targets)
 
 #CXX=clang++
 #c++14 for std::rbegin and std::rend
-CXXFLAGS=-I ../ -std=c++11 -g -I ../../east/include -I ../../coscalcpp/include/ -I ../rng -O2 -pthread -pedantic-errors -Weffc++
-LDFLAGS=-pthread -L ../../east/lib -least -L ../../coscalcpp/lib/ -lcoscalcpp -O2
+CXXFLAGS=-I ../ -std=c++11 -g -I ../../east/include -I ../../coscalcpp/include/ -I ../rng -O2 -pthread -pedantic-errors -Weffc++ -fopenmp $(EXT_FLAGS)
+LDFLAGS=-pthread -L ../../east/lib -least -L ../../coscalcpp/lib/ -lcoscalcpp -O2 -fopenmp
 
 %.out :	%.o
 	$(CXX) $< -o $@ $(LDFLAGS)

@@ -13,7 +13,7 @@
 #include "discrete_sample.hpp"
 #include "continuous_sample.hpp"
 #include "node.hpp"
-
+#include "ptransform.hpp"
 namespace mcmc_utilities
 {
   template <typename T,template <typename TE> class T_vector>
@@ -95,20 +95,16 @@ namespace mcmc_utilities
       T result=static_cast<T>(0);
       auto& ss=this->get_all_stochastic_children();
       T_vector<T> results(get_size(ss));
-#if 1
       ////followings are the current implementation of computing the log likelihood
+      //
+#if defined USE_STD_TRANSFORM
       std::transform(std::begin(ss),std::end(ss),std::begin(results),[](const stochastic_node<T,T_vector>* const& p){return p->log_prob();});
-      result=std::accumulate(std::begin(results),std::end(results),static_cast<T>(0));
+#elif defined USE_TRANSFORM_THREAD
+      pvec_transform_thread(ss,results,[](const stochastic_node<T,T_vector>* const& p){return p->log_prob();},10);
 #else
-      T_vector<std::future<T> > futures(get_size(ss));
-      ///followings are the async parallelized version of implementation, but the performance is rather rather poor
-      std::transform(std::begin(ss),std::end(ss),std::begin(futures),[](const stochastic_node<T,T_vector>* const& p){return std::async([p](){return p->log_prob();});});
-      for(auto& i:futures)
-	{
-	  result+=i.get();
-	}
-      //////////
+      pvec_transform_omp(ss,results,[](const stochastic_node<T,T_vector>* const& p){return p->log_prob();},10);
 #endif
+      result=std::accumulate(std::begin(results),std::end(results),static_cast<T>(0));
       return result;
     }
     
