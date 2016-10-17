@@ -97,12 +97,12 @@ namespace mcmc_utilities
       T_vector<T> results(get_size(ss));
       ////followings are the current implementation of computing the log likelihood
       //
-#if defined USE_STD_TRANSFORM
-      std::transform(std::begin(ss),std::end(ss),std::begin(results),[](const stochastic_node<T,T_vector>* const& p){return p->log_prob();});
-#elif defined USE_TRANSFORM_THREAD
+#if defined USE_OMP_TRANSFORM
+      pvec_transform_omp(ss,results,[](const stochastic_node<T,T_vector>* const& p){return p->log_prob();},10);      
+#elif defined USE_THREAD_TRANSFORM
       pvec_transform_thread(ss,results,[](const stochastic_node<T,T_vector>* const& p){return p->log_prob();},10);
 #else
-      pvec_transform_omp(ss,results,[](const stochastic_node<T,T_vector>* const& p){return p->log_prob();},10);
+      std::transform(std::begin(ss),std::end(ss),std::begin(results),[](const stochastic_node<T,T_vector>* const& p){return p->log_prob();});
 #endif
       result=std::accumulate(std::begin(results),std::end(results),static_cast<T>(0));
       return result;
