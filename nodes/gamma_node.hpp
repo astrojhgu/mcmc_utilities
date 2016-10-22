@@ -1,7 +1,6 @@
 #ifndef GAMMA_NODE_HPP
 #define GAMMA_NODE_HPP
 #include <core/deterministic_node.hpp>
-#include <helper/vnode.hpp>
 #include <helper/node_counter.hpp>
 #include <string>
 #include <cmath>
@@ -56,29 +55,6 @@ namespace mcmc_utilities
 
   };
   
-  
-  template <typename T,template <typename TE> class T_vector>
-  class gamma_vnode
-    :public vnode<T,T_vector>
-  {
-  public:
-    gamma_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T,T_vector>&,size_t> >& p)
-      :vnode<T,T_vector>("gamma",n,p)
-    {
-      this->binded=true;
-    }
-    
-    std::shared_ptr<node<T,T_vector> > get_node()const override
-    {
-      return std::shared_ptr<node<T,T_vector> >(new gamma_node<T,T_vector>);
-    }
-
-    std::shared_ptr<vnode<T,T_vector> > clone()const override
-    {
-      return std::shared_ptr<vnode<T,T_vector> >(new gamma_vnode<T,T_vector>(*this));
-    }
-  };
-
   template <typename T,template <typename TE> class T_vector>
   class gamma_node_factory
     :public abstract_node_factory<T,T_vector>
@@ -101,8 +77,6 @@ namespace mcmc_utilities
     }
 
   };
-  
-  //using vgamma=gamma_vnode<double>;
 }
 
 #endif

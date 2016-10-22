@@ -47,30 +47,6 @@ namespace mcmc_utilities
     }
   };
 
-
-  template <typename T,template <typename TE> class T_vector>
-  class step_vnode
-    :public vnode<T,T_vector>
-  {
-  public:
-    step_vnode(std::string n,
-	      const std::pair<const vnode<T,T_vector>&,size_t>& p)
-      :vnode<T,T_vector>("step",n,{p})
-    {
-      this->binded=true;
-    }
-
-    std::shared_ptr<node<T,T_vector> > get_node()const override
-    {
-      return std::shared_ptr<node<T,T_vector> >(new step_node<T,T_vector>);
-    }
-
-    std::shared_ptr<vnode<T,T_vector> > clone()const override
-    {
-      return std::shared_ptr<vnode<T,T_vector> >(new step_vnode<T,T_vector>(*this));
-    }
-  };
-
   template <typename T,template <typename TE> class T_vector>
   class step_node_factory
     :public abstract_node_factory<T,T_vector>
@@ -91,15 +67,6 @@ namespace mcmc_utilities
       return std::string("deterministic node");
     }
   };
-
-  template <typename T,template <typename TE> class T_vector>
-  step_vnode<T,T_vector> vstep(const vnode<T,T_vector>& n1)
-  {
-    auto result= step_vnode<T,T_vector>(std::string("step")+node_count<step_vnode<T,T_vector> >(),{n1,(size_t)0});
-    result.named=false;
-    return result;
-  }
-
 }
 
 

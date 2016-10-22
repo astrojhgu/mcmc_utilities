@@ -1,7 +1,6 @@
 #ifndef DISCRETE_UNIFORM_NODE_HPP
 #define DISCRETE_UNIFORM_NODE_HPP
 #include <core/deterministic_node.hpp>
-#include <helper/vnode.hpp>
 #include <helper/node_counter.hpp>
 #include <helper/abstract_node_factory.hpp>
 #include <string>
@@ -93,32 +92,6 @@ namespace mcmc_utilities
       return std::string("stochastic node");
     }
   };
-  
-  template <typename T,template <typename TE> class T_vector>
-  class discrete_uniform_vnode
-    :public vnode<T,T_vector>
-  {
-    int a;
-    int b;
-  public:
-    discrete_uniform_vnode(std::string n,int _a,int _b)
-      :vnode<T,T_vector>("discrete_uniform",n),a(_a),b(_b)
-    {
-      this->binded=true;
-    }
-    
-    std::shared_ptr<node<T,T_vector> > get_node()const override
-    {
-      return std::shared_ptr<node<T,T_vector> >(new discrete_uniform_node<T,T_vector>(a,b));
-    }
-    
-    std::shared_ptr<vnode<T,T_vector> > clone()const override
-    {
-      return std::shared_ptr<vnode<T,T_vector> >(new discrete_uniform_vnode<T,T_vector>(*this));
-    }
-  };
-
-  //using vdiscrete_uniform=discrete_uniform_vnode<double>;
 };
 
 #endif

@@ -2,7 +2,6 @@
 #define CONST_NODE_HPP
 #include <core/deterministic_node.hpp>
 #include <core/tp_aware_dtm_node.hpp>
-#include <helper/vnode.hpp>
 #include <helper/node_counter.hpp>
 #include <helper/abstract_node_factory.hpp>
 #include <string>
@@ -41,32 +40,7 @@ namespace mcmc_utilities
       v=v1;
     }
   };
-
-  template <typename T,template <typename TE> class T_vector>
-  class const_vnode
-    :public vnode<T,T_vector>
-  {
-  public:
-    T value;
-  public:
-    const_vnode(std::string n,T v)
-      :vnode<T,T_vector>("const",n),value(v)
-    {
-      this->binded=true;
-    }
-    
-  public:
-    std::shared_ptr<node<T,T_vector> > get_node()const override
-    {
-      return std::shared_ptr<node<T,T_vector> >(new const_node<T,T_vector>(value));
-    }
-
-    std::shared_ptr<vnode<T,T_vector> > clone()const override
-    {
-      return std::shared_ptr<vnode<T,T_vector> >(new const_vnode<T,T_vector>(*this));
-    }
-  };
-
+  
   template <typename T,template <typename TE> class T_vector>
   class const_node_factory
     :public abstract_node_factory<T,T_vector>
@@ -88,8 +62,6 @@ namespace mcmc_utilities
       return std::string("deterministic");
     }
   };
-  
-  //using vconst=const_vnode<double>;
 }
 
 #endif

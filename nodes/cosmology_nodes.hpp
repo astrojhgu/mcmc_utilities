@@ -112,29 +112,6 @@ namespace mcmc_utilities
 
 
   template <typename T,template <typename TE> class T_vector>
-  class luminosity_distance_vnode
-    :public vnode<T,T_vector>
-  {
-  public:
-    luminosity_distance_vnode(std::string n,
-	      const std::pair<const vnode<T,T_vector>&,size_t>& p)
-      :vnode<T,T_vector>("luminosity_distance",n,{p})
-    {
-      this->binded=true;
-    }
-
-    std::shared_ptr<node<T,T_vector> > get_node()const override
-    {
-      return std::shared_ptr<node<T,T_vector> >(new luminosity_distance_node<T,T_vector>);
-    }
-
-    std::shared_ptr<vnode<T,T_vector> > clone()const override
-    {
-      return std::shared_ptr<vnode<T,T_vector> >(new luminosity_distance_vnode<T,T_vector>(*this));
-    }
-  };
-
-  template <typename T,template <typename TE> class T_vector>
   class luminosity_distance_node_factory
     :public abstract_node_factory<T,T_vector>
   {
@@ -242,30 +219,6 @@ namespace mcmc_utilities
     }
 
 
-  };
-
-
-  template <typename T,template <typename TE> class T_vector>
-  class asize_distance_vnode
-    :public vnode<T,T_vector>
-  {
-  public:
-    asize_distance_vnode(std::string n,
-	      const std::pair<const vnode<T,T_vector>&,size_t>& p)
-      :vnode<T,T_vector>("asize_distance",n,{p})
-    {
-      this->binded=true;
-    }
-
-    std::shared_ptr<node<T,T_vector> > get_node()const override
-    {
-      return std::shared_ptr<node<T,T_vector> >(new asize_distance_node<T,T_vector>);
-    }
-
-    std::shared_ptr<vnode<T,T_vector> > clone()const override
-    {
-      return std::shared_ptr<vnode<T,T_vector> >(new asize_distance_vnode<T,T_vector>(*this));
-    }
   };
 
   template <typename T,template <typename TE> class T_vector>

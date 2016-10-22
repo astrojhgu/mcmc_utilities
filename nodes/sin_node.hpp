@@ -50,29 +50,6 @@ namespace mcmc_utilities
 
 
   template <typename T,template <typename TE> class T_vector>
-  class sin_vnode
-    :public vnode<T,T_vector>
-  {
-  public:
-    sin_vnode(std::string n,
-	      const std::pair<const vnode<T,T_vector>&,size_t>& p)
-      :vnode<T,T_vector>("sin",n,{p})
-    {
-      this->binded=true;
-    }
-
-    std::shared_ptr<node<T,T_vector> > get_node()const override
-    {
-      return std::shared_ptr<node<T,T_vector> >(new sin_node<T,T_vector>);
-    }
-
-    std::shared_ptr<vnode<T,T_vector> > clone()const override
-    {
-      return std::shared_ptr<vnode<T,T_vector> >(new sin_vnode<T,T_vector>(*this));
-    }
-  };
-
-  template <typename T,template <typename TE> class T_vector>
   class sin_node_factory
     :public abstract_node_factory<T,T_vector>
   {
@@ -92,15 +69,6 @@ namespace mcmc_utilities
       return std::string("deterministic node");
     }
   };
-
-  template <typename T,template <typename TE> class T_vector>
-  sin_vnode<T,T_vector> vsin(const vnode<T,T_vector>& n1)
-  {
-    auto result= sin_vnode<T,T_vector>(std::string("sin")+node_count<sin_vnode<T,T_vector> >(),{n1,(size_t)0});
-    result.named=false;
-    return result;
-  }
-
 }
 
 

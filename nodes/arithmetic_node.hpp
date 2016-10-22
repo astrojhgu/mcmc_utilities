@@ -2,7 +2,6 @@
 #define ARITHMETIC_NODE
 #include <core/tp_aware_dtm_node.hpp>
 #include <helper/node_counter.hpp>
-#include <helper/vnode.hpp>
 #include <memory>
 #include <utility>
 #include <string>
@@ -69,37 +68,6 @@ namespace mcmc_utilities
   };
   
   
-  template <typename T,template <typename TE> class T_vector>
-  class add_vnode
-    :public vnode<T,T_vector>
-  {
-  public:
-    add_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T,T_vector>&,size_t> >& p)
-      :vnode<T,T_vector>("add",n,p)
-    {
-      this->binded=true;
-    }
-    
-    std::shared_ptr<node<T,T_vector> > get_node()const override
-    {
-      return std::shared_ptr<node<T,T_vector> >(new add_node<T,T_vector>);
-    }
-
-    std::shared_ptr<vnode<T,T_vector> > clone()const override
-    {
-      return std::shared_ptr<vnode<T,T_vector> >(new add_vnode<T,T_vector>(*this));
-    }
-  };
-  
-  template <typename T,template <typename TE> class T_vector>
-  add_vnode<T,T_vector> operator+(const vnode<T,T_vector>& n1,
-		 const vnode<T,T_vector>& n2)
-  {
-    auto result= add_vnode<T,T_vector>(std::string("add")+node_count<add_vnode<T,T_vector> >(),{{n1,0},{n2,0}});
-    result.named=false;
-    return result;
-  }
-  
   /////sub////
   template <typename T,template <typename TE> class T_vector>
   class sub_node
@@ -158,38 +126,6 @@ namespace mcmc_utilities
 
   };
   
-  
-  template <typename T,template <typename TE> class T_vector>
-  class sub_vnode
-    :public vnode<T,T_vector>
-  {
-  public:
-    sub_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T,T_vector>&,size_t> >& p)
-      :vnode<T,T_vector>("sub",n,p)
-    {
-      this->binded=true;
-    }
-    
-    std::shared_ptr<node<T,T_vector> > get_node()const override
-    {
-      return std::shared_ptr<node<T,T_vector> >(new sub_node<T,T_vector>);
-    }
-
-    std::shared_ptr<vnode<T,T_vector> > clone()const override
-    {
-      return std::shared_ptr<vnode<T,T_vector> >(new sub_vnode<T,T_vector>(*this));
-    }
-  };
-  
-  template <typename T,template <typename TE> class T_vector>
-  sub_vnode<T,T_vector> operator-(const vnode<T,T_vector>& n1,
-		 const vnode<T,T_vector>& n2)
-  {
-    auto result = sub_vnode<T,T_vector>(std::string("sub")+node_count<sub_vnode<T,T_vector> >(),{{n1,0},{n2,0}});
-    result.named=false;
-    return result;
-  }
-
   /////neg////
   template <typename T,template <typename TE> class T_vector>
   class neg_node
@@ -238,31 +174,8 @@ namespace mcmc_utilities
     }
 
   };
-  
-  
-  template <typename T,template <typename TE> class T_vector>
-  class neg_vnode
-    :public vnode<T,T_vector>
-  {
-  public:
-    neg_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T,T_vector>&,size_t> >& p)
-      :vnode<T,T_vector>("neg",n,p)
-    {
-      this->binded=true;
-    }
-    
-    std::shared_ptr<node<T,T_vector> > get_node()const override
-    {
-      return std::shared_ptr<node<T,T_vector> >(new neg_node<T,T_vector>);
-    }
 
-    std::shared_ptr<vnode<T,T_vector> > clone()const override
-    {
-      return std::shared_ptr<vnode<T,T_vector> >(new neg_vnode<T,T_vector>(*this));
-    }
-  };
-
-    /////pos////
+  /////pos////
   template <typename T,template <typename TE> class T_vector>
   class pos_node
     :public tp_aware_dtm_node<T,T_vector>
@@ -311,30 +224,6 @@ namespace mcmc_utilities
     }
 
   };
-  
-  
-  template <typename T,template <typename TE> class T_vector>
-  class pos_vnode
-    :public vnode<T,T_vector>
-  {
-  public:
-    pos_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T,T_vector>&,size_t> >& p)
-      :vnode<T,T_vector>("pos",n,p)
-    {
-      this->binded=true;
-    }
-    
-    std::shared_ptr<node<T,T_vector> > get_node()const override
-    {
-      return std::shared_ptr<node<T,T_vector> >(new pos_node<T,T_vector>);
-    }
-
-    std::shared_ptr<vnode<T,T_vector> > clone()const override
-    {
-      return std::shared_ptr<vnode<T,T_vector> >(new pos_vnode<T,T_vector>(*this));
-    }
-  };
-
 
   /////mul////
   template <typename T,template <typename TE> class T_vector>
@@ -392,37 +281,6 @@ namespace mcmc_utilities
     }
 
   };
-  
-  template <typename T,template <typename TE> class T_vector>
-  class mul_vnode
-    :public vnode<T,T_vector>
-  {
-  public:
-    mul_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T,T_vector>&,size_t> >& p)
-      :vnode<T,T_vector>("mul",n,p)
-    {
-      this->binded=true;
-    }
-    
-    std::shared_ptr<node<T,T_vector> > get_node()const override
-    {
-      return std::shared_ptr<node<T,T_vector> >(new mul_node<T,T_vector>);
-    }
-
-    std::shared_ptr<vnode<T,T_vector> > clone()const override
-    {
-      return std::shared_ptr<vnode<T,T_vector> >(new mul_vnode<T,T_vector>(*this));
-    }
-  };
-  
-  template <typename T,template <typename TE> class T_vector>
-  mul_vnode<T,T_vector> operator*(const vnode<T,T_vector>& n1,
-		 const vnode<T,T_vector>& n2)
-  {
-    auto result= mul_vnode<T,T_vector>(std::string("mul")+node_count<mul_vnode<T,T_vector> >(),{{n1,0},{n2,0}});
-    result.named=false;
-    return result;
-  }
   
   /////div////
   template <typename T,template <typename TE> class T_vector>
@@ -487,39 +345,7 @@ namespace mcmc_utilities
     }
 
   };
-  
-  
-  template <typename T,template <typename TE> class T_vector>
-  class div_vnode
-    :public vnode<T,T_vector>
-  {
-  public:
-    div_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T,T_vector>&,size_t> >& p)
-      :vnode<T,T_vector>("div",n,p)
-    {
-      this->binded=true;
-    }
     
-    std::shared_ptr<node<T,T_vector> > get_node()const override
-    {
-      return std::shared_ptr<node<T,T_vector> >(new div_node<T,T_vector>);
-    }
-
-    std::shared_ptr<vnode<T,T_vector> > clone()const override
-    {
-      return std::shared_ptr<vnode<T,T_vector> >(new div_vnode<T,T_vector>(*this));
-    }
-  };
-  
-  template <typename T,template <typename TE> class T_vector>
-  div_vnode<T,T_vector> operator/(const vnode<T,T_vector>& n1,
-		 const vnode<T,T_vector>& n2)
-  {
-    auto result= div_vnode<T,T_vector>(std::string("div")+node_count<div_vnode<T,T_vector> >(),{{n1,0},{n2,0}});
-    result.named=false;
-    return result;
-  }
-  
   /////pow////
   template <typename T,template <typename TE> class T_vector>
   class pow_node
@@ -576,40 +402,6 @@ namespace mcmc_utilities
       return std::string("deterministic");
     }
   };
-  
-  
-  template <typename T,template <typename TE> class T_vector>
-  class pow_vnode
-    :public vnode<T,T_vector>
-  {
-  public:
-    pow_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T,T_vector>&,size_t> >& p)
-      :vnode<T,T_vector>("pow",n,p)
-    {
-      this->binded=true;
-    }
-    
-    std::shared_ptr<node<T,T_vector> > get_node()const override
-    {
-      return std::shared_ptr<node<T,T_vector> >(new pow_node<T,T_vector>);
-    }
-
-    std::shared_ptr<vnode<T,T_vector> > clone()const override
-    {
-      return std::shared_ptr<vnode<T,T_vector> >(new pow_vnode<T,T_vector>(*this));
-    }
-  };
-  
-  template <typename T,template <typename TE> class T_vector>
-  pow_vnode<T,T_vector> operator/(const vnode<T,T_vector>& n1,
-		 const vnode<T,T_vector>& n2)
-  {
-    auto result= pow_vnode<T,T_vector>(std::string("pow")+node_count<pow_vnode<T,T_vector> >(),{{n1,0},{n2,0}});
-    result.named=false;
-    return result;
-  }
-
-  
 }
 
 #endif

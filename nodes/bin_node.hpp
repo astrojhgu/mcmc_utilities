@@ -1,6 +1,5 @@
 #ifndef BIN_NODE_HPP
 #define BIN_NODE_HPP
-#include <helper/vnode.hpp>
 #include <helper/node_counter.hpp>
 #include <math/distributions.hpp>
 #include <math/functions.hpp>
@@ -97,43 +96,6 @@ namespace mcmc_utilities
     }
   };
 
-  template <typename T,template <typename TE> class T_vector>
-  class bin_vnode
-    :public vnode<T,T_vector>
-  {
-  private:
-    
-  public:
-    
-    bin_vnode(std::string n,
-		  const std::pair<const vnode<T,T_vector>&,size_t>& p1,
-		  const std::pair<const vnode<T,T_vector>&,size_t>& p2)
-      :vnode<T,T_vector>("bin",n,{p1,p2})
-    {
-      this->binded=true;
-    }
-
-    bin_vnode(const std::pair<const vnode<T,T_vector>&,size_t>& p1,
-	      const std::pair<const vnode<T,T_vector>&,size_t>& p2)
-      :vnode<T,T_vector>("bin",std::string("bin")+node_count<bin_vnode<T,T_vector> >(),{p1,p2})
-    {
-      this->binded=true;
-      this->named=false;
-    }
-    
-    
-    std::shared_ptr<node<T,T_vector> > get_node()const override
-    {
-      return std::shared_ptr<node<T,T_vector> >(new bin_node<T,T_vector>());
-    }
-    
-    std::shared_ptr<vnode<T,T_vector> > clone()const override
-    {
-      return std::shared_ptr<vnode<T,T_vector> >(new bin_vnode<T,T_vector>(*this));
-    }
-  };
-  
-  //using vbin=bin_vnode<double>;
 }
 
 

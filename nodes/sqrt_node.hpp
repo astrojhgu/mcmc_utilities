@@ -45,31 +45,7 @@ namespace mcmc_utilities
       return order{0,true,true};
     }
   };
-
-
-  template <typename T,template <typename TE> class T_vector>
-  class sqrt_vnode
-    :public vnode<T,T_vector>
-  {
-  public:
-    sqrt_vnode(std::string n,
-	      const std::pair<const vnode<T,T_vector>&,size_t>& p)
-      :vnode<T,T_vector>("sqrt",n,{p})
-    {
-      this->binded=true;
-    }
-
-    std::shared_ptr<node<T,T_vector> > get_node()const override
-    {
-      return std::shared_ptr<node<T,T_vector> >(new sqrt_node<T,T_vector>);
-    }
-
-    std::shared_ptr<vnode<T,T_vector> > clone()const override
-    {
-      return std::shared_ptr<vnode<T,T_vector> >(new sqrt_vnode<T,T_vector>(*this));
-    }
-  };
-
+  
   template <typename T,template <typename TE> class T_vector>
   class sqrt_node_factory
     :public abstract_node_factory<T,T_vector>
@@ -90,15 +66,6 @@ namespace mcmc_utilities
       return std::string("deterministic node");
     }
   };
-
-  template <typename T,template <typename TE> class T_vector>
-  sqrt_vnode<T,T_vector> vsqrt(const vnode<T,T_vector>& n1)
-  {
-    auto result= sqrt_vnode<T,T_vector>(std::string("sqrt")+node_count<sqrt_vnode<T,T_vector> >(),{n1,(size_t)0});
-    result.named=false;
-    return result;
-  }
-
 }
 
 

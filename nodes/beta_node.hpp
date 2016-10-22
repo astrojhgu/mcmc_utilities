@@ -1,7 +1,6 @@
 #ifndef BETA_NODE_HPP
 #define BETA_NODE_HPP
 #include <core/deterministic_node.hpp>
-#include <helper/vnode.hpp>
 #include <helper/node_counter.hpp>
 #include <limits>
 #include <string>
@@ -55,31 +54,6 @@ namespace mcmc_utilities
     }
   };
   
-  
-  template <typename T,template <typename TE> class T_vector>
-  class beta_vnode
-    :public vnode<T,T_vector>
-  {
-  private:
-    T a,b;
-  public:
-    beta_vnode(std::string n,const T& v1,const T& v2)
-      :vnode<T,T_vector>("beta",n),a(v1),b(v2)
-    {
-      this->binded=true;
-    }
-    
-    std::shared_ptr<node<T,T_vector> > get_node()const override
-    {
-      return std::shared_ptr<node<T,T_vector> >(new beta_node<T,T_vector>(a,b));
-    }
-
-    std::shared_ptr<vnode<T,T_vector> > clone()const override
-    {
-      return std::shared_ptr<vnode<T,T_vector> >(new beta_vnode<T,T_vector>(*this));
-    }
-  };
-
   template <typename T,template <typename TE> class T_vector>
   class beta_node_factory
     :public abstract_node_factory<T,T_vector>

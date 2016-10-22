@@ -45,31 +45,7 @@ namespace mcmc_utilities
       return order{0,true,true};
     }
   };
-
-
-  template <typename T,template <typename TE> class T_vector>
-  class tan_vnode
-    :public vnode<T,T_vector>
-  {
-  public:
-    tan_vnode(std::string n,
-	      const std::pair<const vnode<T,T_vector>&,size_t>& p)
-      :vnode<T,T_vector>("tan",n,{p})
-    {
-      this->binded=true;
-    }
-
-    std::shared_ptr<node<T,T_vector> > get_node()const override
-    {
-      return std::shared_ptr<node<T,T_vector> >(new tan_node<T,T_vector>);
-    }
-
-    std::shared_ptr<vnode<T,T_vector> > clone()const override
-    {
-      return std::shared_ptr<vnode<T,T_vector> >(new tan_vnode<T,T_vector>(*this));
-    }
-  };
-
+  
   template <typename T,template <typename TE> class T_vector>
   class tan_node_factory
     :public abstract_node_factory<T,T_vector>
@@ -90,15 +66,6 @@ namespace mcmc_utilities
       return std::string("deterministic node");
     }
   };
-
-  template <typename T,template <typename TE> class T_vector>
-  tan_vnode<T,T_vector> vtan(const vnode<T,T_vector>& n1)
-  {
-    auto result= tan_vnode<T,T_vector>(std::string("tan")+node_count<tan_vnode<T,T_vector> >(),{n1,(size_t)0});
-    result.named=false;
-    return result;
-  }
-
 }
 
 

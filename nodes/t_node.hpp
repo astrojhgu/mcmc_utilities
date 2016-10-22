@@ -1,7 +1,6 @@
 #ifndef T_NODE_HPP
 #define T_NODE_HPP
 #include <core/deterministic_node.hpp>
-#include <helper/vnode.hpp>
 #include <helper/node_counter.hpp>
 #include <string>
 #include <cmath>
@@ -82,29 +81,6 @@ namespace mcmc_utilities
 
   };
   
-  
-  template <typename T,template <typename TE> class T_vector>
-  class t_vnode
-    :public vnode<T,T_vector>
-  {
-  public:
-    t_vnode(std::string n,const std::initializer_list<std::pair<const vnode<T,T_vector>&,size_t> >& p)
-      :vnode<T,T_vector>("t",n,p)
-    {
-      this->binded=true;
-    }
-    
-    std::shared_ptr<node<T,T_vector> > get_node()const override
-    {
-      return std::shared_ptr<node<T,T_vector> >(new t_node<T,T_vector>);
-    }
-
-    std::shared_ptr<vnode<T,T_vector> > clone()const override
-    {
-      return std::shared_ptr<vnode<T,T_vector> >(new t_vnode<T,T_vector>(*this));
-    }
-  };
-
   template <typename T,template <typename TE> class T_vector>
   class t_node_factory
     :public abstract_node_factory<T,T_vector>
@@ -127,8 +103,6 @@ namespace mcmc_utilities
     }
 
   };
-  
-  //using vt=t_vnode<double>;
 }
 
 #endif

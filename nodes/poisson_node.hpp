@@ -1,6 +1,5 @@
 #ifndef POISSON_NODE_HPP
 #define POISSON_NODE_HPP
-#include <helper/vnode.hpp>
 #include <helper/node_counter.hpp>
 #include <math/distributions.hpp>
 #include <math/functions.hpp>
@@ -99,44 +98,6 @@ namespace mcmc_utilities
       return std::string("stochastic node");
     }
   };
-
-  template <typename T,template <typename TE> class T_vector>
-  class poisson_vnode
-    :public vnode<T,T_vector>
-  {
-  private:
-    
-  public:
-    
-    poisson_vnode(std::string n,
-		  const std::pair<const vnode<T,T_vector>&,size_t>& p1
-		  )
-      :vnode<T,T_vector>("poisson",n,{p1})
-    {
-      this->binded=true;
-    }
-
-    poisson_vnode(const std::pair<const vnode<T,T_vector>&,size_t>& p1
-		  )
-      :vnode<T,T_vector>("poisson",std::string("poisson")+node_count<poisson_vnode<T,T_vector> >(),{p1})
-    {
-      this->binded=true;
-      this->named=false;
-    }
-    
-    
-    std::shared_ptr<node<T,T_vector> > get_node()const override
-    {
-      return std::shared_ptr<node<T,T_vector> >(new poisson_node<T,T_vector>());
-    }
-    
-    std::shared_ptr<vnode<T,T_vector> > clone()const override
-    {
-      return std::shared_ptr<vnode<T,T_vector> >(new poisson_vnode<T,T_vector>(*this));
-    }
-  };
-  
-  //using vpoisson=poisson_vnode<double>;
 }
 
 
