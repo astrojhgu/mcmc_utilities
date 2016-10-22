@@ -39,4 +39,6 @@ int main()
   nn2.connect_to_parent(&nn1,0,0);
 
   cout<<nn2.value(0)<<endl;
+
+  cout<<str_node<double,std_vector>::eval_expr("a+b*c",{"a","b","c"},{1,2,3})<<std::endl;
 }

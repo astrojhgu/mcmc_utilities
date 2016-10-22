@@ -155,6 +155,20 @@ namespace mcmc_utilities
 	  return p;
 	}
     }
+  public:
+    static T eval_expr(const std::string& expression1,
+		     const std::vector<std::string>& input_names1,
+		     const std::vector<T>& params)
+    {
+      str_node<T,T_vector> sn(expression1,input_names1);
+      std::vector<std::shared_ptr<node<T,T_vector> > > parents;
+      for(int i=0;i<input_names1.size();++i)
+	{
+	  parents.push_back(std::shared_ptr<node<T,T_vector> >(new const_node<T,T_vector>(params[i])));
+	  sn.connect_to_parent(parents.back().get(),i,0);
+	}
+      return sn.value(0); 
+    }
 		  
   public:
     str_node(const std::string& expression1,
