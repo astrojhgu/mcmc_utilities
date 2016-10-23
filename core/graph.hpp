@@ -37,6 +37,8 @@ namespace mcmc_utilities
        shuffled_sampling(false),topology_frozen(false),verbose_level(0)
     {}
 
+    virtual ~graph(){}
+
     graph(const graph<T,T_tag,T_vector>&)=delete;
     graph<T,T_tag,T_vector>& operator=(const graph<T,T_tag,T_vector>&)=delete;
     
