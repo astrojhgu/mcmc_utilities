@@ -1,6 +1,6 @@
 #ifndef T_NODE_HPP
 #define T_NODE_HPP
-#include <core/deterministic_node.hpp>
+#include <core/forward_sampleable_node.hpp>
 #include <helper/node_counter.hpp>
 #include <string>
 #include <cmath>
@@ -10,12 +10,12 @@ namespace mcmc_utilities
 {
   template <typename T,template <typename TE> class T_vector>
   class t_node
-    :public stochastic_node<T,T_vector>
+    :public forward_sampleable_node<T,T_vector>
   {
   private:
   public:
     t_node()
-      :stochastic_node<T,T_vector>(3,0)
+      :forward_sampleable_node<T,T_vector>(3,0)
     {}
     
   private:

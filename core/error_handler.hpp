@@ -136,6 +136,15 @@ namespace mcmc_utilities
       :mcmc_exception("node has already added")
     {}
   };
+
+  class parent_not_connected
+    :public mcmc_exception
+  {
+  public:
+    parent_not_connected()
+      :mcmc_exception("parent not connected")
+    {}
+  };
   
   class parents_not_exist
     :public mcmc_exception

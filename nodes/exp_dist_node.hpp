@@ -3,7 +3,7 @@
 
 //double exponential distribution
 
-#include <core/deterministic_node.hpp>
+#include <core/forward_sampleable_node.hpp>
 #include <helper/node_counter.hpp>
 #include <string>
 #include <helper/abstract_node_factory.hpp>
@@ -12,12 +12,12 @@ namespace mcmc_utilities
 {
   template <typename T,template <typename TE> class T_vector>
   class exp_dist_node
-    :public stochastic_node<T,T_vector>
+    :public forward_sampleable_node<T,T_vector>
   {
   private:
   public:
     exp_dist_node()
-      :stochastic_node<T,T_vector>(1,std::numeric_limits<T>::epsilon())
+      :forward_sampleable_node<T,T_vector>(1,std::numeric_limits<T>::epsilon())
     {}
     
   private:

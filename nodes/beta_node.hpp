@@ -1,6 +1,6 @@
 #ifndef BETA_NODE_HPP
 #define BETA_NODE_HPP
-#include <core/deterministic_node.hpp>
+#include <core/forward_sampleable_node.hpp>
 #include <helper/node_counter.hpp>
 #include <limits>
 #include <string>
@@ -11,13 +11,13 @@ namespace mcmc_utilities
 {
   template <typename T,template <typename TE> class T_vector>
   class beta_node
-    :public stochastic_node<T,T_vector>
+    :public forward_sampleable_node<T,T_vector>
   {
   private:
     T alpha,beta;
   public:
     beta_node(T a,T b)
-      :stochastic_node<T,T_vector>(0,.5),alpha(a),beta(b)
+      :forward_sampleable_node<T,T_vector>(0,.5),alpha(a),beta(b)
     {}
     
   private:

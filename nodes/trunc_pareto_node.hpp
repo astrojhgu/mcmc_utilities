@@ -1,6 +1,6 @@
 #ifndef TRUNC_PARETO_NODE_HPP
 #define TRUNC_PARETO_NODE_HPP
-#include <core/deterministic_node.hpp>
+#include <core/forward_sampleable_node.hpp>
 #include <helper/node_counter.hpp>
 #include <string>
 #include <helper/abstract_node_factory.hpp>
@@ -10,13 +10,13 @@ namespace mcmc_utilities
 {
   template <typename T,template <typename TE> class T_vector>
   class trunc_pareto_node
-    :public stochastic_node<T,T_vector>
+    :public forward_sampleable_node<T,T_vector>
   {
   private:
     T xmax;
   public:
     trunc_pareto_node(T xm)
-      :stochastic_node<T,T_vector>(2,0),xmax(xm)
+      :forward_sampleable_node<T,T_vector>(2,0),xmax(xm)
     {}
     
   private:

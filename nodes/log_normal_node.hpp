@@ -1,6 +1,6 @@
 #ifndef LOG_NORMAL_NODE_HPP
 #define LOG_NORMAL_NODE_HPP
-#include <core/deterministic_node.hpp>
+#include <core/forward_sampleable_node.hpp>
 #include <helper/node_counter.hpp>
 #include <string>
 #include <helper/abstract_node_factory.hpp>
@@ -9,12 +9,12 @@ namespace mcmc_utilities
 {
   template <typename T,template <typename TE> class T_vector>
   class log_normal_node
-    :public stochastic_node<T,T_vector>
+    :public forward_sampleable_node<T,T_vector>
   {
   private:
   public:
     log_normal_node()
-      :stochastic_node<T,T_vector>(2,0)
+      :forward_sampleable_node<T,T_vector>(2,0)
     {}
     
   private:

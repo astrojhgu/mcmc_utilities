@@ -3,17 +3,17 @@
 #include <helper/node_counter.hpp>
 #include <math/distributions.hpp>
 #include <math/functions.hpp>
-#include <core/stochastic_node.hpp>
+#include <core/forward_sampleable_node.hpp>
 #include <helper/abstract_node_factory.hpp>
 namespace mcmc_utilities
 {
   template <typename T,template <typename TE> class T_vector>
   class poisson_node
-    :public stochastic_node<T,T_vector>
+    :public forward_sampleable_node<T,T_vector>
   {
   public:
     poisson_node()
-      :stochastic_node<T,T_vector>(1,1)
+      :forward_sampleable_node<T,T_vector>(1,1)
     {}
 
   public:

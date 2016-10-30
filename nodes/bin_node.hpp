@@ -3,16 +3,16 @@
 #include <helper/node_counter.hpp>
 #include <math/distributions.hpp>
 #include <math/functions.hpp>
-#include <core/stochastic_node.hpp>
+#include <core/forward_sampleable_node.hpp>
 namespace mcmc_utilities
 {
   template <typename T,template <typename TE> class T_vector>
   class bin_node
-    :public stochastic_node<T,T_vector>
+    :public forward_sampleable_node<T,T_vector>
   {
   public:
     bin_node()
-      :stochastic_node<T,T_vector>(2,1)
+      :forward_sampleable_node<T,T_vector>(2,1)
     {}
 
   public:

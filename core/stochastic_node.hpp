@@ -119,12 +119,21 @@ namespace mcmc_utilities
       set_element(v,idx,this->regulate(idx,v_));
     }
 
+    void set_observed_value(size_t idx,const T& v_)
+    {
+      this->set_value(idx,v_);
+      this->set_observed(idx,true);
+    }
+
     T regulate(size_t idx,const T& x)const
     {
       return do_regulate(idx,x);
     }
 
-
+    std::pair<T,T> var_range()const
+    {
+      return this->do_var_range();
+    }
 
   public:
     void sample(base_urand<T>& urand)
@@ -170,6 +179,18 @@ namespace mcmc_utilities
 	  this->set_value(i,xprev);
 	}
     }
+
+  public:
+    virtual bool is_continuous(size_t idx)const=0;
+    T_vector<T> init_points()const
+    {
+      return do_init_points();
+    }
+
+    T_vector<T> candidate_points()const
+    {
+      return this->do_candidate_points();
+    }
     
   private:
     virtual void do_sample(base_urand<T>& urand)
@@ -196,8 +217,6 @@ namespace mcmc_utilities
     {
       return x;
     }
-
-    virtual bool is_continuous(size_t idx)const=0;
 
     virtual std::pair<T,T> do_var_range()const=0;
 

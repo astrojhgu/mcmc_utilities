@@ -1,6 +1,6 @@
 #ifndef DISCRETE_UNIFORM_NODE_HPP
 #define DISCRETE_UNIFORM_NODE_HPP
-#include <core/deterministic_node.hpp>
+#include <core/forward_sampleable_node.hpp>
 #include <helper/node_counter.hpp>
 #include <helper/abstract_node_factory.hpp>
 #include <string>
@@ -10,7 +10,7 @@ namespace mcmc_utilities
 {
   template <typename T,template <typename TE> class T_vector>
   class discrete_uniform_node
-    :public stochastic_node<T,T_vector>
+    :public forward_sampleable_node<T,T_vector>
   {
   private:
     int a;
@@ -18,7 +18,7 @@ namespace mcmc_utilities
     T_vector<T> candidates;
   public:
     discrete_uniform_node(int _a,int _b)
-      :stochastic_node<T,T_vector>(0,round((_a+_b)/2)),a(_a),b(_b),candidates(_b-_a)
+      :forward_sampleable_node<T,T_vector>(0,round((_a+_b)/2)),a(_a),b(_b),candidates(_b-_a)
     {
       for(int i=a;i<b;++i)
 	{

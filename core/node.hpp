@@ -22,7 +22,7 @@ namespace mcmc_utilities
   template <typename T,template <typename TE> class T_vector>
   class node
   {
-  private:
+  protected:
     //public:
     std::list<stochastic_node<T,T_vector>* > stochastic_children;
     std::list<deterministic_node<T,T_vector>* > deterministic_children;
@@ -129,6 +129,16 @@ namespace mcmc_utilities
       return this->reduced_stochastic_children;
     }
 
+    const std::list<stochastic_node<T,T_vector>* >& get_stochastic_children()const
+    {
+      return this->stochastic_children;
+    }
+
+    const std::list<deterministic_node<T,T_vector>* >& get_deterministic_children()const
+    {
+      return this->deterministic_children;
+    }
+
     void init_value()
     {
       for(size_t i=0;i<ndims;++i)
@@ -219,6 +229,10 @@ namespace mcmc_utilities
     //obsid:the id in a set of observed values
     {
       //return parents[pid].first->value(parents[pid].second);
+      if(!get_element(parents,pid).first)
+	{
+	  throw parent_not_connected();
+	}
       return get_element(parents,pid).first->value(get_element(parents,pid).second);
     }
 

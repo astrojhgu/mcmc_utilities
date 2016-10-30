@@ -1,6 +1,6 @@
 #ifndef GEN_GAMMA_NODE_HPP
 #define GEN_GAMMA_NODE_HPP
-#include <core/deterministic_node.hpp>
+#include <core/forward_sampleable_node.hpp>
 #include <helper/node_counter.hpp>
 #include <string>
 #include <cmath>
@@ -10,12 +10,12 @@ namespace mcmc_utilities
 {
   template <typename T,template <typename TE> class T_vector>
   class gen_gamma_node
-    :public stochastic_node<T,T_vector>
+    :public forward_sampleable_node<T,T_vector>
   {
   private:
   public:
     gen_gamma_node()
-      :stochastic_node<T,T_vector>(3,1)
+      :forward_sampleable_node<T,T_vector>(3,1)
     {}
     
   private:

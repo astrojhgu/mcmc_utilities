@@ -25,7 +25,6 @@ namespace mcmc_utilities
     std::map<T_tag,std::shared_ptr<node<T,T_vector> > > node_map;
     //std::map<std::shared_ptr<node<T,T_vector> > ,T_tag, std::owner_less<std::shared_ptr<node<T,T_vector> > > > tag_map;
     std::map<std::shared_ptr<node<T,T_vector> > ,T_tag > tag_map;
-    bool shuffled_sampling;
     bool topology_frozen;
     int verbose_level;
   public:
@@ -34,7 +33,7 @@ namespace mcmc_utilities
        deterministic_node_list(),
        node_map(),
        tag_map(),
-       shuffled_sampling(false),topology_frozen(false),verbose_level(0)
+       topology_frozen(false),verbose_level(0)
     {}
 
     virtual ~graph(){}
@@ -107,11 +106,6 @@ namespace mcmc_utilities
       verbose_level=n;
     }
 
-    void set_shuffle(bool s)
-    {
-      shuffled_sampling=s;
-    }
-
     void freeze_topology()
     {
       for(auto& p:stochastic_node_list)
@@ -139,31 +133,15 @@ namespace mcmc_utilities
       
       stochastic_node<T,T_vector>* p_current=nullptr;
       int n=0;
-      T_vector<stochastic_node<T,T_vector>*> stochastic_node_vector;
-      reserve(stochastic_node_vector,get_size(stochastic_node_list));
-      std::for_each(std::begin(stochastic_node_list),
-		    std::end(stochastic_node_list),
-		    [&](stochastic_node<T,T_vector>* p){push_back(stochastic_node_vector,p);}
-		    );
-      if(shuffled_sampling)
-	{
-	  std::random_shuffle(std::begin(stochastic_node_vector),std::end(stochastic_node_vector),
-			      [&](size_t i)->size_t {
-				for(;;)
-				  {
-				    size_t result=rnd()*i;
-				    if(result<i)
-				      {
-					return result;
-				      }
-				  }
-				return 0;
-			      });
-	}
-      
+      //T_vector<stochastic_node<T,T_vector>*> stochastic_node_vector;
+      //reserve(stochastic_node_vector,get_size(stochastic_node_list));
+      //std::for_each(std::begin(stochastic_node_list),
+      //std::end(stochastic_node_list),
+      //[&](stochastic_node<T,T_vector>* p){push_back(stochastic_node_vector,p);}
+      //);
       try
 	{
-	  for(auto& p:stochastic_node_vector)
+	  for(auto& p:stochastic_node_list)
 	    {
 	      if(p->num_of_unobserved()>0)
 		{
