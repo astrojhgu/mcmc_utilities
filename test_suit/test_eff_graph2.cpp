@@ -87,10 +87,10 @@ int main()
   graph<double,tag_t,std_vector> g;
   data_loader dl("eff.txt");
 
-  auto pA=std::shared_ptr<node<double,std_vector> >(new uniform_node<double,std_vector>(.001,1-1e-5));
-  auto pB=std::shared_ptr<node<double,std_vector> >(new uniform_node<double,std_vector>(.001,1-1e-5));
-  auto pmu=std::shared_ptr<node<double,std_vector> >(new uniform_node<double,std_vector>(.001,100-1e-5));
-  auto psigma=std::shared_ptr<node<double,std_vector> >(new uniform_node<double,std_vector>(.001,100-1e-5));
+  auto pA=std::shared_ptr<node<double,std_vector> >(new fixed_uniform_node<double,std_vector>(.001,1-1e-5));
+  auto pB=std::shared_ptr<node<double,std_vector> >(new fixed_uniform_node<double,std_vector>(.001,1-1e-5));
+  auto pmu=std::shared_ptr<node<double,std_vector> >(new fixed_uniform_node<double,std_vector>(.001,100-1e-5));
+  auto psigma=std::shared_ptr<node<double,std_vector> >(new fixed_uniform_node<double,std_vector>(.001,100-1e-5));
 
   g.add_node(pA,{"A"});
   g.add_node(pB,{"B"});

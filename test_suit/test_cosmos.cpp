@@ -39,23 +39,23 @@ int main()
   auto obsx=data.find("obsx")->second;
   auto errobsx=data.find("errobsx")->second;
 
-  std::shared_ptr<node<double,std_vector> > pMm(new uniform_node<double,std_vector>(-20.3,-18.3));
-  std::shared_ptr<node<double,std_vector> > palpha(new uniform_node<double,std_vector>(-2,2));
-  std::shared_ptr<node<double,std_vector> > pbeta(new uniform_node<double,std_vector>(-4,4));
-  std::shared_ptr<node<double,std_vector> > pcm(new uniform_node<double,std_vector>(-3,3));
-  std::shared_ptr<node<double,std_vector> > pxm(new uniform_node<double,std_vector>(-10,10));
-  std::shared_ptr<node<double,std_vector> > plgintrscatM(new uniform_node<double,std_vector>(-3,0));
+  std::shared_ptr<node<double,std_vector> > pMm(new fixed_uniform_node<double,std_vector>(-20.3,-18.3));
+  std::shared_ptr<node<double,std_vector> > palpha(new fixed_uniform_node<double,std_vector>(-2,2));
+  std::shared_ptr<node<double,std_vector> > pbeta(new fixed_uniform_node<double,std_vector>(-4,4));
+  std::shared_ptr<node<double,std_vector> > pcm(new fixed_uniform_node<double,std_vector>(-3,3));
+  std::shared_ptr<node<double,std_vector> > pxm(new fixed_uniform_node<double,std_vector>(-10,10));
+  std::shared_ptr<node<double,std_vector> > plgintrscatM(new fixed_uniform_node<double,std_vector>(-3,0));
   std::shared_ptr<node<double,std_vector> > pintrscatM(new str_node<double,std_vector>("10^x",{"x"}));
-  std::shared_ptr<node<double,std_vector> > plgintrscatx(new uniform_node<double,std_vector>(-5,2));
+  std::shared_ptr<node<double,std_vector> > plgintrscatx(new fixed_uniform_node<double,std_vector>(-5,2));
   std::shared_ptr<node<double,std_vector> > pintrscatx(new str_node<double,std_vector>("10^x",{"x"}));
-  std::shared_ptr<node<double,std_vector> > plgintrscatC(new uniform_node<double,std_vector>(-5,2));
+  std::shared_ptr<node<double,std_vector> > plgintrscatC(new fixed_uniform_node<double,std_vector>(-5,2));
   std::shared_ptr<node<double,std_vector> > pintrscatC(new str_node<double,std_vector>("10^x",{"x"}));
   std::shared_ptr<node<double,std_vector> > pH0_mu(new const_node<double,std_vector>(72));
   std::shared_ptr<node<double,std_vector> > pH0_sigma(new const_node<double,std_vector>(8.0));
   std::shared_ptr<node<double,std_vector> > pH0(new normal_node<double,std_vector>());
   std::shared_ptr<node<double,std_vector> > pOmega_l(new str_node<double,std_vector>("1-x",{"x"}));
-  std::shared_ptr<node<double,std_vector> > pOmega_m(new uniform_node<double,std_vector>(0,1));
-  std::shared_ptr<node<double,std_vector> > pw(new uniform_node<double,std_vector>(-4,0));
+  std::shared_ptr<node<double,std_vector> > pOmega_m(new fixed_uniform_node<double,std_vector>(0,1));
+  std::shared_ptr<node<double,std_vector> > pw(new fixed_uniform_node<double,std_vector>(-4,0));
 
   g.add_node(pMm,{"Mm"});
   g.add_node(palpha,{"alpha"});
@@ -81,7 +81,7 @@ int main()
 
   for(int i=0;i<obsz.size();++i)
     {
-      std::shared_ptr<node<double,std_vector> > pz(new uniform_node<double,std_vector>(1e-6,2));
+      std::shared_ptr<node<double,std_vector> > pz(new fixed_uniform_node<double,std_vector>(1e-6,2));
       g.add_node(pz,{"z",i});
       g.set_value({"z",i},0,obsz[i]);
       std::shared_ptr<node<double,std_vector> > perrz(new const_node<double,std_vector>(errz[i]));

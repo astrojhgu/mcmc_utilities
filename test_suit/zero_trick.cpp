@@ -25,7 +25,7 @@ private:
 
 int main()
 {
-  auto pY=std::shared_ptr<node<double,std_vector> >(new uniform_node<double,std_vector>(-1000,1000));
+  auto pY=std::shared_ptr<node<double,std_vector> >(new fixed_uniform_node<double,std_vector>(-1000,1000));
   auto p_poisson=new poisson_node<double,std_vector>;
   auto pl=std::shared_ptr<node<double,std_vector> >(p_poisson);
   auto pth=std::shared_ptr<node<double,std_vector> >(new const_node<double,std_vector>(150));

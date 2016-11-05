@@ -50,10 +50,10 @@ int main()
   g2.add_node(new const_node<double,std_vector>(2),{"m2"});
   g2.add_node(new const_node<double,std_vector>(.2),{"s2"});
   */  
-  auto m1=new uniform_node<double,std_vector>(-10,10);
-  auto s1=new uniform_node<double,std_vector>(.1,10);
-  auto m2=new uniform_node<double,std_vector>(-10,10);
-  auto s2=new uniform_node<double,std_vector>(.1,10);
+  auto m1=new fixed_uniform_node<double,std_vector>(-10,10);
+  auto s1=new fixed_uniform_node<double,std_vector>(.1,10);
+  auto m2=new fixed_uniform_node<double,std_vector>(-10,10);
+  auto s2=new fixed_uniform_node<double,std_vector>(.1,10);
   m1->set_value(0,0);
   s1->set_value(0,.2);
   m2->set_value(0,2);
@@ -65,7 +65,7 @@ int main()
   g2.add_node(s2,{"s2"});
 
 
-  auto p=new uniform_node<double,std_vector>(1e-5,1-1e-5);
+  auto p=new fixed_uniform_node<double,std_vector>(1e-5,1-1e-5);
   p->set_value(0,.2);
   g2.add_node(p,{"p"});
   

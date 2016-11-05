@@ -17,7 +17,7 @@ int main()
 {
   urand<double> rnd;
   graph<double,std::string,std_vector> g;
-  auto x_prior=std::shared_ptr<node<double,std_vector> >(new uniform_node<double,std_vector>(-1000,1000));
+  auto x_prior=std::shared_ptr<node<double,std_vector> >(new fixed_uniform_node<double,std_vector>(-1000,1000));
   auto x_likelihood=std::shared_ptr<node<double,std_vector> >(new likelihood_adapter<double,std_vector>(new t_node<double,std_vector>));
   auto t_mean=std::shared_ptr<node<double,std_vector> >(new const_node<double,std_vector>(1.0));
   auto t_sigma=std::shared_ptr<node<double,std_vector> >(new const_node<double,std_vector>(1.0e-7));

@@ -66,7 +66,7 @@ int main()
   auto data=generate_data();
   //return 0;
   graph<double,tag_t,std_vector> g;
-  auto p=new uniform_node<double,std_vector>(1e-6,1-1e-6);
+  auto p=new fixed_uniform_node<double,std_vector>(1e-6,1-1e-6);
   //p->set_observed_value(0,.2);
   //auto mu1=new const_node<double,std_vector>(5.2);
   //auto sigma1=new const_node<double,std_vector>(1);
@@ -74,11 +74,11 @@ int main()
   //auto mu2=new const_node<double,std_vector>(1);
   //auto sigma2=new const_node<double,std_vector>(.5);
   
-  auto mu1=new uniform_node<double,std_vector>(0,7);
-  auto sigma1=new uniform_node<double,std_vector>(.01,10);
+  auto mu1=new fixed_uniform_node<double,std_vector>(0,7);
+  auto sigma1=new fixed_uniform_node<double,std_vector>(.01,10);
 
-  auto mu2=new uniform_node<double,std_vector>(0,7);
-  auto sigma2=new uniform_node<double,std_vector>(.01,10);
+  auto mu2=new fixed_uniform_node<double,std_vector>(0,7);
+  auto sigma2=new fixed_uniform_node<double,std_vector>(.01,10);
   g.add_node(p,{"p_prior"});
   g.add_node(mu1,{"mu1"});
   g.add_node(sigma1,{"sigma1"});
