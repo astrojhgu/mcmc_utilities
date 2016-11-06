@@ -45,8 +45,13 @@ namespace mcmc_utilities
     if(std::isnan(result)||std::isinf(result))
       {
 	nan_or_inf e;
-	e.attach_message("#0");
-	e.attach_message(std::string("x=")+std::to_string(x));
+	std::ostringstream oss;
+	oss<<"##################\n";
+	oss<<"#0\n";
+	oss<<"x="<<x<<"\n";
+	oss<<__FILE__<<":"<<__LINE__<<"\n";
+	oss<<"##################\n";
+	e.attach_message(oss.str());
 	throw e;
       }
     return result;
@@ -105,7 +110,11 @@ namespace mcmc_utilities
 	//nan_or_inf e;
 	//e.attach_message("nan #1");
 	ill_conditioned_distribution e;
-	e.attach_message("ill #1");
+	std::ostringstream oss;
+	oss<<"##################\n";
+	oss<<__FILE__<<":"<<__LINE__<<"\n";
+	oss<<"##################\n";
+	e.attach_message(oss.str());	
 	throw e;
       }
     return result;
@@ -213,7 +222,11 @@ namespace mcmc_utilities
     if(!std::isfinite(result))
       {
 	nan_or_inf e;
-	e.attach_message("#2");
+	std::ostringstream oss;
+	oss<<"##################\n";
+	oss<<__FILE__<<":"<<__LINE__<<"\n";
+	oss<<"##################\n";
+	e.attach_message(oss.str());
 	throw e;
       }
     
@@ -552,7 +565,13 @@ namespace mcmc_utilities
       }
     //cerr<<"x="<<x<<endl;
     var_out_of_range e;
-    e.attach_message("#3");
+    std::ostringstream oss;
+    oss<<"##################\n";
+    oss<<"x="<<x<<"\n";
+    oss<<"xrange:"<<section_list.front().x_l()<<","<<section_list.back().x_u()<<"\n";
+    oss<<__FILE__<<":"<<__LINE__<<"\n";
+    oss<<"##################\n";
+    e.attach_message(oss.str());
     throw e;
     return C_ZERO<T>();
   }

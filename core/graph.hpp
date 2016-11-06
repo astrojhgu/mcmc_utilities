@@ -162,6 +162,7 @@ namespace mcmc_utilities
 	  oss<<"When sampling\n";
 	  oss<<this->get_tag(p_current);
 	  oss<<"\n";
+	  oss<<__FILE__<<":"<<__LINE__<<"\n";
 	  oss<<"##################\n";
 	  e.attach_message(oss.str());
 	  throw e;
