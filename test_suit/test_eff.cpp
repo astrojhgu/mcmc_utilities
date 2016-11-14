@@ -98,7 +98,7 @@ public:
 
   double do_eval_log(const variable& x,int n)const
   {
-    if(x.A<0)
+    if(x.A<0||x.A>1||x.B<0||x.B>1)
       {
 	return -std::numeric_limits<double>::infinity();
       }
@@ -149,8 +149,8 @@ int main()
   for(int i=0;i<100;++i)
     {
       variable y;
-      y.A=.5+rng()*.2-.1;
-      y.B=.75+rng()*.2-.1;
+      y.A=.2+rng()*.2-.1;
+      y.B=.9+rng()*.2-.1;
       y.mu=15+rng()*.2-.1;
       y.sigma=12+rng()*.2-.1;
       ensemble.push_back(y);
@@ -160,7 +160,7 @@ int main()
   for(int n=0;n<30000;++n)
     {
       //gibbs_sample(cd,x,rng);
-      ensemble=pemcee([&cd](const variable& x){return cd.eval_log(x);},ensemble,rng);
+      ensemble=pemcee([&cd](const variable& x){return cd.eval_log(x);},ensemble,prng);
       int j;
       do{j=rng()*ensemble.size();}while(j==100);
       

@@ -5,6 +5,7 @@
 #include <functional>
 #include <type_traits>
 #include <thread>
+#include <sstream>
 #include "mcmc_traits.hpp"
 #include "base_urand.hpp"
 #include "distribution.hpp"
@@ -60,6 +61,23 @@ namespace mcmc_utilities
 	    set_element(Y,l,get_element(get_element(ensemble,j+half_K*ni),l)+z*(get_element(get_element(ensemble,k),l)-get_element(get_element(ensemble,j+half_K*ni),l)));
 	  }
 	T q=std::exp((n-1)*std::log(z)+(logprob(Y)-logprob(get_element(ensemble,k))));
+	if(std::isnan(q)||std::isinf(q))
+	  {
+	    nan_or_inf e;
+	    e.attach_message("inf or nan\n");
+	    
+	    std::ostringstream oss;
+	    oss<<"q="<<q<<std::endl;
+	    oss<<"x=";
+	    for(int l=0;l<n;++l)
+	      {
+		oss<<get_element(Y,l)<<" ";
+	      }
+	    oss<<"\ny="<<logprob(Y)<<"\n";
+	    e.attach_message(oss.str());
+	    throw e;
+	  }
+	
 	T r=rnd();
 	if(r<=q)
 	  {
