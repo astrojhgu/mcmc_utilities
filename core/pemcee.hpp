@@ -5,6 +5,8 @@
 #include <functional>
 #include <type_traits>
 #include <thread>
+#include <mutex>
+#include <atomic>
 #include <sstream>
 #include "mcmc_traits.hpp"
 #include "base_urand.hpp"
@@ -94,19 +96,50 @@ namespace mcmc_utilities
       }
     else
       {
-	size_t hard_nthread=std::thread::hardware_concurrency();
-	for(size_t k=0;k<K;)
-	  {
-	    std::vector<std::thread> pool;
-	    while(pool.size()<hard_nthread&&k<K)
+	std::vector<std::thread> pool;
+	pool.reserve(K);
+	size_t nthread_allowed=std::thread::hardware_concurrency();
+	size_t nrunning_thread(0);
+	size_t k(0);
+	std::mutex mx;
+	std::function<void()> chain_task([&nrunning_thread,&k,&task,nthread_allowed,&pool,&chain_task,K,&mx](){
+	    mx.lock();
+	    int k1=k;
+	    //std::cerr<<"k="<<k<<std::endl;
+	    nrunning_thread++;
+	    k++;
+	    mx.unlock();
+	    task(k1);
+	    mx.lock();
+	    if(nrunning_thread<nthread_allowed&&pool.size()<K)
 	      {
-		pool.push_back(std::thread(task,k++));
+		pool.push_back(std::thread(chain_task));
+		assert(pool.size()<=K);
 	      }
+	    nrunning_thread--;
+	    mx.unlock();
+	  });
+	mx.lock();
+	for(int i=0;i<nthread_allowed;++i)
+	  {
+	    pool.push_back(std::thread(chain_task));
+	  }
+	mx.unlock();
+	//std::cerr<<pool.size()<<std::endl;
+	bool any_running=false;
+	do
+	  {
+	    any_running=false;
 	    for(auto& t:pool)
 	      {
-		t.join();
+		if(t.joinable())
+		  {
+		    any_running=true;
+		    t.join();
+		  }
 	      }
 	  }
+	while(any_running||pool.size()<K);
       }
     
     return (ensemble_half);
