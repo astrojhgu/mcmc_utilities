@@ -7,8 +7,8 @@
 #include <cassert>
 #include <iostream>
 #include <cassert>
-
-
+#include <core/pemcee.hpp>
+#include <rng/prng.hpp>
 template <typename T>
 using std_vector=std::vector<T>;
 
@@ -33,10 +33,28 @@ struct variable
   variable()
     :A(data[0]),B(data[1]),mu(data[2]),sigma(data[3])
   {
-    for(int i=0;i<3;++i)
+    for(int i=0;i<4;++i)
       {
 	data[i]=0;
       }
+  }
+
+  variable(const variable& rhs)
+    :A(data[0]),B(data[1]),mu(data[2]),sigma(data[3])
+  {
+    for(int i=0;i<4;++i)
+      {
+	data[i]=rhs.data[i];
+      }
+  }
+
+  variable& operator=(const variable& rhs)
+  {
+    for(int i=0;i<4;++i)
+      {
+	data[i]=rhs.data[i];
+      }
+    return *this;
   }
 
   double& operator[](size_t i)
@@ -80,6 +98,11 @@ public:
 
   double do_eval_log(const variable& x,int n)const
   {
+    if(x.A<0)
+      {
+	return -std::numeric_limits<double>::infinity();
+      }
+    
     double log_p=0;
 
     for(unsigned int i=0;i<E.size();++i)
@@ -119,16 +142,35 @@ int main()
   x.mu=15;
   x.sigma=12;
   urand<double> rng;
+  prng<double> prng;
   //cout<<cd.eval_log(x)<<endl;
+
+  std::vector<variable> ensemble;
+  for(int i=0;i<100;++i)
+    {
+      variable y;
+      y.A=.5+rng()*.2-.1;
+      y.B=.75+rng()*.2-.1;
+      y.mu=15+rng()*.2-.1;
+      y.sigma=12+rng()*.2-.1;
+      ensemble.push_back(y);
+    }
+
+  
   for(int n=0;n<30000;++n)
     {
-      gibbs_sample(cd,x,rng);
-      //if(n>100)
+      //gibbs_sample(cd,x,rng);
+      ensemble=pemcee([&cd](const variable& x){return cd.eval_log(x);},ensemble,rng);
+      int j;
+      do{j=rng()*ensemble.size();}while(j==100);
+      
+      if(n>100)
 	{
+	  variable x=ensemble[j];
 	  for(unsigned int i=0;i<x.size();++i)
-	    {
-	      cout<<x[i]<<" ";
-	    }
+	  {
+	    cout<<x[i]<<" ";
+	  }
 	  cout<<endl;
 	}
     }

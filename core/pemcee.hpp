@@ -2,6 +2,10 @@
 #define PEMCEE_HPP
 #include <cassert>
 #include <cmath>
+#include <functional>
+#include <type_traits>
+#include <thread>
+#include "mcmc_traits.hpp"
 #include "base_urand.hpp"
 #include "distribution.hpp"
 #include "error_handler.hpp"
@@ -22,45 +26,72 @@ namespace mcmc_utilities
     return std::pow(static_cast<T>(1/sqrt_a+p/2),static_cast<T>(2));
   }
   
-  template <typename T,template <typename TE> class T_vector,typename T_var>
-  void pemcee(const probability_density_md<T,T_var,T_vector>& prob,
-	      T_vector<T_var>& ensemble,
-	      base_urand<T>& rnd,
-	      T a=2)
+  template <typename T_logprob,typename T_ensemble>
+  const T_ensemble pemcee(const T_logprob& logprob,
+	  const T_ensemble& ensemble,
+	  base_urand<typename std::result_of<T_logprob(typename T_ensemble::value_type)>::type>& rnd,
+	  typename std::result_of<T_logprob(typename T_ensemble::value_type)>::type a=2)
   {
-    size_t K=ensemble.size();
-    size_t n=ensemble[0].size();
+    const size_t K=ensemble.size();
+    const size_t n=get_element(ensemble,0).size();
+    const size_t half_K=K/2;
+    using T=typename std::result_of<T_logprob(typename T_ensemble::value_type)>::type;
+    using T_var=typename T_ensemble::value_type;
     if(K%2!=0)
       {
 	throw mcmc_exception("number of positions must be even");
       }
-    T_vector<T_var> ensemble_half(ensemble);
-    for(size_t i:{0,1})
+    T_ensemble ensemble_half(ensemble);
+
+    auto task=[&](size_t k)
       {
-	size_t ni=1-i;
-	for(size_t k=0;k<K/2;++k)
+	const size_t i=k<half_K?0:1;
+	const size_t ni=1-i;
+	size_t j=0;
+	do
 	  {
-	    size_t j=0;
-	    do
+	    j=rnd()*(half_K);
+	  }
+	while(j==half_K);
+	T z=draw_z(rnd,a);
+	T_var Y(get_element(ensemble,k));
+	for(int l=0;l<Y.size();++l)
+	  {
+	    set_element(Y,l,get_element(get_element(ensemble,j+half_K*ni),l)+z*(get_element(get_element(ensemble,k),l)-get_element(get_element(ensemble,j+half_K*ni),l)));
+	  }
+	T q=std::exp((n-1)*std::log(z)+(logprob(Y)-logprob(get_element(ensemble,k))));
+	T r=rnd();
+	if(r<=q)
+	  {
+	    set_element(ensemble_half,k,Y);
+	  }
+      };
+
+    if(!rnd.is_parallel())
+      {
+	for(size_t k=0;k<K;++k)
+	  {
+	    task(k);
+	  }
+      }
+    else
+      {
+	size_t hard_nthread=std::thread::hardware_concurrency();
+	for(size_t k=0;k<K;)
+	  {
+	    std::vector<std::thread> pool;
+	    while(pool.size()<hard_nthread&&k<K)
 	      {
-		j=rnd()*(K/2);
+		pool.push_back(std::thread(task,k++));
 	      }
-	    while(j==K/2);
-	    T z=draw_z(rnd,a);
-	    T_var Y(ensemble[k+K/2*i]);
-	    for(int l=0;l<Y.size();++l)
+	    for(auto& t:pool)
 	      {
-		Y[l]=ensemble[j+K/2*ni][l]+z*(ensemble[k+K/2*i][l]-ensemble[j+K/2*ni][l]);
-	      }
-	    T q=std::exp((n-1)*std::log(z)+(prob.eval_log(Y)-prob.eval_log(ensemble[k+K/2*i])));
-	    T r=rnd();
-	    if(r<=q)
-	      {
-		ensemble_half[k+K/2*i]=Y;
+		t.join();
 	      }
 	  }
       }
-    ensemble.swap(ensemble_half);
+    
+    return (ensemble_half);
   }
 }
 
