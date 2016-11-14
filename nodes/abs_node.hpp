@@ -1,7 +1,7 @@
 #ifndef ABS_NODE_HPP
 #define ABS_NODE_HPP
 
-#include <core/tp_aware_dtm_node.hpp>
+#include <core/differentiable_dtm_node.hpp>
 #include <math/functions.hpp>
 #include <helper/node_counter.hpp>
 #include <helper/abstract_node_factory.hpp>
@@ -15,11 +15,11 @@ namespace mcmc_utilities
 {
   template <typename T,template <typename TE> class T_vector>
   class abs_node
-    :public tp_aware_dtm_node<T,T_vector>
+    :public differentiable_dtm_node<T,T_vector>
   {
   public:
     abs_node()
-      :tp_aware_dtm_node<T,T_vector>(1,1)
+      :differentiable_dtm_node<T,T_vector>(1,1)
     {}
 
     T do_calc(size_t idx,const T_vector<T>& parent)const override
@@ -30,21 +30,6 @@ namespace mcmc_utilities
     std::shared_ptr<node<T,T_vector> > do_clone()const override
     {
       return std::shared_ptr<node<T,T_vector> >(new abs_node);
-    }
-
-    order do_get_order(const node<T,T_vector>* pn,int n)const override
-    {
-      order o=this->get_parent_order(0,pn,n);
-      //return order{0,false,false};
-      if(o.n!=0||
-	 !o.poly)
-	{
-	  return order{0,false,false};
-	}
-      else
-	{
-	  return order{0,true,true};
-	}
     }
 
   };

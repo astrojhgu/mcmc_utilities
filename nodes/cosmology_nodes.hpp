@@ -1,7 +1,7 @@
 #ifndef COSMOLOGY_NODE_HPP
 #define COSMOLOGY_NODE_HPP
 
-#include <core/tp_aware_dtm_node.hpp>
+#include <core/cached_dtm_node.hpp>
 #include <math/functions.hpp>
 #include <helper/node_counter.hpp>
 #include <memory>
@@ -16,7 +16,7 @@ namespace mcmc_utilities
   ///////////luminosity distance node//////////////
   template <typename T,template <typename TE> class T_vector>
   class luminosity_distance_node
-    :public tp_aware_dtm_node<T,T_vector>
+    :public cached_dtm_node<T,T_vector>
   {
   private:
     struct parent_value_cache_t
@@ -39,7 +39,7 @@ namespace mcmc_utilities
     T value_cache;
   public:
     luminosity_distance_node()
-      :tp_aware_dtm_node<T,T_vector>(7,1),parent_value_cache{},value_cache{}
+      :cached_dtm_node<T,T_vector>(7,1),parent_value_cache{},value_cache{}
     {}
 
     T do_calc(size_t idx,const T_vector<T>& parent)const override
@@ -94,20 +94,6 @@ namespace mcmc_utilities
       return std::shared_ptr<node<T,T_vector> >(new luminosity_distance_node);
     }
 
-    order do_get_order(const node<T,T_vector>* pn,int n)const override
-    {
-      for (size_t i=0;i<this->num_of_parents();++i)
-	{
-	  order o=this->get_parent_order(i,pn,n);
-	  if(o.n!=0||
-	     !o.poly)
-	    {
-	      return order{0,false,false};
-	    }
-	}
-      return order{0,true,true};
-    }
-
   };
 
 
@@ -135,7 +121,7 @@ namespace mcmc_utilities
   ///////////asize distance node//////////////
   template <typename T,template <typename TE> class T_vector>
   class asize_distance_node
-    :public tp_aware_dtm_node<T,T_vector>
+    :public cached_dtm_node<T,T_vector>
   {
   private:
     struct parent_value_cache_t
@@ -159,7 +145,7 @@ namespace mcmc_utilities
 
   public:
     asize_distance_node()
-      :tp_aware_dtm_node<T,T_vector>(7,1),parent_value_cache{},value_cache{}
+      :cached_dtm_node<T,T_vector>(7,1),parent_value_cache{},value_cache{}
     {}
 
     T do_calc(size_t idx,const T_vector<T>& parent)const override
@@ -203,21 +189,6 @@ namespace mcmc_utilities
     {
       return std::shared_ptr<node<T,T_vector> >(new asize_distance_node);
     }
-
-    order do_get_order(const node<T,T_vector>* pn,int n)const override
-    {
-      for (size_t i=0;i<this->num_of_parents();++i)
-	{
-	  order o=this->get_parent_order(i,pn,n);
-	  if(o.n!=0||
-	     !o.poly)
-	    {
-	      return order{0,false,false};
-	    }
-	}
-      return order{0,true,true};
-    }
-
 
   };
 

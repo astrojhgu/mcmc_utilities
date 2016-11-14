@@ -1,7 +1,7 @@
 #ifndef EZ_NODE_HPP
 #define EZ_NODE_HPP
 
-#include <core/tp_aware_dtm_node.hpp>
+#include <core/differentiable_dtm_node.hpp>
 #include <math/functions.hpp>
 #include <helper/node_counter.hpp>
 #include <memory>
@@ -14,11 +14,11 @@ namespace mcmc_utilities
 {
   template <typename T,template <typename TE> class T_vector>
   class ez_node
-    :public tp_aware_dtm_node<T,T_vector>
+    :public differentiable_dtm_node<T,T_vector>
   {
   public:
     ez_node()
-      :tp_aware_dtm_node<T,T_vector>(6,1)
+      :differentiable_dtm_node<T,T_vector>(6,1)
     {}
 
     T E(T z,T Omega_m,T Omega_l,T Omega_k,T Omega_rad,T w)const
@@ -41,20 +41,6 @@ namespace mcmc_utilities
     std::shared_ptr<node<T,T_vector> > do_clone()const override
     {
       return std::shared_ptr<node<T,T_vector> >(new ez_node);
-    }
-
-    order do_get_order(const node<T,T_vector>* pn,int n)const override
-    {
-      for (size_t i=0;i<this->num_of_parents();++i)
-	{
-	  order o=this->get_parent_order(i,pn,n);
-	  if(o.n!=0||
-	     !o.poly)
-	    {
-	      return order{0,false,false};
-	    }
-	}
-      return order{0,true,true};
     }
   };
 

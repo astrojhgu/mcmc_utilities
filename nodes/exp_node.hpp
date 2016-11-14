@@ -1,7 +1,7 @@
 #ifndef EXP_NODE_HPP
 #define EXP_NODE_HPP
 
-#include <core/tp_aware_dtm_node.hpp>
+#include <core/differentiable_dtm_node.hpp>
 #include <math/functions.hpp>
 #include <helper/node_counter.hpp>
 #include <memory>
@@ -14,11 +14,11 @@ namespace mcmc_utilities
 {
   template <typename T,template <typename TE> class T_vector>
   class exp_node
-    :public tp_aware_dtm_node<T,T_vector>
+    :public differentiable_dtm_node<T,T_vector>
   {
   public:
     exp_node()
-      :tp_aware_dtm_node<T,T_vector>(1,1)
+      :differentiable_dtm_node<T,T_vector>(1,1)
     {}
 
     T do_calc(size_t idx,const T_vector<T>& parent)const override
@@ -31,19 +31,6 @@ namespace mcmc_utilities
       return std::shared_ptr<node<T,T_vector> >(new exp_node);
     }
 
-    order do_get_order(const node<T,T_vector>* pn,int n)const override
-    {
-      for (size_t i=0;i<this->num_of_parents();++i)
-	{
-	  order o=this->get_parent_order(i,pn,n);
-	  if(o.n!=0||
-	     !o.poly)
-	    {
-	      return order{0,false,false};
-	    }
-	}
-      return order{0,true,true};
-    }
   };
 
 

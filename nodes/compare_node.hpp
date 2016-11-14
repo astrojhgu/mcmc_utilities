@@ -1,7 +1,7 @@
 #ifndef LT_NODE_HPP
 #define LT_NODE_HPP
 
-#include <core/tp_aware_dtm_node.hpp>
+#include <core/cached_dtm_node.hpp>
 #include <core/error_handler.hpp>
 #include <math/functions.hpp>
 #include <helper/node_counter.hpp>
@@ -15,11 +15,11 @@ namespace mcmc_utilities
 {
   template <typename T,template <typename TE> class T_vector>
   class lt_node
-    :public tp_aware_dtm_node<T,T_vector>
+    :public cached_dtm_node<T,T_vector>
   {
   public:
     lt_node()
-      :tp_aware_dtm_node<T,T_vector>(2,1)
+      :cached_dtm_node<T,T_vector>(2,1)
     {}
 
     T do_calc(size_t idx,const T_vector<T>& parent)const override
@@ -33,18 +33,6 @@ namespace mcmc_utilities
       return std::shared_ptr<node<T,T_vector> >(p);
     }
 
-    order do_get_order(const node<T,T_vector>* pn,int n)const override
-    {
-      order o1=this->get_parent_order(0,pn,n);
-      order o2=this->get_parent_order(1,pn,n);
-      
-      if(!o1.poly||o1.n!=0||
-	 !o2.poly||o2.n!=0)
-	{
-	  return order{0,false,false};
-	}
-      return order{0,true,true};
-    }
   };
 
   template <typename T,template <typename TE> class T_vector>
@@ -70,11 +58,11 @@ namespace mcmc_utilities
 
   template <typename T,template <typename TE> class T_vector>
   class le_node
-    :public tp_aware_dtm_node<T,T_vector>
+    :public cached_dtm_node<T,T_vector>
   {
   public:
     le_node()
-      :tp_aware_dtm_node<T,T_vector>(2,1)
+      :cached_dtm_node<T,T_vector>(2,1)
     {}
 
     T do_calc(size_t idx,const T_vector<T>& parent)const override
@@ -88,18 +76,6 @@ namespace mcmc_utilities
       return std::shared_ptr<node<T,T_vector> >(p);
     }
 
-    order do_get_order(const node<T,T_vector>* pn,int n)const override
-    {
-      order o1=this->get_parent_order(0,pn,n);
-      order o2=this->get_parent_order(1,pn,n);
-      
-      if(!o1.poly||o1.n!=0||
-	 !o2.poly||o2.n!=0)
-	{
-	  return order{0,false,false};
-	}
-      return order{0,true,true};
-    }
   };
 
   template <typename T,template <typename TE> class T_vector>
@@ -126,11 +102,11 @@ namespace mcmc_utilities
 
   template <typename T,template <typename TE> class T_vector>
   class gt_node
-    :public tp_aware_dtm_node<T,T_vector>
+    :public cached_dtm_node<T,T_vector>
   {
   public:
     gt_node()
-      :tp_aware_dtm_node<T,T_vector>(2,1)
+      :cached_dtm_node<T,T_vector>(2,1)
     {}
 
     T do_calc(size_t idx,const T_vector<T>& parent)const override
@@ -144,18 +120,6 @@ namespace mcmc_utilities
       return std::shared_ptr<node<T,T_vector> >(p);
     }
 
-    order do_get_order(const node<T,T_vector>* pn,int n)const override
-    {
-      order o1=this->get_parent_order(0,pn,n);
-      order o2=this->get_parent_order(1,pn,n);
-      
-      if(!o1.poly||o1.n!=0||
-	 !o2.poly||o2.n!=0)
-	{
-	  return order{0,false,false};
-	}
-      return order{0,true,true};
-    }
   };
 
 
@@ -182,11 +146,11 @@ namespace mcmc_utilities
 
   template <typename T,template <typename TE> class T_vector>
   class ge_node
-    :public tp_aware_dtm_node<T,T_vector>
+    :public cached_dtm_node<T,T_vector>
   {
   public:
     ge_node()
-      :tp_aware_dtm_node<T,T_vector>(2,1)
+      :cached_dtm_node<T,T_vector>(2,1)
     {}
 
     T do_calc(size_t idx,const T_vector<T>& parent)const override
@@ -200,18 +164,6 @@ namespace mcmc_utilities
       return std::shared_ptr<node<T,T_vector> >(p);
     }
 
-    order do_get_order(const node<T,T_vector>* pn,int n)const override
-    {
-      order o1=this->get_parent_order(0,pn,n);
-      order o2=this->get_parent_order(1,pn,n);
-      
-      if(!o1.poly||o1.n!=0||
-	 !o2.poly||o2.n!=0)
-	{
-	  return order{0,false,false};
-	}
-      return order{0,true,true};
-    }
   };
 
   template <typename T,template <typename TE> class T_vector>
@@ -237,11 +189,11 @@ namespace mcmc_utilities
 
   template <typename T,template <typename TE> class T_vector>
   class eq_node
-    :public tp_aware_dtm_node<T,T_vector>
+    :public cached_dtm_node<T,T_vector>
   {
   public:
     eq_node()
-      :tp_aware_dtm_node<T,T_vector>(2,1)
+      :cached_dtm_node<T,T_vector>(2,1)
     {}
 
     T do_calc(size_t idx,const T_vector<T>& parent)const override
@@ -255,18 +207,6 @@ namespace mcmc_utilities
       return std::shared_ptr<node<T,T_vector> >(p);
     }
 
-    order do_get_order(const node<T,T_vector>* pn,int n)const override
-    {
-      order o1=this->get_parent_order(0,pn,n);
-      order o2=this->get_parent_order(1,pn,n);
-      
-      if(!o1.poly||o1.n!=0||
-	 !o2.poly||o2.n!=0)
-	{
-	  return order{0,false,false};
-	}
-      return order{0,true,true};
-    }
   };
 
   template <typename T,template <typename TE> class T_vector>

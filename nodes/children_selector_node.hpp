@@ -1,7 +1,7 @@
 #ifndef CHILDREN_SELECTOR_NODE_HPP
 #define CHILDREN_SELECTOR_NODE_HPP
 
-#include <core/tp_aware_dtm_node.hpp>
+#include <core/cached_dtm_node.hpp>
 #include <core/error_handler.hpp>
 #include <math/functions.hpp>
 #include <helper/node_counter.hpp>
@@ -15,11 +15,11 @@ namespace mcmc_utilities
 {
   template <typename T,template <typename TE> class T_vector>
   class children_selector_node
-    :public tp_aware_dtm_node<T,T_vector>
+    :public cached_dtm_node<T,T_vector>
   {
   public:
     children_selector_node(int noutput)
-      :tp_aware_dtm_node<T,T_vector>(2,noutput)
+      :cached_dtm_node<T,T_vector>(2,noutput)
     {}
 
     T do_calc(size_t idx,const T_vector<T>& parent)const override
@@ -56,20 +56,6 @@ namespace mcmc_utilities
       return std::shared_ptr<node<T,T_vector> >(p);
     }
 
-    order do_get_order(const node<T,T_vector>* pn,int n)const override
-    {
-      for(size_t i=0;i<this->num_of_parents();++i)
-	{
-	  order o=this->get_parent_order(0,pn,n);
-	  //return order{0,false,false};
-	  if(o.n!=0||
-	     !o.poly)
-	    {
-	      return order{0,false,false};
-	    }
-	}
-      return order{0,true,true};
-    } 
   };
 }
 
