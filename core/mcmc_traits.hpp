@@ -167,8 +167,12 @@ namespace mcmc_utilities
     //return static_cast<T>(std::nan(""));
     return T(NAN);
   }
+
+  template <typename T>
+  T clone(const T& rhs)
+  {
+    return T(rhs);
+  }
 }
-
-
 
 #endif

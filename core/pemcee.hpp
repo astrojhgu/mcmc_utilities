@@ -35,8 +35,8 @@ namespace mcmc_utilities
 	  base_urand<typename std::result_of<T_logprob(typename T_ensemble::value_type)>::type>& rnd,
 	  typename std::result_of<T_logprob(typename T_ensemble::value_type)>::type a=2)
   {
-    const size_t K=ensemble.size();
-    const size_t n=get_element(ensemble,0).size();
+    const size_t K=get_size(ensemble);
+    const size_t n=get_size(get_element(ensemble,0));
     const size_t half_K=K/2;
     using T=typename std::result_of<T_logprob(typename T_ensemble::value_type)>::type;
     using T_var=typename T_ensemble::value_type;
@@ -44,7 +44,8 @@ namespace mcmc_utilities
       {
 	throw mcmc_exception("number of walkers must be even");
       }
-    T_ensemble ensemble_half(ensemble);
+    //T_ensemble ensemble_half(ensemble);
+    auto ensemble_half(clone<T_ensemble>(ensemble));
 
     auto task=[&](size_t k)
       {
@@ -57,8 +58,9 @@ namespace mcmc_utilities
 	  }
 	while(j==half_K);
 	T z=draw_z(rnd,a);
-	T_var Y(get_element(ensemble,k));
-	for(int l=0;l<Y.size();++l)
+	//T_var Y(get_element(ensemble,k));
+	T_var Y(clone<T_var>(get_element(ensemble,k)));
+	for(int l=0;l<get_size(Y);++l)
 	  {
 	    T y=get_element(get_element(ensemble,j+half_K*ni),l)+z*(get_element(get_element(ensemble,k),l)-get_element(get_element(ensemble,j+half_K*ni),l));
 	    set_element(Y,l,y);
