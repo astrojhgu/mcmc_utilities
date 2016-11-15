@@ -42,7 +42,7 @@ namespace mcmc_utilities
     using T_var=typename T_ensemble::value_type;
     if(K%2!=0)
       {
-	throw mcmc_exception("number of positions must be even");
+	throw mcmc_exception("number of walkers must be even");
       }
     T_ensemble ensemble_half(ensemble);
 
@@ -79,12 +79,19 @@ namespace mcmc_utilities
 	    
 	    std::ostringstream oss;
 	    oss<<"q="<<q<<std::endl;
-	    oss<<"x=";
+	    oss<<"Y=";
 	    for(int l=0;l<n;++l)
 	      {
 		oss<<get_element(Y,l)<<" ";
 	      }
-	    oss<<"\ny="<<logprob(Y)<<"\n";
+	    oss<<"\nlogprob(Y)="<<logprob(Y)<<"\n";
+
+	    oss<<"X=";
+	    for(int l=0;l<n;++l)
+	      {
+		oss<<get_element(get_element(ensemble,k),l)<<" ";
+	      }
+	    oss<<"\nlogprob(X)="<<logprob(get_element(ensemble,k))<<"\n";
 	    e.attach_message(oss.str());
 	    throw e;
 	  }
