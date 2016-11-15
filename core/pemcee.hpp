@@ -60,7 +60,16 @@ namespace mcmc_utilities
 	T_var Y(get_element(ensemble,k));
 	for(int l=0;l<Y.size();++l)
 	  {
-	    set_element(Y,l,get_element(get_element(ensemble,j+half_K*ni),l)+z*(get_element(get_element(ensemble,k),l)-get_element(get_element(ensemble,j+half_K*ni),l)));
+	    T y=get_element(get_element(ensemble,j+half_K*ni),l)+z*(get_element(get_element(ensemble,k),l)-get_element(get_element(ensemble,j+half_K*ni),l));
+	    set_element(Y,l,y);
+	    if(std::isnan(y)||std::isinf(y))
+	      {
+		nan_or_inf e;
+		e.attach_message("inf or nan for y\n");
+		std::ostringstream oss;
+		oss<<"y="<<y<<std::endl;
+		e.attach_message(oss.str());
+	      }
 	  }
 	T q=std::exp((n-1)*std::log(z)+(logprob(Y)-logprob(get_element(ensemble,k))));
 	if(std::isnan(q)||std::isinf(q))
