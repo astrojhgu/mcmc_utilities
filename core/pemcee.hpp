@@ -123,7 +123,7 @@ namespace mcmc_utilities
 	    if(nrunning_thread<nthread_allowed&&pool.size()<K)
 	      {
 		pool.push_back(std::thread(chain_task));
-		assert(pool.size()<=K);
+		//assert(pool.size()<=K);
 	      }
 	    nrunning_thread--;
 	    mx.unlock();
