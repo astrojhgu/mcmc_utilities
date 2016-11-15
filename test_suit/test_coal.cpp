@@ -1,7 +1,9 @@
 #include <core/distribution.hpp>
 #include <core/gibbs_sampler.hpp>
 #include <math/distributions.hpp>
+#include <core/pemcee.hpp>
 #include <core/urand.hpp>
+#include <rng/prng.hpp>
 #include <vector>
 #include <fstream>
 #include <cassert>
@@ -37,12 +39,15 @@ public:
   }
 
   double do_eval_log(const std::vector<double>& x,int n)const
-  {
-    
-    
+  {   
     double lambda1=x[0];
     double lambda2=x[1];
     double k=x[2];
+
+    if(lambda1<=0||lambda2<=0||k<0||k>100)
+      {
+	return -std::numeric_limits<double>::infinity();
+      }
     double logp=0;
     double lambda=0;
     for(int i=0;i<year.size();++i)
@@ -59,7 +64,8 @@ public:
 	double logp1=logdpoisson(n,lambda);
 	logp+=logp1;
       }
-
+    //logp+=200;
+    //std::cout<<logp<<std::endl;
     return logp;
   }
 
@@ -79,20 +85,33 @@ public:
 int main()
 {
   coal_distribution cd;
-  std::vector<double> x;
-  x.push_back(3);
-  x.push_back(4);
-  x.push_back(50);
   urand<double> rng;
+  prng<double> prng;
+  
+  std::vector<std::vector<double> > ensemble;
+  constexpr int nwalker=100;
+  for(int i=0;i<nwalker;++i)
+    {
+      std::vector<double> x{6+rng()-.5,1+rng()-.5,60+rng()*4-2};
+      ensemble.push_back(x);
+    }
+  
+      
   
   //cout<<cd.eval_log(x)<<endl;
   for(int n=0;n<10000;++n)
     {
       //gibbs_sample<double,std::vector<double> >(cd,x,1,as,10);
-      gibbs_sample(cd,x,rng);
-      for(int i=0;i<x.size();++i)
+      //gibbs_sample(cd,x,rng);
+      ensemble=pemcee([&cd](const std::vector<double>& x){
+	  double y=cd.eval_log(x);
+	  //std::cerr<<x[0]<<" "<<y<<std::endl;
+	  return y;},ensemble,prng);
+      int j=0;
+      do{j=rng()*nwalker;}while(j>=nwalker);
+      for(int i=0;i<3;++i)
 	{
-	  cout<<x[i]<<" ";
+	  cout<<ensemble[j][i]<<" ";
 	}
       cout<<endl;
     }
