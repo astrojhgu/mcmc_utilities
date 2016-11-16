@@ -1,7 +1,7 @@
 #include <core/distribution.hpp>
 #include <core/gibbs_sampler.hpp>
 #include <math/distributions.hpp>
-#include <core/pemcee.hpp>
+#include <core/ensemble_sample.hpp>
 #include <core/urand.hpp>
 #include <rng/prng.hpp>
 #include <vector>
@@ -103,7 +103,7 @@ int main()
     {
       //gibbs_sample<double,std::vector<double> >(cd,x,1,as,10);
       //gibbs_sample(cd,x,rng);
-      ensemble=pemcee([&cd](const std::vector<double>& x){
+      ensemble=ensemble_sample([&cd](const std::vector<double>& x){
 	  double y=cd.eval_log(x);
 	  //std::cerr<<x[0]<<" "<<y<<std::endl;
 	  return y;},ensemble,prng);

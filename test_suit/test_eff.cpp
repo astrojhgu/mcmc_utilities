@@ -7,7 +7,7 @@
 #include <cassert>
 #include <iostream>
 #include <cassert>
-#include <core/pemcee.hpp>
+#include <core/ensemble_sample.hpp>
 #include <rng/prng.hpp>
 template <typename T>
 using std_vector=std::vector<T>;
@@ -160,7 +160,7 @@ int main()
   for(int n=0;n<30000;++n)
     {
       //gibbs_sample(cd,x,rng);
-      ensemble=pemcee([&cd](const variable& x){return cd.eval_log(x);},ensemble,prng);
+      ensemble=ensemble_sample([&cd](const variable& x){return cd.eval_log(x);},ensemble,prng);
       int j;
       do{j=rng()*ensemble.size();}while(j==100);
       

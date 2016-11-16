@@ -1,5 +1,5 @@
-#ifndef PEMCEE_HPP
-#define PEMCEE_HPP
+#ifndef ENSEMBLE_SAMPLER_HPP
+#define ENSEMBLE_SAMPLER_HPP
 #include <cassert>
 #include <cmath>
 #include <functional>
@@ -30,20 +30,25 @@ namespace mcmc_utilities
   }
   
   template <typename T_logprob,typename T_ensemble>
-  const T_ensemble pemcee(const T_logprob& logprob,
+  const T_ensemble ensemble_sample(const T_logprob& logprob,
 	  const T_ensemble& ensemble,
 	  base_urand<typename std::result_of<T_logprob(typename T_ensemble::value_type)>::type>& rnd,
 	  typename std::result_of<T_logprob(typename T_ensemble::value_type)>::type a=2)
   {
-    const size_t K=get_size(ensemble);
-    const size_t n=get_size(get_element(ensemble,0));
-    const size_t half_K=K/2;
     using T=typename std::result_of<T_logprob(typename T_ensemble::value_type)>::type;
     using T_var=typename T_ensemble::value_type;
+    
+    const size_t K=get_size(ensemble);
+    if(K==0)
+      {
+	throw mcmc_exception("number of walkers must not be zero");
+      }
     if(K%2!=0)
       {
 	throw mcmc_exception("number of walkers must be even");
       }
+    const size_t n=get_size(get_element(ensemble,0));
+    const size_t half_K=K/2;
     //T_ensemble ensemble_half(ensemble);
     auto ensemble_half(clone<T_ensemble>(ensemble));
 
