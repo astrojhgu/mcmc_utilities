@@ -78,8 +78,8 @@ namespace mcmc_utilities
 		e.attach_message(oss.str());
 	      }
 	  }
-	T q=std::exp((n-1)*std::log(z)+(logprob(Y)-logprob(get_element(ensemble,k))));
-	if(std::isnan(q)||std::isinf(q))
+	T q=std::exp((n-1)*std::log(z)+logprob(Y)-logprob(get_element(ensemble,k)));
+	if(std::isnan(q))
 	  {
 	    nan_or_inf e;
 	    e.attach_message("inf or nan\n");
@@ -99,6 +99,7 @@ namespace mcmc_utilities
 		oss<<get_element(get_element(ensemble,k),l)<<" ";
 	      }
 	    oss<<"\nlogprob(X)="<<logprob(get_element(ensemble,k))<<"\n";
+	    oss<<"z="<<z<<std::endl;
 	    e.attach_message(oss.str());
 	    throw e;
 	  }
