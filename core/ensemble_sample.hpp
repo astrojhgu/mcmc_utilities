@@ -30,13 +30,13 @@ namespace mcmc_utilities
   }
   
   template <typename T_logprob,typename T_ensemble>
-  const T_ensemble ensemble_sample(const T_logprob& logprob,
+  T_ensemble ensemble_sample(const T_logprob& logprob,
 	  const T_ensemble& ensemble,
-	  base_urand<typename std::result_of<T_logprob(typename T_ensemble::value_type)>::type>& rnd,
-	  typename std::result_of<T_logprob(typename T_ensemble::value_type)>::type a=2)
+	  base_urand<typename std::result_of<T_logprob(typename element_type_trait<T_ensemble>::element_type)>::type>& rnd,
+	  typename std::result_of<T_logprob(typename element_type_trait<T_ensemble>::element_type)>::type a=2)
   {
-    using T=typename std::result_of<T_logprob(typename T_ensemble::value_type)>::type;
-    using T_var=typename T_ensemble::value_type;
+    using T=typename std::result_of<T_logprob(typename element_type_trait<T_ensemble>::element_type)>::type;
+    using T_var=typename element_type_trait<T_ensemble>::element_type;
     
     const size_t K=get_size(ensemble);
     if(K==0)
@@ -50,7 +50,7 @@ namespace mcmc_utilities
     const size_t n=get_size(get_element(ensemble,0));
     const size_t half_K=K/2;
     //T_ensemble ensemble_half(ensemble);
-    auto ensemble_half(clone<T_ensemble>(ensemble));
+    auto ensemble_half(clone(ensemble));
 
     auto task=[&](size_t k)
       {
@@ -64,11 +64,11 @@ namespace mcmc_utilities
 	while(j==half_K);
 	T z=draw_z(rnd,a);
 	//T_var Y(get_element(ensemble,k));
-	T_var Y(clone<T_var>(get_element(ensemble,k)));
+	T_var Y(clone(get_element(ensemble,k)));
 	for(int l=0;l<get_size(Y);++l)
 	  {
-	    T y=get_element(get_element(ensemble,j+half_K*ni),l)+z*(get_element(get_element(ensemble,k),l)-get_element(get_element(ensemble,j+half_K*ni),l));
-	    set_element(Y,l,y);
+	    T y=as<T>(get_element(get_element(ensemble,j+half_K*ni),l))+z*(as<T>(get_element(get_element(ensemble,k),l))-as<T>(get_element(get_element(ensemble,j+half_K*ni),l)));
+	    set_element(Y,l,as<typename element_type_trait<T_var>::element_type>(y));
 	    if(std::isnan(y)||std::isinf(y))
 	      {
 		nan_or_inf e;
@@ -76,6 +76,7 @@ namespace mcmc_utilities
 		std::ostringstream oss;
 		oss<<"y="<<y<<std::endl;
 		e.attach_message(oss.str());
+		
 	      }
 	  }
 	T q=std::exp((n-1)*std::log(z)+logprob(Y)-logprob(get_element(ensemble,k)));
@@ -89,25 +90,26 @@ namespace mcmc_utilities
 	    oss<<"Y=";
 	    for(int l=0;l<n;++l)
 	      {
-		oss<<get_element(Y,l)<<" ";
+		oss<<as<T>(get_element(Y,l))<<" ";
 	      }
 	    oss<<"\nlogprob(Y)="<<logprob(Y)<<"\n";
 
 	    oss<<"X=";
 	    for(int l=0;l<n;++l)
 	      {
-		oss<<get_element(get_element(ensemble,k),l)<<" ";
+		oss<<as<T>(get_element(get_element(ensemble,k),l))<<" ";
 	      }
 	    oss<<"\nlogprob(X)="<<logprob(get_element(ensemble,k))<<"\n";
 	    oss<<"z="<<z<<std::endl;
 	    e.attach_message(oss.str());
+	    
 	    throw e;
 	  }
 	
 	T r=rnd();
 	if(r<=q)
 	  {
-	    set_element(ensemble_half,k,Y);
+	    set_element(ensemble_half,k,as<typename element_type_trait<T_ensemble>::element_type>(Y));
 	  }
       };
 

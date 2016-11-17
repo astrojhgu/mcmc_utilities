@@ -173,6 +173,12 @@ namespace mcmc_utilities
   {
     return T(rhs);
   }
+
+  template <typename T,typename U>
+  T as(const U& rhs)
+  {
+    return static_cast<T>(rhs);
+  }
 }
 
 #endif

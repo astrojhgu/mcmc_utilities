@@ -3,6 +3,7 @@
 #include <atomic>
 #include <mutex>
 #include "prng_engine.hpp"
+#include <core/base_urand.hpp>
 
 namespace mcmc_utilities
 {
