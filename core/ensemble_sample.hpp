@@ -30,7 +30,7 @@ namespace mcmc_utilities
   }
   
   template <typename T_logprob,typename T_ensemble>
-  T_ensemble ensemble_sample(const T_logprob& logprob,
+  T_ensemble ensemble_sample(T_logprob&& logprob,
 	  const T_ensemble& ensemble,
 	  base_urand<typename std::result_of<T_logprob(typename element_type_trait<T_ensemble>::element_type)>::type>& rnd,
 	  typename std::result_of<T_logprob(typename element_type_trait<T_ensemble>::element_type)>::type a=2)
