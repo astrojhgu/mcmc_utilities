@@ -69,6 +69,13 @@ namespace mcmc_utilities
 	  {
 	    T beta1=beta_list[i];
 	    T beta2=beta_list[i+1];
+
+	    if(beta1==beta2)
+	      {
+		mcmc_exception e("beta list should not contain duplicated elements");
+		throw e;
+	      }
+	    
 	    for(size_t j=0;j<nwalker;++j)
 	      {
 		auto var1=as<T_var>(get_element(get_element(new_ensemble_list,i),j));
