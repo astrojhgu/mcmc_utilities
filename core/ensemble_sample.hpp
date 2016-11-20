@@ -22,18 +22,19 @@
 namespace mcmc_utilities
 {
   template <typename T>
-  T draw_z(base_urand<T>& rnd,T a)
+  T draw_z(base_urand<T>& rng,T a)
   {
     const T sqrt_a=std::sqrt(a);
-    T p=rnd()*2*(sqrt_a-1/sqrt_a);
+    T p=rng()*2*(sqrt_a-1/sqrt_a);
     return std::pow(static_cast<T>(1/sqrt_a+p/2),static_cast<T>(2));
   }
   
   template <typename T_logprob,typename T_ensemble>
   T_ensemble ensemble_sample(T_logprob&& logprob,
-	  const T_ensemble& ensemble,
-	  base_urand<typename std::result_of<T_logprob(typename element_type_trait<T_ensemble>::element_type)>::type>& rnd,
-	  typename std::result_of<T_logprob(typename element_type_trait<T_ensemble>::element_type)>::type a=2)
+			     const T_ensemble& ensemble,
+			     base_urand<typename std::result_of<T_logprob(typename element_type_trait<T_ensemble>::element_type)>::type>& rng,
+			     size_t nthread_allowed=1,
+			     typename std::result_of<T_logprob(typename element_type_trait<T_ensemble>::element_type)>::type a=2)
   {
     using T=typename std::result_of<T_logprob(typename element_type_trait<T_ensemble>::element_type)>::type;
     using T_var=typename element_type_trait<T_ensemble>::element_type;
@@ -47,6 +48,7 @@ namespace mcmc_utilities
       {
 	throw mcmc_exception("number of walkers must be even");
       }
+    nthread_allowed=nthread_allowed<1?1:nthread_allowed;
     const size_t n=get_size(get_element(ensemble,0));
     const size_t half_K=K/2;
     //T_ensemble ensemble_half(ensemble);
@@ -59,10 +61,10 @@ namespace mcmc_utilities
 	size_t j=0;
 	do
 	  {
-	    j=rnd()*(half_K);
+	    j=rng()*(half_K);
 	  }
 	while(j==half_K);
-	T z=draw_z(rnd,a);
+	T z=draw_z(rng,a);
 	//T_var Y(get_element(ensemble,k));
 	T_var Y(clone(get_element(ensemble,k)));
 	for(int l=0;l<get_size(Y);++l)
@@ -106,14 +108,14 @@ namespace mcmc_utilities
 	    throw e;
 	  }
 	
-	T r=rnd();
+	T r=rng();
 	if(r<=q)
 	  {
 	    set_element(ensemble_half,k,as<typename element_type_trait<T_ensemble>::element_type>(Y));
 	  }
       };
 
-    if(!rnd.is_parallel())
+    if(!rng.is_parallel()||nthread_allowed==1)
       {
 	for(size_t k=0;k<K;++k)
 	  {
@@ -124,7 +126,6 @@ namespace mcmc_utilities
       {
 	std::vector<std::thread> pool;
 	pool.reserve(K);
-	size_t nthread_allowed=std::thread::hardware_concurrency();
 	size_t nrunning_thread(0);
 	size_t k(0);
 	std::mutex mx;

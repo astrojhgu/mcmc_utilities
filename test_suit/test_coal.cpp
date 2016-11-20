@@ -2,6 +2,7 @@
 #include <core/gibbs_sampler.hpp>
 #include <math/distributions.hpp>
 #include <core/ensemble_sample.hpp>
+#include <core/ptsample.hpp>
 #include <core/urand.hpp>
 #include <rng/prng.hpp>
 #include <vector>
@@ -88,12 +89,20 @@ int main()
   urand<double> rng;
   prng<double> prng;
   
-  std::vector<std::vector<double> > ensemble;
+  std::vector<std::vector<std::vector<double> > > ensemble_list;
   constexpr int nwalker=100;
-  for(int i=0;i<nwalker;++i)
+  constexpr int ntemp=10;
+  std::vector<double> beta_list;
+  for(int i=0;i<ntemp;++i)
     {
-      std::vector<double> x{6+rng()-.5,1+rng()-.5,60+rng()*4-2};
-      ensemble.push_back(x);
+      beta_list.push_back(i/(ntemp-1));
+      std::vector<std::vector<double> > ensemble;
+      for(int j=0;j<nwalker;++j)
+	{
+	  std::vector<double> x{6+rng()-.5,1+rng()-.5,60+rng()*4-2};
+	  ensemble.push_back(x);
+	}
+      ensemble_list.push_back(ensemble);
     }
   
       
@@ -103,15 +112,22 @@ int main()
     {
       //gibbs_sample<double,std::vector<double> >(cd,x,1,as,10);
       //gibbs_sample(cd,x,rng);
+      /*
       ensemble=ensemble_sample([&cd](const std::vector<double>& x){
 	  double y=cd.eval_log(x);
 	  //std::cerr<<x[0]<<" "<<y<<std::endl;
-	  return y;},ensemble,prng);
+	  return y;},ensemble,prng,4);
+      */
+      
+      ensemble_list=ptsample([&cd](const std::vector<double>& x){
+	  double y=cd.eval_log(x);
+	  //std::cerr<<x[0]<<" "<<y<<std::endl;
+	  return y;},ensemble_list,prng,beta_list,n%10==0);
       int j=0;
       do{j=rng()*nwalker;}while(j>=nwalker);
       for(int i=0;i<3;++i)
 	{
-	  cout<<ensemble[j][i]<<" ";
+	  cout<<ensemble_list.back()[j][i]<<" ";
 	}
       cout<<endl;
     }

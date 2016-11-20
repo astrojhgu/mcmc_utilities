@@ -59,6 +59,14 @@ namespace mcmc_utilities
     return x[i];
   }
 
+  template <typename T>
+  inline typename 
+  return_type_trait<typename element_type_trait<T>::element_type>::
+  reference_type get_element(T& x,size_t i)
+  {
+    return x[i];
+  }
+
   
   /**
      set ths i-th element by a given value

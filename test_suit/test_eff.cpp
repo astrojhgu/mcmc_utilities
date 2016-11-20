@@ -160,7 +160,7 @@ int main()
   for(int n=0;n<30000;++n)
     {
       //gibbs_sample(cd,x,rng);
-      ensemble=ensemble_sample([&cd](const variable& x){return cd.eval_log(x);},ensemble,prng);
+      ensemble=ensemble_sample([&cd](const variable& x){return cd.eval_log(x);},ensemble,prng,4);
       int j;
       do{j=rng()*ensemble.size();}while(j==100);
       

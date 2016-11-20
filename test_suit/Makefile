@@ -1,4 +1,4 @@
-targets=test_eff_graph.out test_eff_graph2.out test_arms.out test_coal.out  test_eff.out  test_gibbs.out  test_pf.out zero_trick.out test_poisson.out test_composed.out test_t.out test_cosmos.out test_likelihood_adapter.out test_mixture_node.out
+targets=test_eff_graph.out test_eff_graph2.out test_arms.out test_coal.out  test_eff.out  test_gibbs.out  test_pf.out zero_trick.out test_poisson.out test_composed.out test_t.out test_cosmos.out test_likelihood_adapter.out test_mixture_node.out test_bimodal.out
 
 all:$(targets)
 
