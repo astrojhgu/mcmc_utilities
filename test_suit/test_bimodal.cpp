@@ -15,6 +15,7 @@ template <typename T>
 using std_vector=std::vector<T>;
 int main()
 {
+  srand(time(0));
   urand<double> rng;
   prng<double> prng;
   
@@ -24,7 +25,15 @@ int main()
   std::vector<double> beta_list;
   for(int i=0;i<ntemp;++i)
     {
-      beta_list.push_back(pow(.5,(double)i));
+      if(i==ntemp-1)
+	{
+	  beta_list.push_back(0);
+	}
+      else
+	{
+	  beta_list.push_back(pow(1/std::sqrt(2),(double)i));
+	}
+      
       std::vector<std::vector<double> > ensemble;
       for(int j=0;j<nwalker;++j)
 	{
@@ -39,8 +48,12 @@ int main()
   //cout<<cd.eval_log(x)<<endl;
   std::vector<std::vector<double> > results(ntemp);
   
-  for(int n=0;n<10000;++n)
+  for(int n=0;n<100000;++n)
     {
+      if(n%100==0)
+	{
+	  std::cerr<<n<<std::endl;
+	}
       //gibbs_sample<double,std::vector<double> >(cd,x,1,as,10);
       //gibbs_sample(cd,x,rng);
       /*
@@ -49,7 +62,7 @@ int main()
 	  //std::cerr<<x[0]<<" "<<y<<std::endl;
 	  return y;},ensemble,prng,4);
       */
-      
+
       ensemble_list=ptsample([](const std::vector<double>& x){
 	  if(x[0]<-15||x[0]>15||x[1]<0||x[1]>1)
 	    {
