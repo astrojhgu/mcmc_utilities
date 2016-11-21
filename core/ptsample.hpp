@@ -13,6 +13,9 @@ namespace mcmc_utilities
 								typename std::result_of<T_logprob(T_var)>::type beta2)
   {
     using T=typename std::result_of<T_logprob(T_var)>::type;
+    //beta2<beta1 2 is a hi-T system
+    //if logprob(var2)<logprob(var1) => logprob(var2)-logprob(var1)<0
+    //exp(...)<1
     return std::min(as<T>(1),std::exp((beta2-beta1)*(-logprob(var2)+logprob(var1))));
   }
 

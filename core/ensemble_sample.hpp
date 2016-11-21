@@ -63,7 +63,7 @@ namespace mcmc_utilities
 	  {
 	    j=rng()*(half_K);
 	  }
-	while(j==half_K);
+	while(j>=half_K);
 	T z=draw_z(rng,a);
 	//T_var Y(get_element(ensemble,k));
 	T_var Y(clone(get_element(ensemble,k)));
@@ -81,37 +81,50 @@ namespace mcmc_utilities
 		
 	      }
 	  }
-	T q=std::exp((n-1)*std::log(z)+logprob(Y)-logprob(get_element(ensemble,k)));
-	if(std::isnan(q))
+	T lpY=logprob(Y);
+	T lpLastY=logprob(get_element(ensemble,k));
+	if(std::isinf(lpLastY))
 	  {
 	    nan_or_inf e;
 	    e.attach_message("inf or nan\n");
-	    
-	    std::ostringstream oss;
-	    oss<<"q="<<q<<std::endl;
-	    oss<<"Y=";
-	    for(size_t l=0;l<n;++l)
-	      {
-		oss<<as<T>(get_element(Y,l))<<" ";
-	      }
-	    oss<<"\nlogprob(Y)="<<logprob(Y)<<"\n";
-
-	    oss<<"X=";
-	    for(size_t l=0;l<n;++l)
-	      {
-		oss<<as<T>(get_element(get_element(ensemble,k),l))<<" ";
-	      }
-	    oss<<"\nlogprob(X)="<<logprob(get_element(ensemble,k))<<"\n";
-	    oss<<"z="<<z<<std::endl;
-	    e.attach_message(oss.str());
-	    
+	    e.attach_message("the logprob of the members in last ensemble should not be inf");
 	    throw e;
 	  }
-	
-	T r=rng();
-	if(r<=q)
+
+	if(!std::isinf(lpY)&&!std::isnan(lpY))
 	  {
-	    set_element(ensemble_half,k,as<typename element_type_trait<T_ensemble>::element_type>(Y));
+	    T q=std::exp((n-1)*std::log(z)+lpY-lpLastY);
+	    if(std::isnan(q))
+	      {
+		nan_or_inf e;
+		e.attach_message("inf or nan\n");
+		
+		std::ostringstream oss;
+		oss<<"q="<<q<<std::endl;
+		oss<<"Y=";
+		for(size_t l=0;l<n;++l)
+		  {
+		    oss<<as<T>(get_element(Y,l))<<" ";
+		  }
+		oss<<"\nlogprob(Y)="<<logprob(Y)<<"\n";
+		
+		oss<<"X=";
+		for(size_t l=0;l<n;++l)
+		  {
+		    oss<<as<T>(get_element(get_element(ensemble,k),l))<<" ";
+		  }
+		oss<<"\nlogprob(X)="<<logprob(get_element(ensemble,k))<<"\n";
+		oss<<"z="<<z<<std::endl;
+		e.attach_message(oss.str());
+		
+		throw e;
+	      }
+	    
+	    T r=rng();
+	    if(r<=q)
+	      {
+		set_element(ensemble_half,k,as<typename element_type_trait<T_ensemble>::element_type>(Y));
+	      }
 	  }
       };
 
