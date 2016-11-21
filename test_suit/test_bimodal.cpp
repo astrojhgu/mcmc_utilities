@@ -75,7 +75,7 @@ int main()
 	  
 	  if(x[1]<.5){return -(x[0]-mu1)*(x[0]-mu1)/(2*sigma1*sigma1)-std::log(sigma1);}
 	  else{return -(x[0]-mu2)*(x[0]-mu2)/(2*sigma2*sigma2)-std::log(sigma2);};
-	},ensemble_list,prng,beta_list,n%100==0,1);
+	},ensemble_list,prng,beta_list,n%10==0,1);
       int j=0;
       do{j=rng()*nwalker;}while(j>=nwalker);
       //if(n%100==0)
