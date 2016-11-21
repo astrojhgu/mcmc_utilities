@@ -67,7 +67,7 @@ namespace mcmc_utilities
 	T z=draw_z(rng,a);
 	//T_var Y(get_element(ensemble,k));
 	T_var Y(clone(get_element(ensemble,k)));
-	for(int l=0;l<get_size(Y);++l)
+	for(size_t l=0;l<get_size(Y);++l)
 	  {
 	    T y=as<T>(get_element(get_element(ensemble,j+half_K*ni),l))+z*(as<T>(get_element(get_element(ensemble,k),l))-as<T>(get_element(get_element(ensemble,j+half_K*ni),l)));
 	    set_element(Y,l,as<typename element_type_trait<T_var>::element_type>(y));
@@ -90,14 +90,14 @@ namespace mcmc_utilities
 	    std::ostringstream oss;
 	    oss<<"q="<<q<<std::endl;
 	    oss<<"Y=";
-	    for(int l=0;l<n;++l)
+	    for(size_t l=0;l<n;++l)
 	      {
 		oss<<as<T>(get_element(Y,l))<<" ";
 	      }
 	    oss<<"\nlogprob(Y)="<<logprob(Y)<<"\n";
 
 	    oss<<"X=";
-	    for(int l=0;l<n;++l)
+	    for(size_t l=0;l<n;++l)
 	      {
 		oss<<as<T>(get_element(get_element(ensemble,k),l))<<" ";
 	      }
@@ -131,7 +131,7 @@ namespace mcmc_utilities
 	std::mutex mx;
 	std::function<void()> chain_task([&nrunning_thread,&k,&task,nthread_allowed,&pool,&chain_task,K,&mx](){
 	    mx.lock();
-	    int k1=k;
+	    size_t k1=k;
 	    //std::cerr<<"k="<<k<<std::endl;
 	    nrunning_thread++;
 	    k++;
@@ -147,7 +147,7 @@ namespace mcmc_utilities
 	    mx.unlock();
 	  });
 	mx.lock();
-	for(int i=0;i<nthread_allowed;++i)
+	for(size_t i=0;i<nthread_allowed;++i)
 	  {
 	    pool.push_back(std::thread(chain_task));
 	  }
