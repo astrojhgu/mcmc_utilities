@@ -70,7 +70,6 @@ namespace mcmc_utilities
 	for(size_t l=0;l<get_size(Y);++l)
 	  {
 	    T y=as<T>(get_element(get_element(ensemble,j+half_K*ni),l))+z*(as<T>(get_element(get_element(ensemble,k),l))-as<T>(get_element(get_element(ensemble,j+half_K*ni),l)));
-	    set_element(Y,l,as<typename element_type_trait<T_var>::element_type>(y));
 	    if(std::isnan(y)||std::isinf(y))
 	      {
 		nan_or_inf e;
@@ -80,6 +79,7 @@ namespace mcmc_utilities
 		e.attach_message(oss.str());
 		
 	      }
+	    set_element(Y,l,as<typename element_type_trait<T_var>::element_type>(y));
 	  }
 	T lpY=logprob(Y);
 	T lpLastY=logprob(get_element(ensemble,k));
@@ -88,6 +88,14 @@ namespace mcmc_utilities
 	    nan_or_inf e;
 	    e.attach_message("inf or nan\n");
 	    e.attach_message("the logprob of the members in last ensemble should not be inf");
+	    std::ostringstream oss;
+	    oss<<"last Y=";
+	    for(size_t l=0;l<n;++l)
+	      {
+		oss<<as<T>(get_element(get_element(ensemble,k),l))<<" ";
+	      }
+	    oss<<"\nlogprob(Y)="<<lpLastY<<"\n";
+	    e.attach_message(oss.str());
 	    throw e;
 	  }
 

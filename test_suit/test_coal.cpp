@@ -95,7 +95,7 @@ int main()
   std::vector<double> beta_list;
   for(int i=0;i<ntemp;++i)
     {
-      beta_list.push_back(i/(ntemp-1));
+      beta_list.push_back(i/double(ntemp-1));
       std::vector<std::vector<double> > ensemble;
       for(int j=0;j<nwalker;++j)
 	{
