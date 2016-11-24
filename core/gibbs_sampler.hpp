@@ -57,7 +57,7 @@ namespace mcmc_utilities
   void gibbs_sample1(const probability_density_md<T_p,T_var,T_vector>& pd,
 		    T_var& init_var,size_t idx,base_urand<T_p>& rnd)
   {
-    for(int i=0;i<get_size(init_var);++i)
+    for(size_t i=0;i<get_size(init_var);++i)
       {
 	auto xrange=pd.var_range(init_var,i);
 	if(xrange.first>get_element(init_var,i)||xrange.second<get_element(init_var,i))

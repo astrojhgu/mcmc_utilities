@@ -142,7 +142,7 @@ namespace mcmc_utilities
 	{
 	  std::cerr<<"inside pf-combined_log_prob"<<std::endl;
 	  std::cerr<<"n="<<n<<std::endl;
-	  for(int i=0;i<x.size();++i)
+	  for(size_t i=0;i<x.size();++i)
 	    {
 	      std::cerr<<"x["<<i<<"]="<<x[i]<<std::endl;
 	    }
@@ -162,7 +162,7 @@ namespace mcmc_utilities
 	{
 	  std::cerr<<"inside pf"<<std::endl;
 	  std::cerr<<"n="<<n<<std::endl;
-	  for(int i=0;i<x.size();++i)
+	  for(size_t i=0;i<x.size();++i)
 	    {
 	      std::cerr<<"x["<<i<<"]="<<x[i]<<std::endl;
 	    }
@@ -245,7 +245,7 @@ namespace mcmc_utilities
 	    {
 	      std::cerr<<"inside pf-prob:"<<std::endl;
 	      std::cerr<<"n="<<n<<std::endl;
-	      for(int i=0;i<x.size();++i)
+	      for(size_t i=0;i<x.size();++i)
 		{
 		  std::cerr<<"x["<<i<<"]="<<x[i]<<std::endl;
 		}

@@ -49,7 +49,7 @@ namespace mcmc_utilities
 	  {
 	    std::cerr<<"inside ps-pf-evol"<<std::endl;
 	    std::cerr<<"n="<<n<<std::endl;
-	    for(int i=0;i<x.size();++i)
+	    for(size_t i=0;i<x.size();++i)
 	      {
 		std::cerr<<"x["<<i<<"]="<<x[i]<<std::endl;
 	      }
@@ -65,7 +65,7 @@ namespace mcmc_utilities
 	  {
 	    std::cerr<<"inside ps-pf-obs"<<std::endl;
 	    std::cerr<<"n="<<n<<std::endl;
-	    for(int i=0;i<x.size();++i)
+	    for(size_t i=0;i<x.size();++i)
 	      {
 		std::cerr<<"x["<<i<<"]="<<x[i]<<std::endl;
 	      }
@@ -107,7 +107,7 @@ namespace mcmc_utilities
 	  {
 	    std::cerr<<"inside ps-pf-evol_rev"<<std::endl;
 	    std::cerr<<"n="<<n<<std::endl;
-	    for(int i=0;i<x.size();++i)
+	    for(size_t i=0;i<x.size();++i)
 	      {
 		std::cerr<<"x["<<i<<"]="<<x[i]<<std::endl;
 	      }
@@ -123,7 +123,7 @@ namespace mcmc_utilities
 	  {
 	    std::cerr<<"inside ps-pf-obs-rev"<<std::endl;
 	    std::cerr<<"n="<<n<<std::endl;
-	    for(int i=0;i<x.size();++i)
+	    for(size_t i=0;i<x.size();++i)
 	      {
 		std::cerr<<"x["<<i<<"]="<<x[i]<<std::endl;
 	      }
@@ -220,8 +220,10 @@ namespace mcmc_utilities
       //size_t nparticles=particles.size();
       T_t future_t(t_list.back());
       
-      for(int i=obs_list.size()-2;i>=0;--i)
+      //for(int i=obs_list.size()-2;i>=0;--i)
+      for(size_t j=1;j<obs_list.size();++j)
 	{
+	  size_t i=obs_list.size()-1-j;
 	  sm_rev.update_sir(obs_list.at(i),t_list.at(i),particles,future_t,rng);
 	  history[i]=particles;
 	  if(verbose_level)
@@ -240,8 +242,9 @@ namespace mcmc_utilities
       //size_t nparticles=particles.size();
       T_t prev_t(t_list.front());
       
-      for(int i=1;i!=obs_list.size();++i)
-	{
+      for(size_t i=1;i!=obs_list.size();++i)
+      {
+	  
 	  sm.update_sir(obs_list.at(i),t_list.at(i),particles,prev_t,rng);
 	  history[i]=particles;
 	  if(verbose_level)
@@ -257,8 +260,10 @@ namespace mcmc_utilities
     std::vector<T_state> draw_realization(base_urand<T_p>& rng)const
     {
       std::vector<T_state> result(history.size());
-      for(int i=history.size()-1;i>=0;--i)
+      //for(int i=history.size()-1;i>=0;--i)
+      for(size_t j1=0;j1<history.size();++j1)
 	{
+	  size_t i=history.size()-1-j1;
 	  std::vector<T_p> weights(history[i].size());
 	  if(false&&i!=history.size()-1)
 	    {
@@ -311,7 +316,7 @@ namespace mcmc_utilities
 	{
 	  std::cerr<<"inside ps-evol"<<std::endl;
 	  std::cerr<<"n="<<n<<std::endl;
-	  for(int i=0;i<x.size();++i)
+	  for(size_t i=0;i<x.size();++i)
 	    {
 	      std::cerr<<"x["<<i<<"]="<<x[i]<<std::endl;
 	    }
@@ -327,7 +332,7 @@ namespace mcmc_utilities
 	{
 	  std::cerr<<"inside ps-evol_rev"<<std::endl;
 	  std::cerr<<"n="<<n<<std::endl;
-	  for(int i=0;i<x.size();++i)
+	  for(size_t i=0;i<x.size();++i)
 	    {
 	      std::cerr<<"x["<<i<<"]="<<x[i]<<std::endl;
 	    }
@@ -342,7 +347,7 @@ namespace mcmc_utilities
 	{
 	  std::cerr<<"inside ps-obs"<<std::endl;
 	  std::cerr<<"n="<<n<<std::endl;
-	  for(int i=0;i<x.size();++i)
+	  for(size_t i=0;i<x.size();++i)
 	    {
 	      std::cerr<<"x["<<i<<"]="<<x[i]<<std::endl;
 	    }

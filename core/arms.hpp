@@ -1225,7 +1225,7 @@ namespace mcmc_utilities
 
   
   template <typename T,typename T_urand,typename TD>
-  T sample(const std::list<section<T> >& section_list,T_urand& rnd,const TD& pd,T scale)
+  T sample(const std::list<section<T> >& section_list,T_urand&& rnd,const TD& pd,T scale)
   {
     T result=C_ZERO<T>();
 
@@ -1247,7 +1247,7 @@ namespace mcmc_utilities
     T p=0;
     for(size_t i=0;i<10;++i)
       {
-	p=rnd();
+	p=urng<T>(rnd);
 	if(p>=C_ZERO<T>()&&p<C_ONE<T>())
 	  {
 	    break;
@@ -1362,7 +1362,7 @@ namespace mcmc_utilities
   
   template <typename T,typename TD,typename T_urand,typename T_vector>
   T arms(const TD& pd,const std::pair<T,T>& xrange,
-	 const T_vector& init_x,T xcur,size_t n,T_urand& rnd,size_t& xmchange_count)
+	 const T_vector& init_x,T xcur,size_t n,T_urand&& rnd,size_t& xmchange_count)
   {
     constexpr T C_TWO=C_ONE<T>()+C_ONE<T>();
     if(xrange.second<xrange.first+std::numeric_limits<T>::epsilon()*std::abs(xrange.first))
@@ -1467,7 +1467,7 @@ namespace mcmc_utilities
 	    break;
 	  }
 	
-	T u=rnd();
+	T u=urng<T>(rnd);
 	T xa=C_ZERO<T>();
 	if(std::log(u)+eval(x,section_list)>eval_log(pd,x,scale))
 	  {
@@ -1520,7 +1520,7 @@ namespace mcmc_utilities
 	  {
 	    xa=x;
 	  }
-	u=rnd();
+	u=urng<T>(rnd);
 	
 	if(std::log(u)>std::min(C_ZERO<T>(),eval_log(pd,xa,scale)-eval_log(pd,xcur,scale)+std::min(eval_log(pd,xcur,scale),eval(xcur,section_list))-std::min(eval_log(pd,xa,scale),eval(xa,section_list))))
 	  {

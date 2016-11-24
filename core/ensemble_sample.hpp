@@ -9,8 +9,6 @@
 #include <atomic>
 #include <sstream>
 #include "mcmc_traits.hpp"
-#include "base_urand.hpp"
-#include "distribution.hpp"
 #include "error_handler.hpp"
 
 /*
@@ -21,18 +19,18 @@
 
 namespace mcmc_utilities
 {
-  template <typename T>
-  T draw_z(base_urand<T>& rng,T a)
+  template <typename T,typename T_rng>
+  T draw_z(T_rng&& rng,T a)
   {
     const T sqrt_a=std::sqrt(a);
-    T p=rng()*2*(sqrt_a-1/sqrt_a);
+    T p=urng<T>(rng)*2*(sqrt_a-1/sqrt_a);
     return std::pow(static_cast<T>(1/sqrt_a+p/2),static_cast<T>(2));
   }
   
-  template <typename T_logprob,typename T_ensemble>
+  template <typename T_logprob,typename T_ensemble,typename T_rng>
   T_ensemble ensemble_sample(T_logprob&& logprob,
 			     const T_ensemble& ensemble,
-			     base_urand<typename std::result_of<T_logprob(typename element_type_trait<T_ensemble>::element_type)>::type>& rng,
+			     T_rng&& rng,
 			     size_t nthread_allowed=1,
 			     typename std::result_of<T_logprob(typename element_type_trait<T_ensemble>::element_type)>::type a=2)
   {
@@ -61,7 +59,7 @@ namespace mcmc_utilities
 	size_t j=0;
 	do
 	  {
-	    j=rng()*(half_K);
+	    j=urng<T>(rng)*(half_K);
 	  }
 	while(j>=half_K);
 	T z=draw_z(rng,a);
@@ -128,7 +126,7 @@ namespace mcmc_utilities
 		throw e;
 	      }
 	    
-	    T r=rng();
+	    T r=urng<T>(rng);
 	    if(r<=q)
 	      {
 		set_element(ensemble_half,k,as<typename element_type_trait<T_ensemble>::element_type>(Y));
@@ -136,7 +134,7 @@ namespace mcmc_utilities
 	  }
       };
 
-    if(!rng.is_parallel()||nthread_allowed==1)
+    if(nthread_allowed==1)
       {
 	for(size_t k=0;k<K;++k)
 	  {

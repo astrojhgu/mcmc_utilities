@@ -88,7 +88,7 @@ namespace mcmc_utilities
 	    {
 	      return result;
 	    }
-	  for(int i=0;i<p->num_of_dims();++i)
+	  for(size_t i=0;i<p->num_of_dims();++i)
 	    {
 	      result=result||p->is_observed(i);
 	      if(result)

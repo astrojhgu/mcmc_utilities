@@ -37,9 +37,11 @@ namespace mcmc_utilities
   void shuffle(T_container& arr,
 	       T_rng& rng)
   {
-    int n=get_size(arr);
-    for(int i=n-1;i>=0;--i)
+    size_t n=get_size(arr);
+    //for(int i=n-1;i>=0;--i)
+    for(size_t j=0;j<n;++j)
       {
+	int i=n-1-j;
 	int i2=0;
 	do
 	  {
@@ -51,10 +53,10 @@ namespace mcmc_utilities
       }
   }
 
-  template <typename T_logprob,typename T_ensemble_list,typename T_beta_list>
+  template <typename T_logprob,typename T_ensemble_list,typename T_beta_list,typename T_rng>
   T_ensemble_list ptsample(T_logprob&& logprob,
 			   const T_ensemble_list& ensemble_list,
-			   base_urand<typename std::result_of<T_logprob(typename element_type_trait<typename element_type_trait<T_ensemble_list>::element_type>::element_type)>::type>& rng,
+			   T_rng&& rng,
 			   const T_beta_list& beta_list,
 			   bool perform_swap,
 			   size_t nthread_allowed=1,
@@ -90,7 +92,7 @@ namespace mcmc_utilities
 		auto var1=as<T_var>(get_element(get_element(new_ensemble_list,i),j));
 		auto var2=as<T_var>(get_element(get_element(new_ensemble_list,i+1),j));
 		T ep=exchange_prob(logprob,var1,var2,beta1,beta2);
-		if(rng()<ep)
+		if(urng<T>(rng)<ep)
 		  {
 		    auto temp=clone<T_var>(get_element(get_element(new_ensemble_list,i),j));
 		    set_element(get_element(new_ensemble_list,i),j,

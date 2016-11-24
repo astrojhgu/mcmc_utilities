@@ -42,7 +42,7 @@ namespace mcmc_utilities
 	block_size+=1;
       }
     std::vector<std::thread> pool;
-    for(int i=0;i<nth;++i)
+    for(size_t i=0;i<nth;++i)
       {
 	size_t nbegin=i*block_size;
 	size_t nend=(i+1)*block_size;
@@ -66,7 +66,7 @@ namespace mcmc_utilities
 			  T_vec2& vec_out,UnaryOperation unary_op,size_t max_th)
   {
 #pragma omp parallel for
-    for(int i=0;i<vec_in.size();++i)
+    for(size_t i=0;i<vec_in.size();++i)
       {
 	vec_out[i]=unary_op(vec_in[i]);
       }

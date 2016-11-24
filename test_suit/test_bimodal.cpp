@@ -3,8 +3,7 @@
 #include <math/distributions.hpp>
 #include <core/ensemble_sample.hpp>
 #include <core/ptsample.hpp>
-#include <core/urand.hpp>
-#include <rng/prng.hpp>
+#include <random>
 #include <vector>
 #include <fstream>
 #include <cassert>
@@ -16,8 +15,9 @@ using std_vector=std::vector<T>;
 int main()
 {
   srand(time(0));
-  urand<double> rng;
-  prng<double> prng;
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  
   
   std::vector<std::vector<std::vector<double> > > ensemble_list;
   constexpr int nwalker=100;
@@ -37,7 +37,7 @@ int main()
       std::vector<std::vector<double> > ensemble;
       for(int j=0;j<nwalker;++j)
 	{
-	  std::vector<double> x{rng()*20-10,rng()};
+	  std::vector<double> x{urng<double>(gen)*20-10,urng<double>(gen)};
 	  ensemble.push_back(x);
 	}
       ensemble_list.push_back(ensemble);
@@ -75,9 +75,9 @@ int main()
 	  
 	  if(x[1]<.5){return -(x[0]-mu1)*(x[0]-mu1)/(2*sigma1*sigma1)-std::log(sigma1);}
 	  else{return -(x[0]-mu2)*(x[0]-mu2)/(2*sigma2*sigma2)-std::log(sigma2);};
-	},ensemble_list,prng,beta_list,n%10==0,1);
+	},ensemble_list,gen,beta_list,n%10==0,1);
       int j=0;
-      do{j=rng()*nwalker;}while(j>=nwalker);
+      do{j=urng<double>(gen)*nwalker;}while(j>=nwalker);
       //if(n%100==0)
 	{
 	  for(int i=0;i<ntemp;++i)

@@ -187,6 +187,15 @@ namespace mcmc_utilities
   {
     return static_cast<T>(rhs);
   }
+
+  template <typename T,typename T_rng>
+  T urng(T_rng&& rng)
+  //generate a uniform random between 0 and 1
+  {
+    T mn=rng.min();
+    T mx=rng.max();
+    return (static_cast<T>(rng())-mn)/(mx-mn);
+  }
 }
 
 #endif
