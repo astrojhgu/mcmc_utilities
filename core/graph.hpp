@@ -196,12 +196,56 @@ namespace mcmc_utilities
 	{
 	  for(size_t i=0;i<(*p)->num_of_dims();++i)
 	    {
-	      push_back(result,(*p)->value(i));
+	      if(!(*p)->is_observed(i))
+		{
+		  push_back(result,(*p)->value(i));
+		}
 	    }
 	}
       return result;
     }
 
+    void set_params(const T_vector<T>& param)
+    {
+      size_t n=0;
+      for(auto p=std::begin(stochastic_node_list);
+	  p!=std::end(stochastic_node_list);++p)
+	{
+	  for(size_t i=0;i<(*p)->num_of_dims();++i)
+	    {
+	      if(!(*p)->is_observed(i))
+		{
+		  (*p)->set_value(i,get_element(param,n++));
+		}
+	    }
+	}
+    }
+
+    T eval_logprob(const T_vector<T>& param)
+    {
+      T result=0;
+      size_t n=0;
+      for(auto p=std::begin(stochastic_node_list);
+	  p!=std::end(stochastic_node_list);++p)
+	{
+	  for(size_t i=0;i<(*p)->num_of_dims();++i)
+	    {
+	      if(!(*p)->is_observed(i))
+		{
+		  T x=get_element(param,n++);
+		  (*p)->set_current_idx(i);
+		  auto xrange=(*p)->var_range();
+		  if(x<=xrange.first||x>=xrange.second)
+		    {
+		      return -std::numeric_limits<T>::infinity();
+		    }
+		  (*p)->set_value(i,x);
+		}
+	    }
+	}
+      return this->log_joint_prob();
+    }
+    
     std::function<T()> get_monitor(const T_tag& tag,size_t n)const
     {
       auto iter=node_map.find(tag);

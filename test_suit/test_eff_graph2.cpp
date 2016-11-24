@@ -9,6 +9,8 @@
 #include <math/functions.hpp>
 #include <core/tag_t.hpp>
 #include <tools/dump_graph_topology.hpp>
+#include <core/ensemble_sample.hpp>
+#include <core/graph_ensemble_sample.hpp>
 #include <cassert>
 #include <fstream>
 #include <iostream>
@@ -138,10 +140,25 @@ int main()
   ofstream ofs("eff_topology.dot");
   topology_dumper<double,std_vector>(g2).to_dot(ofs);
   ofs.close();
+
+  std_vector<std_vector<double> > ensemble;
+  
   
   for(int i=0;i<30000;++i)
     {
-      g2.sample(rnd1);
-      cout<<A()<<" "<<B()<<" "<<mu()<<" "<<sigma()<<endl;
+      //g2.sample(rnd1);
+      //cout<<A()<<" "<<B()<<" "<<mu()<<" "<<sigma()<<endl;
+      ensemble=ensemble_sample(g,ensemble,rnd1);
+      auto p=ensemble[int(urng<double>(rnd1)*8)%8];
+
+      if(i<100)
+	{
+	  continue;
+	}
+      for(auto& j:p)
+	{
+	  cout<<j<<" ";
+	}
+      cout<<endl;
     }
 }
