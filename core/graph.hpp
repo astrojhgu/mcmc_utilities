@@ -36,6 +36,16 @@ namespace mcmc_utilities
        topology_frozen(false),verbose_level(0)
     {}
 
+    graph(graph&& rhs)
+      :stochastic_node_list(rhs.stochastic_node_list),
+       deterministic_node_list(rhs.stochastic_node_list),
+       node_map(rhs.node_map),
+       tag_map(rhs.tag_map),
+       topology_frozen(rhs.topology_frozen),
+       verbose_level(rhs.verbose_level)
+    {
+    }
+
     virtual ~graph(){}
 
     graph(const graph<T,T_tag,T_vector>&)=delete;
@@ -528,6 +538,16 @@ namespace mcmc_utilities
       return std::weak_ptr<node<T,T_vector> >(i->second);
     }
   };
+
+  template <typename T,typename T_tag,template <typename TE> class T_vector>
+  graph<T,T_tag,T_vector> clone(const graph<T,T_tag,T_vector>& rhs )
+  {
+    graph<T,T_tag,T_vector> g;
+    g.copy_from(rhs);
+    std::cerr<<1<<std::endl;
+    return g;
+  }
+
 }
 
 #endif

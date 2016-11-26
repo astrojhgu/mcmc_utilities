@@ -11,6 +11,7 @@
 #include <tools/dump_graph_topology.hpp>
 #include <core/ensemble_sample.hpp>
 #include <core/graph_ensemble_sample.hpp>
+#include <rng/prng.hpp>
 #include <cassert>
 #include <fstream>
 #include <iostream>
@@ -86,6 +87,8 @@ private:
 
 int main()
 {
+  prng<double> prng;
+  
   graph<double,tag_t,std_vector> g;
   data_loader dl("eff.txt");
 
@@ -148,10 +151,10 @@ int main()
     {
       //g2.sample(rnd1);
       //cout<<A()<<" "<<B()<<" "<<mu()<<" "<<sigma()<<endl;
-      ensemble=ensemble_sample(g,ensemble,rnd1);
+      ensemble=ensemble_sample(g,ensemble,prng);
       auto p=ensemble[int(urng<double>(rnd1)*8)%8];
-
-      if(i<100)
+      //auto p=ensemble[0];
+      if(i<1000)
 	{
 	  continue;
 	}

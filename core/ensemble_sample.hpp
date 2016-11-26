@@ -72,7 +72,7 @@ namespace mcmc_utilities
     //T_ensemble ensemble_half(ensemble);
     auto ensemble_half(clone(ensemble));
 
-    auto task=[&](size_t k)
+    auto task=[&](size_t k,T_logprob& logprob)
       {
 	const size_t i=walker_group_id[k];
 	const size_t ni=1-i;
@@ -158,28 +158,35 @@ namespace mcmc_utilities
       {
 	for(size_t k=0;k<K;++k)
 	  {
-	    task(k);
+	    task(k,logprob);
 	  }
       }
     else
       {
+	std::vector<T_logprob> logprob_vec;
+	logprob_vec.reserve(nthread_allowed);
+	for(size_t i=0;i<nthread_allowed;++i)
+	  {
+	    logprob_vec.push_back(clone(logprob));
+	  }
+	
 	std::vector<std::thread> pool;
 	pool.reserve(K);
 	size_t nrunning_thread(0);
 	size_t k(0);
 	std::mutex mx;
-	std::function<void()> chain_task([&nrunning_thread,&k,&task,nthread_allowed,&pool,&chain_task,K,&mx](){
+	std::function<void(T_logprob&&)> chain_task([&nrunning_thread,&k,&task,nthread_allowed,&pool,&chain_task,K,&mx](T_logprob&& logprob){
 	    mx.lock();
 	    size_t k1=k;
 	    //std::cerr<<"k="<<k<<std::endl;
 	    nrunning_thread++;
 	    k++;
 	    mx.unlock();
-	    task(k1);
+	    task(k1,logprob);
 	    mx.lock();
 	    if(nrunning_thread<nthread_allowed&&pool.size()<K)
 	      {
-		pool.push_back(std::thread(chain_task));
+		pool.push_back(std::thread(chain_task,logprob));
 		//assert(pool.size()<=K);
 	      }
 	    nrunning_thread--;
@@ -188,7 +195,7 @@ namespace mcmc_utilities
 	mx.lock();
 	for(size_t i=0;i<nthread_allowed;++i)
 	  {
-	    pool.push_back(std::thread(chain_task));
+	    pool.push_back(std::thread(chain_task,logprob_vec[i]));
 	  }
 	mx.unlock();
 	//std::cerr<<pool.size()<<std::endl;
