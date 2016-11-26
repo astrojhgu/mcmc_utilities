@@ -38,6 +38,7 @@ namespace mcmc_utilities
     using T_var=typename element_type_trait<T_ensemble>::element_type;
     
     const size_t K=get_size(ensemble);
+    
     if(K==0)
       {
 	throw mcmc_exception("number of walkers must not be zero");
@@ -46,6 +47,25 @@ namespace mcmc_utilities
       {
 	throw mcmc_exception("number of walkers must be even");
       }
+
+    std::vector<std::vector<size_t> > walker_group{std::vector<size_t>(),std::vector<size_t>()};
+    std::vector<size_t> walker_group_id(K);
+    for(auto& i:walker_group)
+      {
+	i.reserve(K/2);
+      }
+    for(size_t i=0;i<K;++i)
+      {
+	size_t gid=urng<T>(rng)<static_cast<T>(0.5)?0:1;
+	if(walker_group[gid].size()==K/2)
+	  {
+	    gid=1-gid;
+	  }
+	walker_group[gid].push_back(i);
+	walker_group_id[i]=gid;
+      }
+
+    
     nthread_allowed=nthread_allowed<1?1:nthread_allowed;
     const size_t n=get_size(get_element(ensemble,0));
     const size_t half_K=K/2;
@@ -54,7 +74,7 @@ namespace mcmc_utilities
 
     auto task=[&](size_t k)
       {
-	const size_t i=k<half_K?0:1;
+	const size_t i=walker_group_id[k];
 	const size_t ni=1-i;
 	size_t j=0;
 	do
@@ -67,7 +87,7 @@ namespace mcmc_utilities
 	T_var Y(clone(get_element(ensemble,k)));
 	for(size_t l=0;l<get_size(Y);++l)
 	  {
-	    T y=as<T>(get_element(get_element(ensemble,j+half_K*ni),l))+z*(as<T>(get_element(get_element(ensemble,k),l))-as<T>(get_element(get_element(ensemble,j+half_K*ni),l)));
+	    T y=as<T>(get_element(get_element(ensemble,walker_group[ni][j]),l))+z*(as<T>(get_element(get_element(ensemble,k),l))-as<T>(get_element(get_element(ensemble,walker_group[ni][j]),l)));
 	    if(std::isnan(y)||std::isinf(y))
 	      {
 		nan_or_inf e;
