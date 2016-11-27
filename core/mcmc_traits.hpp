@@ -2,6 +2,7 @@
 #define MCMC_TRAITS
 #define MCMC_HEADER
 #include <cmath>
+#include <type_traits>
 #include <cstddef>
 namespace mcmc_utilities
 {
@@ -38,9 +39,9 @@ namespace mcmc_utilities
   class return_type_trait
   {
   public:
-    using value_type=T;
-    using reference_type=T&;
-    using const_reference_type=const T&;
+    using value_type=typename std::remove_reference<T>::type;
+    using reference_type=value_type&;
+    using const_reference_type=const value_type&;
   };
   
 

@@ -145,13 +145,18 @@ int main()
   ofs.close();
 
   std_vector<std_vector<double> > ensemble;
+  graph_function_adapter<double,tag_t,std_vector> gfa(g,4);
   
+  ensemble=ensemble_sample(g,ensemble,prng);
+
   
   for(int i=0;i<30000;++i)
     {
       //g2.sample(rnd1);
       //cout<<A()<<" "<<B()<<" "<<mu()<<" "<<sigma()<<endl;
-      ensemble=ensemble_sample(g,ensemble,prng);
+      //ensemble=ensemble_sample(g,ensemble,prng);
+      ensemble=ensemble_sample(gfa,ensemble,prng,4);
+      
       auto p=ensemble[int(urng<double>(rnd1)*8)%8];
       //auto p=ensemble[0];
       if(i<1000)
